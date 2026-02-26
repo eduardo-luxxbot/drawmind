@@ -3,14 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DrawMind - Aprenda a Desenhar</title>
+    <title>DrawMind - Sua Jornada Artística</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
+        :root {
+            --primary: #6366f1;
+            --secondary: #ec4899;
+            --accent: #f59e0b;
+            --dark: #0f0f1a;
+            --light: #fafafa;
+            --gray: #64748b;
+            --glass: rgba(255,255,255,0.1);
+        }
+
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f8fafc;
-            color: #1e1b4b;
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animações */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99,102,241,0.3); }
+            50% { box-shadow: 0 0 40px rgba(99,102,241,0.6); }
+        }
+
+        @keyframes draw-line {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        /* Background Artístico */
+        .bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
         }
 
         /* Navegação */
@@ -18,14 +65,15 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(255,255,255,0.95);
+            background: rgba(15,15,26,0.8);
+            backdrop-filter: blur(20px);
             padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .nav-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -33,27 +81,176 @@
         }
 
         .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #6366f1, #ec4899);
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #fff, #a5b4fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: '✦';
+            font-size: 1.5rem;
+            animation: float 3s ease-in-out infinite;
         }
 
         .nav-links {
             display: flex;
-            gap: 2rem;
+            gap: 2.5rem;
             list-style: none;
+            align-items: center;
         }
 
         .nav-links a {
             text-decoration: none;
-            color: #64748b;
+            color: rgba(255,255,255,0.7);
             font-weight: 500;
-            transition: color 0.3s;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
         }
 
-        .nav-links a:hover { color: #6366f1; }
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        /* Login Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1e1b4b, #0f0f1a);
+            border-radius: 30px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        .modal-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .modal-content p {
+            text-align: center;
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99,102,241,0.4);
+        }
+
+        .toggle-auth {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--gray);
+        }
+
+        .toggle-auth span {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+        }
 
         /* Hero */
         .hero {
@@ -61,654 +258,1827 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%);
+            top: 10%;
+            left: -10%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(236,72,153,0.2) 0%, transparent 70%);
+            bottom: 10%;
+            right: -5%;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        .hero-content {
             text-align: center;
-            padding: 2rem;
+            max-width: 900px;
+            z-index: 1;
         }
 
         .hero-content h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 600;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 50%, #f472b6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .hero-content p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
+            font-size: 1.4rem;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         .cta-button {
-            display: inline-block;
-            padding: 1rem 2.5rem;
-            background: white;
-            color: #6366f1;
-            text-decoration: none;
+            padding: 1.2rem 2.5rem;
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.2);
+            color: white;
             border-radius: 50px;
-            font-weight: 700;
-            transition: transform 0.3s;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .cta-button:hover { transform: translateY(-3px); }
+        .cta-button.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            animation: pulse-glow 2s infinite;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            border-color: white;
+        }
 
         /* Seções */
         section {
-            padding: 5rem 2rem;
-            max-width: 1200px;
+            padding: 6rem 2rem;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
-        .section-title {
-            font-size: 2.5rem;
+        .section-header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
         }
 
-        /* Onboarding */
-        .onboarding {
-            background: white;
-            border-radius: 20px;
-            padding: 3rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            display: none;
+        .section-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
         }
 
-        .onboarding.active { display: block; }
+        .section-header p {
+            color: var(--gray);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-        .learning-styles {
+        /* Personalidade IA */
+        .personality-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
         }
 
-        .style-card {
-            padding: 2rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 15px;
-            cursor: pointer;
+        .personality-card {
+            background: rgba(255,255,255,0.03);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
             text-align: center;
+            cursor: pointer;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .personality-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.05));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .personality-card:hover::before {
+            opacity: 1;
+        }
+
+        .personality-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(99,102,241,0.2);
+        }
+
+        .personality-card.selected {
+            border-color: var(--secondary);
+            background: rgba(236,72,153,0.1);
+        }
+
+        .personality-avatar {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            filter: grayscale(0.3);
             transition: all 0.3s;
         }
 
-        .style-card:hover, .style-card.selected {
-            border-color: #6366f1;
-            background: #6366f1;
-            color: white;
-            transform: translateY(-5px);
+        .personality-card:hover .personality-avatar,
+        .personality-card.selected .personality-avatar {
+            filter: grayscale(0);
+            transform: scale(1.1);
         }
 
-        .style-icon { font-size: 2.5rem; margin-bottom: 1rem; }
-
-        /* Canvas */
-        .drawing-section {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        .personality-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
         }
 
-        .canvas-container {
-            position: relative;
-            width: 100%;
-            height: 500px;
-            background: #f8fafc;
-            border-radius: 15px;
-            overflow: hidden;
-            border: 3px solid #e2e8f0;
+        .personality-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
         }
 
-        #drawingCanvas { cursor: crosshair; display: block; }
-
-        .canvas-tools {
+        .personality-traits {
             display: flex;
-            gap: 1rem;
+            gap: 0.5rem;
+            justify-content: center;
             margin-top: 1rem;
             flex-wrap: wrap;
+        }
+
+        .trait {
+            background: rgba(255,255,255,0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        /* Trilhas */
+        .trilhas-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .trilha-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+
+        .trilha-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(99,102,241,0.5);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+        }
+
+        .trilha-visual {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trilha-visual.iniciante {
+            background: linear-gradient(135deg, #059669, #34d399);
+        }
+
+        .trilha-visual.intermediario {
+            background: linear-gradient(135deg, #d97706, #fbbf24);
+        }
+
+        .trilha-visual.avancado {
+            background: linear-gradient(135deg, #db2777, #f472b6);
+        }
+
+        .trilha-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem;
+            opacity: 0.3;
+        }
+
+        .trilha-content {
+            padding: 2rem;
+        }
+
+        .trilha-content h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .trilha-content > p {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+        }
+
+        .trilha-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta-item {
+            display: flex;
             align-items: center;
+            gap: 0.3rem;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        /* Estúdio de Desenho Aprimorado */
+        .studio-container {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 2rem;
+            height: calc(100vh - 200px);
+        }
+
+        .tools-panel, .reference-panel {
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-category {
+            margin-bottom: 2rem;
+        }
+
+        .tool-category h4 {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .tool-btn {
-            padding: 0.8rem 1.5rem;
-            border: 2px solid #e2e8f0;
-            background: white;
-            border-radius: 10px;
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: white;
             cursor: pointer;
-            font-weight: 600;
             transition: all 0.3s;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
         }
 
         .tool-btn:hover, .tool-btn.active {
-            background: #6366f1;
-            color: white;
-            border-color: #6366f1;
+            background: var(--primary);
+            border-color: var(--primary);
         }
 
-        .color-picker {
-            width: 50px;
-            height: 50px;
-            border: none;
+        .shape-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .shape-btn {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shape-btn:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .canvas-area {
+            background: rgba(255,255,255,0.02);
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #mainCanvas {
+            cursor: crosshair;
+            display: block;
+        }
+
+        .canvas-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .brush-settings {
+            margin-top: 1rem;
+        }
+
+        .setting-row {
+            margin-bottom: 1rem;
+        }
+
+        .setting-row label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: var(--gray);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--primary);
             border-radius: 50%;
             cursor: pointer;
         }
 
-        /* Galeria */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .artwork-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-
-        .artwork-card:hover { transform: translateY(-10px); }
-
-        .artwork-image {
+        input[type="color"] {
             width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-        }
-
-        .artwork-info { padding: 1.5rem; }
-
-        /* Referências */
-        .references-tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            justify-content: center;
-        }
-
-        .tab-btn {
-            padding: 1rem 2rem;
-            border: 2px solid #6366f1;
-            background: transparent;
-            color: #6366f1;
-            border-radius: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
+            background: none;
         }
 
-        .tab-btn.active {
-            background: #6366f1;
-            color: white;
-        }
-
-        .references-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .reference-item {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-
-        .reference-thumb {
-            width: 100%;
-            height: 150px;
-            background: linear-gradient(135deg, #f59e0b, #ec4899);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-        }
-
-        .reference-info { padding: 1rem; }
-
-        /* Assistente IA */
-        .ai-assistant {
+        /* Assistente IA Personalizado */
+        .ai-container {
             position: fixed;
             bottom: 2rem;
             right: 2rem;
-            width: 350px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            width: 400px;
             z-index: 999;
-            overflow: hidden;
         }
 
-        .ai-header {
-            background: linear-gradient(135deg, #6366f1, #ec4899);
-            color: white;
-            padding: 1rem;
+        .ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
             cursor: pointer;
+            box-shadow: 0 10px 30px rgba(99,102,241,0.4);
+            transition: all 0.3s;
+            margin-left: auto;
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+
+        .ai-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(99,102,241,0.6);
+        }
+
+        .ai-chat {
+            background: rgba(30,27,75,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1rem;
+            overflow: hidden;
+            display: none;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .ai-chat.active { display: block; }
+
+        .ai-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(236,72,153,0.2));
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .ai-info span {
+            font-size: 0.85rem;
+            color: var(--gray);
         }
 
         .ai-messages {
-            height: 300px;
+            height: 350px;
             overflow-y: auto;
-            padding: 1rem;
-            background: #f8fafc;
+            padding: 1.5rem;
         }
 
         .message {
             margin-bottom: 1rem;
-            padding: 0.8rem;
-            border-radius: 15px;
-            max-width: 80%;
+            max-width: 85%;
+            animation: fadeIn 0.3s;
         }
 
-        .message.user {
-            background: #6366f1;
-            color: white;
-            margin-left: auto;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .message.ai {
-            background: white;
-            border: 1px solid #e2e8f0;
-        }
-
-        .ai-input {
-            display: flex;
+            background: rgba(255,255,255,0.05);
             padding: 1rem;
-            border-top: 1px solid #e2e8f0;
+            border-radius: 18px 18px 18px 4px;
         }
 
-        .ai-input input {
+        .message.user {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 1rem;
+            border-radius: 18px 18px 4px 18px;
+            margin-left: auto;
+        }
+
+        .ai-input-area {
+            padding: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .ai-input-area input {
             flex: 1;
-            padding: 0.8rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            margin-right: 0.5rem;
+            padding: 0.8rem 1rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: white;
+            outline: none;
         }
 
-        .ai-input button {
+        .ai-input-area button {
             padding: 0.8rem 1.2rem;
-            background: #6366f1;
-            color: white;
+            background: var(--primary);
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
+            color: white;
             cursor: pointer;
+            transition: all 0.3s;
         }
 
-        /* Footer */
-        footer {
-            background: #1e1b4b;
-            color: white;
-            padding: 3rem 2rem;
-            text-align: center;
+        .ai-input-area button:hover {
+            background: var(--secondary);
+        }
+
+        /* Galeria */
+        .gallery-masonry {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .artwork-item {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            aspect-ratio: 4/5;
+            cursor: pointer;
+            transition: all 0.4s;
+        }
+
+        .artwork-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .artwork-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .artwork-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .artwork-item:hover .artwork-overlay {
+            transform: translateY(0);
+        }
+
+        .artwork-author {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .author-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
         }
 
         /* Responsivo */
+        @media (max-width: 1200px) {
+            .studio-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+            }
+            .tools-panel, .reference-panel {
+                display: flex;
+                gap: 1rem;
+                overflow-x: auto;
+            }
+        }
+
         @media (max-width: 768px) {
-            .hero-content h1 { font-size: 2.5rem; }
+            .hero-content h1 { font-size: 3rem; }
             .nav-links { display: none; }
-            .ai-assistant { width: 90%; right: 5%; }
+            .ai-container { width: 90%; right: 5%; left: 5%; }
+            .section-header h2 { font-size: 2rem; }
+        }
+
+        .hidden { display: none !important; }
+        
+        /* Utilitários */
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 0.3rem;
+            padding: 1rem;
+        }
+        
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--gray);
+            border-radius: 50%;
+            animation: bounce 1s infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
     </style>
 </head>
 <body>
 
+    <!-- Background Animado -->
+    <canvas class="bg-canvas" id="bgCanvas"></canvas>
+
+    <!-- Navegação -->
     <nav>
         <div class="nav-container">
-            <div class="logo">🎨 DrawMind</div>
+            <div class="logo" onclick="goHome()">DrawMind</div>
             <ul class="nav-links">
-                <li><a href="#aprender">Aprender</a></li>
-                <li><a href="#desenhar">Desenhar</a></li>
-                <li><a href="#galeria">Galeria</a></li>
-                <li><a href="#referencias">Referências</a></li>
+                <li><a onclick="showSection('onboarding')">Jornada</a></li>
+                <li><a onclick="showSection('trilhas')">Trilhas</a></li>
+                <li><a onclick="showSection('studio')">Estúdio</a></li>
+                <li><a onclick="showSection('galeria')">Galeria</a></li>
+                <li><a onclick="showSection('comunidade')">Comunidade</a></li>
             </ul>
+            <div class="user-menu">
+                <div class="user-avatar" id="userAvatar" onclick="toggleLoginModal()">?</div>
+            </div>
         </div>
     </nav>
 
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Aprenda a Desenhar de Verdade</h1>
-            <p>Compreensão, não decoração. IA personalizada para seu estilo único.</p>
-            <a href="#onboarding" class="cta-button" onclick="startOnboarding()">Começar Agora</a>
-        </div>
-    </section>
+    <!-- Modal de Login -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2>✦ Bem-vindo</h2>
+            <p>Sua jornada artística começa aqui</p>
+            
+            <div id="loginForm">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="seu@email.com">
+                </div>
+                <div class="input-group">
+                    <label>Senha</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••">
+                </div>
+                <button class="btn-primary" onclick="login()">Entrar</button>
+                <div class="toggle-auth">
+                    Não tem conta? <span onclick="toggleAuthMode()">Criar agora</span>
+                </div>
+            </div>
 
-    <section id="onboarding" class="onboarding">
-        <h2>Como você aprende melhor?</h2>
-        <div class="learning-styles">
-            <div class="style-card" onclick="selectStyle(this, 'visual')">
-                <div class="style-icon">👁️</div>
-                <h3>Visual</h3>
-                <p>Vendo demonstrações</p>
-            </div>
-            <div class="style-card" onclick="selectStyle(this, 'pratico')">
-                <div class="style-icon">✋</div>
-                <h3>Prático</h3>
-                <p>Fazendo exercícios</p>
-            </div>
-            <div class="style-card" onclick="selectStyle(this, 'teorico')">
-                <div class="style-icon">📚</div>
-                <h3>Teórico</h3>
-                <p>Entendendo conceitos</p>
-            </div>
-            <div class="style-card" onclick="selectStyle(this, 'social')">
-                <div class="style-icon">👥</div>
-                <h3>Social</h3>
-                <p>Em grupo com feedback</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="aprender">
-        <h2 class="section-title">Trilhas de Aprendizado</h2>
-        <div class="gallery-grid">
-            <div class="artwork-card">
-                <div class="artwork-image" style="background: linear-gradient(135deg, #10b981, #34d399);">🌱</div>
-                <div class="artwork-info">
-                    <h3>Iniciante</h3>
-                    <p>Fundamentos da percepção visual</p>
+            <div id="registerForm" class="hidden">
+                <div class="input-group">
+                    <label>Como quer ser chamado?</label>
+                    <input type="text" id="regName" placeholder="Seu nome artístico">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="seu@email.com">
+                </div>
+                <div class="input-group">
+                    <label>Senha</label>
+                    <input type="password" id="regPassword" placeholder="••••••••">
+                </div>
+                <button class="btn-primary" onclick="register()">Criar Conta</button>
+                <div class="toggle-auth">
+                    Já tem conta? <span onclick="toggleAuthMode()">Entrar</span>
                 </div>
             </div>
-            <div class="artwork-card">
-                <div class="artwork-image" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">🌿</div>
-                <div class="artwork-info">
-                    <h3>Intermediário</h3>
-                    <p>Estrutura, luz e volume</p>
-                </div>
-            </div>
-            <div class="artwork-card">
-                <div class="artwork-image" style="background: linear-gradient(135deg, #ec4899, #f472b6);">🌳</div>
-                <div class="artwork-info">
-                    <h3>Avançado</h3>
-                    <p>Estilo e expressão pessoal</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="desenhar">
-        <h2 class="section-title">Estúdio de Desenho</h2>
-        <div class="drawing-section">
-            <div class="canvas-container">
-                <canvas id="drawingCanvas"></canvas>
-            </div>
-            <div class="canvas-tools">
-                <button class="tool-btn active" onclick="setTool('pencil')">✏️ Lápis</button>
-                <button class="tool-btn" onclick="setTool('eraser')">🧹 Borracha</button>
-                <input type="color" class="color-picker" id="colorPicker" value="#6366f1">
-                <input type="range" min="1" max="50" value="5" id="brushSize">
-                <button class="tool-btn" onclick="clearCanvas()">🗑️ Limpar</button>
-                <button class="tool-btn" onclick="saveDrawing()">💾 Salvar</button>
-            </div>
-        </div>
-    </section>
-
-    <section id="galeria">
-        <h2 class="section-title">Galeria da Comunidade</h2>
-        <div class="gallery-grid" id="communityGallery">
-            <div class="artwork-card">
-                <div class="artwork-image">🎨</div>
-                <div class="artwork-info">
-                    <h3>Estudo de Gestos</h3>
-                    <p>por @artista_iniciante</p>
-                </div>
-            </div>
-            <div class="artwork-card">
-                <div class="artwork-image" style="background: linear-gradient(135deg, #f093fb, #f5576c);">✏️</div>
-                <div class="artwork-info">
-                    <h3>Construção de Formas</h3>
-                    <p>por @desenhando_todo_dia</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="referencias">
-        <h2 class="section-title">Referências</h2>
-        <div class="references-tabs">
-            <button class="tab-btn active" onclick="switchTab('videos')">🎥 Vídeos</button>
-            <button class="tab-btn" onclick="switchTab('imagens')">🖼️ Imagens</button>
-            <button class="tab-btn" onclick="switchTab('poses')">🧍 Poses</button>
-        </div>
-        <div id="videos" class="references-content">
-            <div class="reference-item">
-                <div class="reference-thumb">▶️</div>
-                <div class="reference-info">
-                    <h4>Fundamentos do Desenho Gestual</h4>
-                    <p>Proko • 15 min</p>
-                </div>
-            </div>
-            <div class="reference-item">
-                <div class="reference-thumb" style="background: linear-gradient(135deg, #667eea, #764ba2);">🎬</div>
-                <div class="reference-info">
-                    <h4>Como Ver Formas 3D</h4>
-                    <p>Marco Bucci • 22 min</p>
-                </div>
-            </div>
-        </div>
-        <div id="imagens" class="references-content" style="display:none;">
-            <div class="reference-item">
-                <div class="reference-thumb">🏛️</div>
-                <div class="reference-info">
-                    <h4>Arquitetura Clássica</h4>
-                    <p>Referência de perspectiva</p>
-                </div>
-            </div>
-        </div>
-        <div id="poses" class="references-content" style="display:none;">
-            <div class="reference-item">
-                <div class="reference-thumb">🧍</div>
-                <div class="reference-info">
-                    <h4>Poses Dinâmicas</h4>
-                    <p>30 seg cada</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <div class="ai-assistant" id="aiAssistant">
-        <div class="ai-header" onclick="toggleAI()">
-            <span>🎨 Assistente DrawMind</span>
-            <span id="aiToggle">▼</span>
-        </div>
-        <div class="ai-messages" id="aiMessages">
-            <div class="message ai">Olá! Sou seu assistente de desenho. Como posso ajudar? 🎨</div>
-        </div>
-        <div class="ai-input">
-            <input type="text" id="aiInput" placeholder="Pergunte algo..." onkeypress="handleAIInput(event)">
-            <button onclick="sendAIMessage()">➤</button>
         </div>
     </div>
 
+    <!-- PÁGINAS -->
+
+    <!-- HOME -->
+    <div id="page-home">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Descubra o artista dentro de você</h1>
+                <p>Uma jornada personalizada de aprendizado artístico com IA que entende seu estilo único.</p>
+                <div class="cta-group">
+                    <button class="cta-button primary" onclick="startJourney()">
+                        Começar Jornada ✦
+                    </button>
+                    <button class="cta-button" onclick="showSection('studio')">
+                        Ir para o Estúdio
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ONBOARDING - PERSONALIZAÇÃO -->
+    <div id="page-onboarding" class="hidden">
+        <section>
+            <div class="section-header">
+                <h2>Como você quer aprender?</h2>
+                <p>Personalizaremos toda a sua experiência baseada no seu perfil único</p>
+            </div>
+
+            <div class="personality-grid" id="learningStyles">
+                <div class="personality-card" onclick="selectLearningStyle('explorador')">
+                    <div class="personality-avatar">🎨</div>
+                    <h3>Explorador</h3>
+                    <p>Prefere aprender experimentando, sem regras rígidas</p>
+                    <div class="personality-traits">
+                        <span class="trait">Livre</span>
+                        <span class="trait">Intuitivo</span>
+                        <span class="trait">Criativo</span>
+                    </div>
+                </div>
+
+                <div class="personality-card" onclick="selectLearningStyle('estruturado')">
+                    <div class="personality-avatar">📐</div>
+                    <h3>Estruturado</h3>
+                    <p>Gosta de passo a passo claro e progressão linear</p>
+                    <div class="personality-traits">
+                        <span class="trait">Metódico</span>
+                        <span class="trait">Organizado</span>
+                        <span class="trait">Focado</span>
+                    </div>
+                </div>
+
+                <div class="personality-card" onclick="selectLearningStyle('desafiador')">
+                    <div class="personality-avatar">🔥</div>
+                    <h3>Desafiador</h3>
+                    <p>Aprende melhor com metas difíceis e feedback direto</p>
+                    <div class="personality-traits">
+                        <span class="trait">Ambicioso</span>
+                        <span class="trait">Competitivo</span>
+                        <span class="trait">Determinado</span>
+                    </div>
+                </div>
+
+                <div class="personality-card" onclick="selectLearningStyle('colaborativo')">
+                    <div class="personality-avatar">🤝</div>
+                    <h3>Colaborativo</h3>
+                    <p>Prefere aprender em grupo, trocando ideias</p>
+                    <div class="personality-traits">
+                        <span class="trait">Social</span>
+                        <span class="trait">Comunicativo</span>
+                        <span class="trait">Aberto</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <h2>Escolha sua mentora IA</h2>
+                <p>Elas terão personalidades distintas para guiar sua jornada</p>
+            </div>
+
+            <div class="personality-grid" id="aiPersonalities">
+                <div class="personality-card" onclick="selectAIPersonality('luna')">
+                    <div class="personality-avatar">🌙</div>
+                    <h3>Luna</h3>
+                    <p>Gentil, paciente e encorajadora. Perfeita para quem precisa de apoio emocional.</p>
+                    <div class="personality-traits">
+                        <span class="trait">Empática</span>
+                        <span class="trait">Poética</span>
+                        <span class="trait">Calma</span>
+                    </div>
+                </div>
+
+                <div class="personality-card" onclick="selectAIPersonality('marco')">
+                    <div class="personality-avatar">⚡</div>
+                    <h3>Marco</h3>
+                    <p>Direto, técnico e exigente. Ideal para quem quer evoluir rápido.</p>
+                    <div class="personality-traits">
+                        <span class="trait">Técnico</span>
+                        <span class="trait">Direto</span>
+                        <span class="trait">Eficiente</span>
+                    </div>
+                </div>
+
+                <div class="personality-card" onclick="selectAIPersonality('zoe')">
+                    <div class="personality-avatar">🎭</div>
+                    <h3>Zoe</h3>
+                    <p>Criativa, divertida e fora da caixa. Inspira experimentação.</p>
+                    <div class="personality-traits">
+                        <span class="trait">Inovadora</span>
+                        <span class="trait">Divertida</span>
+                        <span class="trait">Arteira</span>
+                    </div>
+                </div>
+
+                <div class="personality-card" onclick="selectAIPersonality('viktor')">
+                    <div class="personality-avatar">🎓</div>
+                    <h3>Viktor</h3>
+                    <p>Erudito, filosófico e profundo. Conecta arte com história e teoria.</p>
+                    <div class="personality-traits">
+                        <span class="trait">Sábio</span>
+                        <span class="trait">Filosófico</span>
+                        <span class="trait">Clássico</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 3rem;">
+                <button class="cta-button primary" onclick="completeOnboarding()" id="btnComplete" style="opacity: 0.5; pointer-events: none;">
+                    Continuar Jornada ✦
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- TRILHAS -->
+    <div id="page-trilhas" class="hidden">
+        <section>
+            <div class="section-header">
+                <h2>Suas Trilhas de Aprendizado</h2>
+                <p>Caminhos personalizados baseados no seu perfil <span id="userStyleDisplay"></span></p>
+            </div>
+
+            <div class="trilhas-container" id="trilhasList">
+                <!-- Gerado dinamicamente -->
+            </div>
+        </section>
+    </div>
+
+    <!-- ESTÚDIO -->
+    <div id="page-studio" class="hidden">
+        <section style="max-width: 100%; padding: 6rem 1rem 1rem;">
+            <div class="studio-container">
+                <div class="tools-panel">
+                    <div class="panel-title">✨ Ferramentas</div>
+                    
+                    <div class="tool-category">
+                        <h4>Pincéis</h4>
+                        <button class="tool-btn active" onclick="setBrush('pencil')">
+                            ✏️ Lápis
+                        </button>
+                        <button class="tool-btn" onclick="setBrush('pen')">
+                            🖊️ Caneta
+                        </button>
+                        <button class="tool-btn" onclick="setBrush('marker')">
+                            🖍️ Marcador
+                        </button>
+                        <button class="tool-btn" onclick="setBrush('watercolor')">
+                            🎨 Aquarela
+                        </button>
+                        <button class="tool-btn" onclick="setBrush('eraser')">
+                            🧹 Borracha
+                        </button>
+                    </div>
+
+                    <div class="tool-category">
+                        <h4>Formas Rápidas</h4>
+                        <div class="shape-grid">
+                            <button class="shape-btn" onclick="insertShape('circle')" title="Círculo">⭕</button>
+                            <button class="shape-btn" onclick="insertShape('square')" title="Quadrado">⬜</button>
+                            <button class="shape-btn" onclick="insertShape('triangle')" title="Triângulo">🔺</button>
+                            <button class="shape-btn" onclick="insertShape('line')" title="Linha guia">📏</button>
+                            <button class="shape-btn" onclick="insertShape('grid')" title="Grade">▦</button>
+                            <button class="shape-btn" onclick="insertShape('perspective')" title="Perspectiva">📐</button>
+                        </div>
+                    </div>
+
+                    <div class="brush-settings">
+                        <div class="setting-row">
+                            <label>Tamanho</label>
+                            <input type="range" min="1" max="100" value="5" id="brushSize" oninput="updateBrushSize(this.value)">
+                        </div>
+                        <div class="setting-row">
+                            <label>Opacidade</label>
+                            <input type="range" min="1" max="100" value="100" id="brushOpacity" oninput="updateBrushOpacity(this.value)">
+                        </div>
+                        <div class="setting-row">
+                            <label>Cor</label>
+                            <input type="color" id="brushColor" value="#6366f1" onchange="updateBrushColor(this.value)">
+                        </div>
+                    </div>
+
+                    <button class="tool-btn" onclick="clearCanvas()" style="margin-top: 1rem; background: rgba(239,68,68,0.2);">
+                        🗑️ Limpar Tudo
+                    </button>
+                    <button class="tool-btn" onclick="saveArtwork()">
+                        💾 Salvar Obra
+                    </button>
+                </div>
+
+                <div class="canvas-area">
+                    <canvas id="mainCanvas"></canvas>
+                    <canvas id="overlayCanvas" class="canvas-overlay"></canvas>
+                </div>
+
+                <div class="reference-panel">
+                    <div class="panel-title">🖼️ Referência</div>
+                    
+                    <div class="tool-category">
+                        <h4>Modo Referência</h4>
+                        <button class="tool-btn" onclick="toggleOverlay('grid')">
+                            ▦ Grade
+                        </button>
+                        <button class="tool-btn" onclick="toggleOverlay('golden')">
+                            ✦ Proporção Áurea
+                        </button>
+                        <button class="tool-btn" onclick="toggleOverlay('mirror')">
+                            🪞 Espelho
+                        </button>
+                    </div>
+
+                    <div class="tool-category">
+                        <h4>Upload de Imagem</h4>
+                        <input type="file" id="refUpload" accept="image/*" style="display: none;" onchange="loadReference(event)">
+                        <button class="tool-btn" onclick="document.getElementById('refUpload').click()">
+                            📤 Carregar Imagem
+                        </button>
+                        <button class="tool-btn" onclick="toggleReferenceMode()">
+                            👁️ Modo Traçar
+                        </button>
+                    </div>
+
+                    <div class="tool-category">
+                        <h4>Desafio do Dia</h4>
+                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; margin-top: 0.5rem;">
+                            <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">Desenhe algo que represente:</p>
+                            <strong style="color: var(--secondary);" id="dailyChallenge">"Movimento no silêncio"</strong>
+                            <button class="tool-btn" style="margin-top: 1rem;" onclick="newChallenge()">
+                                🎲 Novo Desafio
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- GALERIA -->
+    <div id="page-galeria" class="hidden">
+        <section>
+            <div class="section-header">
+                <h2>Galeria da Comunidade</h2>
+                <p>Inspire-se e compartilhe sua evolução</p>
+            </div>
+
+            <div class="gallery-masonry" id="galleryGrid">
+                <!-- Gerado dinamicamente -->
+            </div>
+        </section>
+    </div>
+
+    <!-- COMUNIDADE -->
+    <div id="page-comunidade" class="hidden">
+        <section>
+            <div class="section-header">
+                <h2>Comunidade DrawMind</h2>
+                <p>Conecte-se com outros artistas em desenvolvimento</p>
+            </div>
+            
+            <div style="text-align: center; padding: 4rem; background: rgba(255,255,255,0.03); border-radius: 20px;">
+                <p style="font-size: 1.2rem; color: var(--gray);">Em breve: Grupos de estudo, desafios semanais e mentorias ao vivo!</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- ASSISTENTE IA -->
+    <div class="ai-container">
+        <div class="ai-chat" id="aiChat">
+            <div class="ai-header">
+                <div class="ai-info">
+                    <h4 id="aiName">Luna</h4>
+                    <span id="aiRole">Sua mentora artística</span>
+                </div>
+                <span style="cursor: pointer;" onclick="toggleAI()">✕</span>
+            </div>
+            <div class="ai-messages" id="aiMessages">
+                <div class="message ai" id="aiWelcome">
+                    Olá! Sou Luna, sua mentora de arte. Estou aqui para guiar sua jornada criativa com gentileza e paciência. Como você está se sentindo hoje? ✨
+                </div>
+            </div>
+            <div class="ai-input-area">
+                <input type="text" id="aiInput" placeholder="Converse comigo..." onkeypress="handleAIInput(event)">
+                <button onclick="sendAIMessage()">➤</button>
+            </div>
+        </div>
+        <div class="ai-avatar" id="aiAvatar" onclick="toggleAI()">🌙</div>
+    </div>
+
     <footer>
-        <h2>DrawMind</h2>
-        <p>Aprendendo a desenhar, uma linha de cada vez.</p>
-        <p style="margin-top: 1rem; opacity: 0.7;">© 2024</p>
+        <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 1rem;">DrawMind</h2>
+        <p style="color: var(--gray);">Cada linha é um passo na sua jornada artística.</p>
+        <p style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.6;">✦ Feito com amor para artistas em evolução ✦</p>
     </footer>
 
     <script>
-        // Canvas
-        const canvas = document.getElementById('drawingCanvas');
-        const ctx = canvas.getContext('2d');
-        let isDrawing = false;
-        let currentTool = 'pencil';
+        // SISTEMA DE ESTADO DO USUÁRIO
+        const userState = {
+            isLoggedIn: false,
+            name: '',
+            email: '',
+            learningStyle: '',
+            aiPersonality: '',
+            progress: {
+                iniciante: 0,
+                intermediario: 0,
+                avancado: 0
+            },
+            currentStreak: 0,
+            totalDrawings: 0
+        };
 
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.offsetWidth;
-            canvas.height = container.offsetHeight;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
+        // CONFIGURAÇÕES DAS PERSONALIDADES IA
+        const aiProfiles = {
+            luna: {
+                name: 'Luna',
+                avatar: '🌙',
+                role: 'Mentora Gentil',
+                style: 'empática, poética, encorajadora',
+                greetings: [
+                    "Olá! Que bom te ver por aqui. Pronto para criar algo bonito hoje? 🌙",
+                    "Sua presença ilumina o estúdio! Como posso apoiar sua criatividade hoje? ✨",
+                    "Lembre-se: cada artista lendário começou exatamente onde você está. Vamos juntos? 💫"
+                ],
+                responses: {
+                    dificuldade: "Respira fundo. A dificuldade é apenas o desconforto do crescimento. Que tal começarmos com algo simples e ir construindo devagar? Você é capaz.",
+                    inspiracao: "Inspiração é como o luar - às vezes brilha forte, às vezes fica tímida. Mas ela sempre volta. Que tal darmos um passeio pela galeria enquanto isso?",
+                    tecnica: "A técnica é importante, mas o sentimento é essencial. Vamos praticar juntos, sem pressa. Cada traço seu tem valor."
+                }
+            },
+            marco: {
+                name: 'Marco',
+                avatar: '⚡',
+                role: 'Instrutor Técnico',
+                style: 'direto, exigente, eficiente',
+                greetings: [
+                    "Vamos trabalhar. Tempo é precioso e você tem muito a evoluir. Onde está seu desenho de hoje? ⚡",
+                    "Bom. Você apareceu. Agora vamos transformar potencial em habilidade real. Pronto?",
+                    "Sem desculpas hoje. Pegue o lápis e vamos corrigir o que precisa ser corrigido. Rápido."
+                ],
+                responses: {
+                    dificuldade: "Difícil? Ótimo. Significa que você está fora da zona de conforto, onde o aprendizado acontece. Faça de novo. E de novo. Até ficar certo.",
+                    inspiracao: "Inspiração é para amadores. Profissionais trabalham independente do humor. Sentou? Desenha. Acabou.",
+                    tecnica: "Vamos aos fatos. Seu problema provavelmente é proporção ou valores. Mostre-me o desenho e eu aponto exatamente onde errou."
+                }
+            },
+            zoe: {
+                name: 'Zoe',
+                avatar: '🎭',
+                role: 'Musa Criativa',
+                style: 'divertida, experimental, inovadora',
+                greetings: [
+                    "Ei, artista! Bora bagunçar essa tela de branco? Vamos fazer algo que ninguém nunca viu! 🎨",
+                    "OOOOI! Tô super animada pra ver o que você vai criar hoje! Que tal quebrar todas as regras? ",
+                    "Aviso: sessão de arte caótica e divertida iniciada! Prepare-se para experimentar coisas loucas!"
+                ],
+                responses: {
+                    dificuldade: "Difícil? PERFEITO! Vamos fazer do jeito mais estranho possível então! Desenhe com a mão esquerda! Use só cores que odeia! Quebre o padrão!",
+                    inspiracao: "Inspiração tá overrated! Vamos criar um caos bonito e ver o que nasce dele! Cola no estúdio, vou te dar um desafio bizarro!",
+                    tecnica: "Regras são feitas pra serem quebradas! Mas ok, se você QUER técnica... que tal a gente aprender fazendo algo totalmente errado de propósito?"
+                }
+            },
+            viktor: {
+                name: 'Viktor',
+                avatar: '🎓',
+                role: 'Mestre Erudito',
+                style: 'filosófico, profundo, histórico',
+                greetings: [
+                    "Bem-vindo, aprendiz. A arte é uma jornada de milênios e você dá seus primeiros passos agora. Honroso. 🎓",
+                    "Da Vinci também começou com linhas tremidas. A diferença é a persistência através dos anos. Você está disposto?",
+                    "A arte reflete a alma humana através dos séculos. Hoje, você adiciona sua voz a esse coro milenar."
+                ],
+                responses: {
+                    dificuldade: "Dificuldade é o preço da maestria. Michelangelo levou 4 anos na Capela Sistina. Você tem paciência para seu primeiro desenho?",
+                    inspiracao: "Estude os mestres. Não copie - compreenda suas decisões. Vou recomendar alguns para você analisar hoje.",
+                    tecnica: "A técnica é a linguagem através da qual expressamos ideias eternas. Vamos estudar os fundamentos que os renascentistas dominaram."
+                }
+            }
+        };
+
+        // TRILHAS DE APRENDIZADO
+        const trilhasData = {
+            iniciante: [
+                { id: 'l1', title: 'O Primeiro Traço', desc: 'Desenhando sem medo do erro', icon: '✏️', time: '15 min' },
+                { id: 'l2', title: 'Ver com Olhos de Artista', desc: 'Percepção vs. Símbolos', icon: '👁️', time: '20 min' },
+                { id: 'l3', title: 'A Dança da Linha', desc: 'Confiança no gesto', icon: '💃', time: '25 min' },
+                { id: 'l4', title: 'Formas Escondidas', desc: 'Encontrando geometria em tudo', icon: '🔷', time: '30 min' }
+            ],
+            intermediario: [
+                { id: 'i1', title: 'Volume em 3D', desc: 'Transformando linhas em formas', icon: ' cube', time: '35 min' },
+                { id: 'i2', title: 'Luz e Vida', desc: 'Como a iluminação cria realidade', icon: '💡', time: '40 min' },
+                { id: 'i3', title: 'Anatomia Simplificada', desc: 'O corpo como construção', icon: '🏃', time: '45 min' },
+                { id: 'i4', title: 'Profundidade', desc: 'Perspectiva sem matemática', icon: '🏔️', time: '50 min' }
+            ],
+            avancado: [
+                { id: 'a1', title: 'Estilo Próprio', desc: 'Encontrando sua voz visual', icon: '🎭', time: '60 min' },
+                { id: 'a2', title: 'Composição Dramática', desc: 'Controlando o olhar do espectador', icon: '🎬', time: '65 min' },
+                { id: 'a3', title: 'Arte Conceitual', desc: 'Desenhando ideias, não apenas formas', icon: '💭', time: '70 min' }
+            ]
+        };
+
+        // INICIALIZAÇÃO
+        window.onload = function() {
+            initBackground();
+            loadGallery();
+            checkLoginStatus();
+        };
+
+        // BACKGROUND ANIMADO
+        function initBackground() {
+            const bg = document.getElementById('bgCanvas');
+            const ctx = bg.getContext('2d');
+            bg.width = window.innerWidth;
+            bg.height = window.innerHeight;
+
+            const particles = [];
+            for(let i = 0; i < 50; i++) {
+                particles.push({
+                    x: Math.random() * bg.width,
+                    y: Math.random() * bg.height,
+                    size: Math.random() * 2,
+                    speedX: (Math.random() - 0.5) * 0.5,
+                    speedY: (Math.random() - 0.5) * 0.5,
+                    opacity: Math.random() * 0.5
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, bg.width, bg.height);
+                
+                particles.forEach(p => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    
+                    if(p.x < 0) p.x = bg.width;
+                    if(p.x > bg.width) p.x = 0;
+                    if(p.y < 0) p.y = bg.height;
+                    if(p.y > bg.height) p.y = 0;
+                    
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(animate);
+            }
+            animate();
         }
 
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+        // NAVEGAÇÃO
+        function showSection(section) {
+            // Esconde todas as páginas
+            document.querySelectorAll('[id^="page-"]').forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            // Mostra a seção solicitada
+            const targetPage = document.getElementById('page-' + section);
+            if(targetPage) {
+                targetPage.classList.remove('hidden');
+                targetPage.classList.add('fade-in');
+            }
+
+            // Inicializa canvas se for o estúdio
+            if(section === 'studio') {
+                setTimeout(initStudio, 100);
+            }
+
+            window.scrollTo(0, 0);
+        }
+
+        function goHome() {
+            showSection('home');
+        }
+
+        function startJourney() {
+            if(!userState.isLoggedIn) {
+                toggleLoginModal();
+                return;
+            }
+            showSection('onboarding');
+        }
+
+        // SISTEMA DE LOGIN
+        function toggleLoginModal() {
+            const modal = document.getElementById('loginModal');
+            modal.classList.toggle('active');
+        }
+
+        function toggleAuthMode() {
+            document.getElementById('loginForm').classList.toggle('hidden');
+            document.getElementById('registerForm').classList.toggle('hidden');
+        }
+
+        function register() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            if(!name || !email || !password) {
+                alert('Por favor, preencha todos os campos');
+                return;
+            }
+
+            // Simulação de registro (em produção, use Firebase Auth)
+            userState.isLoggedIn = true;
+            userState.name = name;
+            userState.email = email;
+            
+            localStorage.setItem('drawmind_user', JSON.stringify(userState));
+            
+            updateUIForLoggedUser();
+            toggleLoginModal();
+            showSection('onboarding');
+            
+            addAIMessage(`Seja muito bem-vindo, ${name}! Sou ${userState.aiPersonality || 'Luna'} e vou acompanhar sua jornada artística. Estou animada para ver sua evolução! ✨`);
+        }
+
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // Simulação de login
+            const saved = localStorage.getItem('drawmind_user');
+            if(saved) {
+                const data = JSON.parse(saved);
+                if(data.email === email) {
+                    Object.assign(userState, data);
+                    userState.isLoggedIn = true;
+                    updateUIForLoggedUser();
+                    toggleLoginModal();
+                    showSection('trilhas');
+                    return;
+                }
+            }
+            
+            alert('Email ou senha incorretos');
+        }
+
+        function checkLoginStatus() {
+            const saved = localStorage.getItem('drawmind_user');
+            if(saved) {
+                Object.assign(userState, JSON.parse(saved));
+                userState.isLoggedIn = true;
+                updateUIForLoggedUser();
+            }
+        }
+
+        function updateUIForLoggedUser() {
+            document.getElementById('userAvatar').textContent = userState.name.charAt(0).toUpperCase();
+            document.getElementById('userStyleDisplay').textContent = userState.learningStyle ? `(${userState.learningStyle})` : '';
+            
+            if(userState.aiPersonality) {
+                const ai = aiProfiles[userState.aiPersonality];
+                document.getElementById('aiName').textContent = ai.name;
+                document.getElementById('aiRole').textContent = ai.role;
+                document.getElementById('aiAvatar').textContent = ai.avatar;
+                document.getElementById('aiWelcome').textContent = ai.greetings[0];
+            }
+        }
+
+        // ONBOARDING
+        function selectLearningStyle(style) {
+            userState.learningStyle = style;
+            document.querySelectorAll('#learningStyles .personality-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            checkOnboardingComplete();
+        }
+
+        function selectAIPersonality(personality) {
+            userState.aiPersonality = personality;
+            document.querySelectorAll('#aiPersonalities .personality-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // Atualiza preview da IA
+            const ai = aiProfiles[personality];
+            document.getElementById('aiName').textContent = ai.name;
+            document.getElementById('aiRole').textContent = ai.role;
+            document.getElementById('aiAvatar').textContent = ai.avatar;
+            
+            checkOnboardingComplete();
+        }
+
+        function checkOnboardingComplete() {
+            const btn = document.getElementById('btnComplete');
+            if(userState.learningStyle && userState.aiPersonality) {
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
+            }
+        }
+
+        function completeOnboarding() {
+            localStorage.setItem('drawmind_user', JSON.stringify(userState));
+            generateTrilhas();
+            showSection('trilhas');
+            addAIMessage(`Perfeito! Configurei sua experiência para o perfil ${userState.learningStyle}. Vamos começar sua primeira trilha? 🎯`);
+        }
+
+        // TRILHAS PERSONALIZADAS
+        function generateTrilhas() {
+            const container = document.getElementById('trilhasList');
+            const styles = {
+                explorador: { desc: 'Livre e intuitivo', color: 'iniciante' },
+                estruturado: { desc: 'Passo a passo claro', color: 'intermediario' },
+                desafiador: { desc: 'Meta desafiadora', color: 'avancado' },
+                colaborativo: { desc: 'Em grupo', color: 'intermediario' }
+            };
+
+            const trilhas = ['iniciante', 'intermediario', 'avancado'];
+            const icons = ['🌱', '🌿', '🌳'];
+            const titles = ['Descoberta', 'Domínio', 'Maestria'];
+
+            container.innerHTML = trilhas.map((nivel, idx) => `
+                <div class="trilha-card" onclick="openTrilha('${nivel}')">
+                    <div class="trilha-visual ${styles[userState.learningStyle].color}">
+                        <div class="trilha-icon">${icons[idx]}</div>
+                    </div>
+                    <div class="trilha-content">
+                        <h3>${titles[idx]}</h3>
+                        <p>${getTrilhaDesc(nivel)}</p>
+                        <div class="trilha-meta">
+                            <span class="meta-item">📚 ${trilhasData[nivel].length} aulas</span>
+                            <span class="meta-item">⏱️ ${calculateTime(nivel)}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${userState.progress[nivel]}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getTrilhaDesc(nivel) {
+            const descs = {
+                iniciante: 'Fundamentos da percepção visual e confiança no traço',
+                intermediario: 'Volume, luz, sombra e construção de formas 3D',
+                avancado: 'Estilo pessoal, composição avançada e expressão artística'
+            };
+            return descs[nivel];
+        }
+
+        function calculateTime(nivel) {
+            const total = trilhasData[nivel].reduce((acc, l) => acc + parseInt(l.time), 0);
+            return `${Math.floor(total/60)}h ${total%60}min`;
+        }
+
+        function openTrilha(nivel) {
+            // Abre primeira lição da trilha
+            const licoes = trilhasData[nivel];
+            if(licoes.length > 0) {
+                addAIMessage(`Vamos começar "${licoes[0].title}"? Posso explicar o exercício ou você prefere tentar sozinho primeiro?`);
+                showSection('studio');
+            }
+        }
+
+        // ESTÚDIO DE ARTE
+        let studioCtx, overlayCtx;
+        let currentBrush = { type: 'pencil', size: 5, color: '#6366f1', opacity: 1 };
+        let isDrawing = false;
+        let shapes = [];
+
+        function initStudio() {
+            const canvas = document.getElementById('mainCanvas');
+            const overlay = document.getElementById('overlayCanvas');
+            const container = canvas.parentElement;
+            
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            overlay.width = canvas.width;
+            overlay.height = canvas.height;
+            
+            studioCtx = canvas.getContext('2d');
+            overlayCtx = overlay.getContext('2d');
+            
+            studioCtx.lineCap = 'round';
+            studioCtx.lineJoin = 'round';
+            
+            // Eventos
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e.touches[0]); });
+            canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); });
+            canvas.addEventListener('touchend', stopDrawing);
+        }
 
         function getPos(e) {
-            const rect = canvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const rect = document.getElementById('mainCanvas').getBoundingClientRect();
             return {
-                x: clientX - rect.left,
-                y: clientY - rect.top
+                x: (e.clientX || e.pageX) - rect.left,
+                y: (e.clientY || e.pageY) - rect.top
             };
         }
 
         function startDrawing(e) {
             isDrawing = true;
             const pos = getPos(e);
-            ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
+            studioCtx.beginPath();
+            studioCtx.moveTo(pos.x, pos.y);
         }
 
         function draw(e) {
-            if (!isDrawing) return;
-            e.preventDefault();
+            if(!isDrawing) return;
             const pos = getPos(e);
             
-            ctx.lineWidth = document.getElementById('brushSize').value;
+            studioCtx.globalAlpha = currentBrush.opacity;
+            studioCtx.lineWidth = currentBrush.size;
             
-            if (currentTool === 'eraser') {
-                ctx.globalCompositeOperation = 'destination-out';
+            if(currentBrush.type === 'eraser') {
+                studioCtx.globalCompositeOperation = 'destination-out';
             } else {
-                ctx.globalCompositeOperation = 'source-over';
-                ctx.strokeStyle = document.getElementById('colorPicker').value;
+                studioCtx.globalCompositeOperation = 'source-over';
+                studioCtx.strokeStyle = currentBrush.color;
+                
+                if(currentBrush.type === 'watercolor') {
+                    studioCtx.shadowBlur = 20;
+                    studioCtx.shadowColor = currentBrush.color;
+                } else {
+                    studioCtx.shadowBlur = 0;
+                }
             }
             
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
+            studioCtx.lineTo(pos.x, pos.y);
+            studioCtx.stroke();
         }
 
         function stopDrawing() {
             isDrawing = false;
-            ctx.beginPath();
+            studioCtx.beginPath();
+            studioCtx.shadowBlur = 0;
         }
 
-        canvas.addEventListener('mousedown', startDrawing);
-        canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('mouseup', stopDrawing);
-        canvas.addEventListener('mouseout', stopDrawing);
-        
-        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); });
-        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
-        canvas.addEventListener('touchend', stopDrawing);
-
-        function setTool(tool) {
-            currentTool = tool;
-            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+        function setBrush(type) {
+            currentBrush.type = type;
+            document.querySelectorAll('.tools-panel .tool-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
             event.target.classList.add('active');
         }
 
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function updateBrushSize(val) { currentBrush.size = val; }
+        function updateBrushOpacity(val) { currentBrush.opacity = val / 100; }
+        function updateBrushColor(val) { currentBrush.color = val; }
+
+        function insertShape(shape) {
+            const canvas = document.getElementById('mainCanvas');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const size = 100;
+            
+            studioCtx.globalAlpha = 0.3;
+            studioCtx.strokeStyle = currentBrush.color;
+            studioCtx.lineWidth = 2;
+            
+            switch(shape) {
+                case 'circle':
+                    studioCtx.beginPath();
+                    studioCtx.arc(centerX, centerY, size, 0, Math.PI * 2);
+                    studioCtx.stroke();
+                    break;
+                case 'square':
+                    studioCtx.strokeRect(centerX - size, centerY - size, size * 2, size * 2);
+                    break;
+                case 'triangle':
+                    studioCtx.beginPath();
+                    studioCtx.moveTo(centerX, centerY - size);
+                    studioCtx.lineTo(centerX + size, centerY + size);
+                    studioCtx.lineTo(centerX - size, centerY + size);
+                    studioCtx.closePath();
+                    studioCtx.stroke();
+                    break;
+                case 'grid':
+                    drawGrid();
+                    break;
+                case 'perspective':
+                    drawPerspective();
+                    break;
+                case 'line':
+                    studioCtx.beginPath();
+                    studioCtx.moveTo(centerX - 200, centerY);
+                    studioCtx.lineTo(centerX + 200, centerY);
+                    studioCtx.stroke();
+                    break;
+            }
+            
+            studioCtx.globalAlpha = 1;
+            addAIMessage(`Adicionei uma ${shape === 'grid' ? 'grade' : shape === 'perspective' ? 'guia de perspectiva' : 'forma'} como referência. Use como guia e apague quando não precisar mais!`);
         }
 
-        function saveDrawing() {
+        function drawGrid() {
+            const step = 50;
+            const canvas = document.getElementById('mainCanvas');
+            
+            studioCtx.globalAlpha = 0.1;
+            for(let x = 0; x < canvas.width; x += step) {
+                studioCtx.beginPath();
+                studioCtx.moveTo(x, 0);
+                studioCtx.lineTo(x, canvas.height);
+                studioCtx.stroke();
+            }
+            for(let y = 0; y < canvas.height; y += step) {
+                studioCtx.beginPath();
+                studioCtx.moveTo(0, y);
+                studioCtx.lineTo(canvas.width, y);
+                studioCtx.stroke();
+            }
+        }
+
+        function drawPerspective() {
+            const canvas = document.getElementById('mainCanvas');
+            const horizon = canvas.height / 2;
+            
+            studioCtx.globalAlpha = 0.2;
+            studioCtx.beginPath();
+            studioCtx.moveTo(0, horizon);
+            studioCtx.lineTo(canvas.width, horizon);
+            studioCtx.stroke();
+            
+            // Pontos de fuga
+            const vp1 = canvas.width * 0.2;
+            const vp2 = canvas.width * 0.8;
+            
+            for(let y = horizon; y < canvas.height; y += 30) {
+                studioCtx.beginPath();
+                studioCtx.moveTo(vp1, horizon);
+                studioCtx.lineTo((y - horizon) * 2, y);
+                studioCtx.stroke();
+                
+                studioCtx.beginPath();
+                studioCtx.moveTo(vp2, horizon);
+                studioCtx.lineTo(canvas.width - (y - horizon) * 2, y);
+                studioCtx.stroke();
+            }
+        }
+
+        function toggleOverlay(type) {
+            const overlay = document.getElementById('overlayCanvas');
+            overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
+            
+            if(type === 'grid') {
+                overlayCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+                overlayCtx.lineWidth = 1;
+                for(let i = 0; i < overlay.width; i += 50) {
+                    overlayCtx.beginPath();
+                    overlayCtx.moveTo(i, 0);
+                    overlayCtx.lineTo(i, overlay.height);
+                    overlayCtx.stroke();
+                }
+                for(let i = 0; i < overlay.height; i += 50) {
+                    overlayCtx.beginPath();
+                    overlayCtx.moveTo(0, i);
+                    overlayCtx.lineTo(overlay.width, i);
+                    overlayCtx.stroke();
+                }
+            }
+        }
+
+        function loadReference(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    overlayCtx.globalAlpha = 0.3;
+                    overlayCtx.drawImage(img, 0, 0, overlay.width, overlay.height);
+                    overlayCtx.globalAlpha = 1;
+                    addAIMessage('Imagem de referência carregada! Use o modo "Traçar" para desenhar por cima se quiser.');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function toggleReferenceMode() {
+            const overlay = document.getElementById('overlayCanvas');
+            overlay.style.pointerEvents = overlay.style.pointerEvents === 'none' ? 'auto' : 'none';
+            addAIMessage(overlay.style.pointerEvents === 'none' ? 'Modo traçar desativado' : 'Modo traçar ativado! Agora você pode desenhar sobre a referência.');
+        }
+
+        function newChallenge() {
+            const challenges = [
+                "Movimento no silêncio",
+                "Luz que dança",
+                "Memória de infância",
+                "O que não se vê",
+                "Duas verdades e uma mentira",
+                "O último suspiro do dia",
+                "Sinfonia em cinza",
+                "A jornada de uma gota",
+                "Retratos sem rosto",
+                "O peso do vazio"
+            ];
+            const challenge = challenges[Math.floor(Math.random() * challenges.length)];
+            document.getElementById('dailyChallenge').textContent = `"${challenge}"`;
+            
+            const ai = aiProfiles[userState.aiPersonality || 'luna'];
+            addAIMessage(`${ai.name === 'Zoe' ? 'NOVO DESAFIO LOUCO!' : 'Novo desafio:'} "${challenge}". ${getChallengeHint(challenge)}`);
+        }
+
+        function getChallengeHint(challenge) {
+            const hints = {
+                "Movimento no silêncio": "Pense em como representar velocidade sem som. Linhas de ação são suas amigas!",
+                "Luz que dança": "Foque nos contrastes extremos. Onde a luz toca, a vida pulsa.",
+                "Memória de infância": "Não desenhe o objeto, desenhe a sensação que ele te dava.",
+                "O que não se vê": "O negativo do espaço conta mais histórias que o positivo.",
+                "Duas verdades e uma mentira": "Três elementos, um deles não pertence. O espectador deve adivinhar qual.",
+                "O último suspiro do dia": "Cores quentes se despedindo, frias chegando. Transição.",
+                "Sinfonia em cinza": "Sem cores, apenas valores. A música está nos tons.",
+                "A jornada de uma gota": "Do alto ao fundo. Narrativa em uma única imagem.",
+                "Retratos sem rosto": "Personalidade sem feições. Postura, gestos, silhueta.",
+                "O peso do vazio": "Como desenhar o nada de forma que pese no peito do observador?"
+            };
+            return hints[challenge] || "Interprete como quiser! A arte é sua.";
+        }
+
+        function clearCanvas() {
+            if(confirm('Tem certeza? Tudo será apagado.')) {
+                studioCtx.clearRect(0, 0, document.getElementById('mainCanvas').width, document.getElementById('mainCanvas').height);
+                overlayCtx.clearRect(0, 0, document.getElementById('overlayCanvas').width, document.getElementById('overlayCanvas').height);
+            }
+        }
+
+        function saveArtwork() {
+            const canvas = document.getElementById('mainCanvas');
             const link = document.createElement('a');
-            link.download = 'meu-desenho.png';
+            link.download = `drawmind-${Date.now()}.png`;
             link.href = canvas.toDataURL();
             link.click();
+            
+            userState.totalDrawings++;
+            localStorage.setItem('drawmind_user', JSON.stringify(userState));
+            
+            addAIMessage('Obra salva! Você já criou ' + userState.totalDrawings + ' desenhos. Cada um é um passo na sua evolução!');
         }
 
-        // Onboarding
-        function startOnboarding() {
-            document.querySelector('.onboarding').classList.add('active');
-            document.getElementById('onboarding').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function selectStyle(element, style) {
-            document.querySelectorAll('.style-card').forEach(card => card.classList.remove('selected'));
-            element.classList.add('selected');
-            localStorage.setItem('learningStyle', style);
-            setTimeout(() => {
-                addAIMessage(`Perfeito! Você é um aprendiz ${style}. Vou personalizar as dicas para você! 🎯`);
-                document.getElementById('aprender').scrollIntoView({ behavior: 'smooth' });
-            }, 500);
-        }
-
-        // Assistente IA
+        // ASSISTENTE IA HUMANIZADA
         function toggleAI() {
-            const assistant = document.getElementById('aiAssistant');
-            const toggle = document.getElementById('aiToggle');
-            if (assistant.style.transform === 'translateY(320px)') {
-                assistant.style.transform = 'translateY(0)';
-                toggle.textContent = '▼';
-            } else {
-                assistant.style.transform = 'translateY(320px)';
-                toggle.textContent = '▲';
-            }
+            document.getElementById('aiChat').classList.toggle('active');
         }
 
         function addAIMessage(text, isUser = false) {
             const container = document.getElementById('aiMessages');
-            const msg = document.createElement('div');
-            msg.className = `message ${isUser ? 'user' : 'ai'}`;
-            msg.textContent = text;
-            container.appendChild(msg);
-            container.scrollTop = container.scrollHeight;
+            
+            if(!isUser) {
+                // Indicador de digitação
+                const typing = document.createElement('div');
+                typing.className = 'typing-indicator';
+                typing.innerHTML = '<span></span><span></span><span></span>';
+                container.appendChild(typing);
+                container.scrollTop = container.scrollHeight;
+                
+                // Remove indicador e mostra mensagem com delay natural
+                setTimeout(() => {
+                    typing.remove();
+                    const msg = document.createElement('div');
+                    msg.className = 'message ai';
+                    msg.textContent = text;
+                    container.appendChild(msg);
+                    container.scrollTop = container.scrollHeight;
+                }, 1000 + Math.random() * 1000);
+            } else {
+                const msg = document.createElement('div');
+                msg.className = 'message user';
+                msg.textContent = text;
+                container.appendChild(msg);
+                container.scrollTop = container.scrollHeight;
+            }
         }
 
         function handleAIInput(e) {
-            if (e.key === 'Enter') sendAIMessage();
+            if(e.key === 'Enter') sendAIMessage();
         }
 
         function sendAIMessage() {
             const input = document.getElementById('aiInput');
             const text = input.value.trim();
-            if (!text) return;
+            if(!text) return;
 
             addAIMessage(text, true);
             input.value = '';
 
-            const style = localStorage.getItem('learningStyle') || 'visual';
+            const ai = aiProfiles[userState.aiPersonality || 'luna'];
+            const response = generateHumanizedResponse(text, ai);
             
             setTimeout(() => {
-                let response = generateResponse(text, style);
                 addAIMessage(response);
-            }, 1000);
+            }, 500);
         }
 
-        function generateResponse(input, style) {
+        function generateHumanizedResponse(input, ai) {
             const lower = input.toLowerCase();
             
-            const responses = {
-                visual: "👁️ **Dica Visual**: Observe a referência por 30 segundos antes de começar. Note as formas grandes primeiro!",
-                pratico: "✋ **Exercício**: Faça 10 linhas rápidas em 1 minuto. Não apague, apenas pratique o movimento!",
-                teorico: "📚 **Conceito**: Tudo é construído de formas simples (cubo, esfera, cilindro). Entenda a estrutura 3D primeiro.",
-                social: "👥 **Desafio**: Compartilhe seu desenho e peça feedback específico sobre uma parte que você quer melhorar!"
-            };
-
-            if (lower.includes('sombra') || lower.includes('luz')) {
-                return "💡 **Luz e Sombra**: Pense em 'onde a luz bate' vs 'onde não chega'. Comece com 3 tons: claro, médio, escuro.";
+            // Respostas contextuais baseadas na personalidade
+            if(lower.includes('difícil') || lower.includes('não consigo') || lower.includes('frustrado')) {
+                return ai.responses.dificuldade;
             }
-            if (lower.includes('proporção') || lower.includes('tamanho')) {
-                return "📏 **Proporção**: Use a cabeça como medida. Um corpo adulto = 7-8 cabeças. Compare sempre!";
+            if(lower.includes('inspiração') || lower.includes('ideia') || lower.includes('criativo')) {
+                return ai.responses.inspiracao;
             }
-            if (lower.includes('mão') || lower.includes('olho')) {
-                return "✏️ **Detalhes**: Esqueça o nome do objeto! Veja apenas formas e sombras. Desenhe o que vê, não o que sabe.";
+            if(lower.includes('técnica') || lower.includes('como desenhar') || lower.includes('como fazer')) {
+                return ai.responses.tecnica;
             }
             
-            return responses[style] || responses.visual;
-        }
-
-        // Abas de Referência
-        function switchTab(tab) {
-            document.querySelectorAll('.references-content').forEach(c => c.style.display = 'none');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            // Respostas específicas por personalidade
+            if(ai.name === 'Luna') {
+                if(lower.includes('oi') || lower.includes('olá')) return "Oi! Que bom que você veio. O que seu coração precisa criar hoje? 💫";
+                if(lower.includes('medo') || lower.includes('inseguro')) return "O medo é só o seu potencial assustado com a própria grandeza. Vamos juntos, devagar?";
+                return "Que pensamento interessante... Conte-me mais sobre isso. Às vezes a conversa revela caminhos que o lápis ainda não viu. 🌙";
+            }
             
-            document.getElementById(tab).style.display = 'grid';
-            event.target.classList.add('active');
+            if(ai.name === 'Marco') {
+                if(lower.includes('oi') || lower.includes('olá')) return "Vamos direto ao ponto. O que você quer resolver hoje?";
+                if(lower.includes('descansar') || lower.includes('cansado')) return "Cansaço é desculpa. Profissionais trabalham mesmo assim. Mas ok, 5 minutos. Depois voltamos.";
+                return "Interessante. Agora mostre-me no desenho. Teoria sem prática é só conversa fiada.";
+            }
+            
+            if(ai.name === 'Zoe') {
+                if(lower.includes('oi') || lower.includes('olá')) return "EIIII! CHEGOU A HORA DE CAUSAR! 🎨✨ O que vamos destruir de bonito hoje?";
+                if(lower.includes('regras') || lower.includes('certo')) return "Certo? ERRADO? QUE ISSO! Vamos fazer algo que ninguém entende mas todo mundo sente!";
+                return "AHHH ADOREI ESSE PENSAMENTO! Bora colocar isso no papel de um jeito TOTALMENTE maluco?";
+            }
+            
+            if(ai.name === 'Viktor') {
+                if(lower.includes('oi') || lower.includes('olá')) return "Saudações. Espero que esteja pronto para uma sessão de estudo produtiva.";
+                if(lower.includes('chato') || lower.includes('entediado')) return "Tédio é falta de compreensão profunda. Vamos estudar um mestre hoje? Da Vinci talvez?";
+                return "Reflexão profunda. A arte atravessou séculos com questionamentos similares. Vamos explorar isso juntos.";
+            }
+            
+            return ai.greetings[Math.floor(Math.random() * ai.greetings.length)];
         }
 
-        // Inicializar
-        setTimeout(() => {
-            toggleAI();
-        }, 2000);
+        // GALERIA
+        function loadGallery() {
+            const artworks = [
+                { author: 'Maria', avatar: 'M', title: 'Primeiro Retrato', color: 'linear-gradient(135deg, #667eea, #764ba2)' },
+                { author: 'João', avatar: 'J', title: 'Estudo de Luz', color: 'linear-gradient(135deg, #f093fb, #f5576c)' },
+                { author: 'Ana', avatar: 'A', title: 'Mãos em Movimento', color: 'linear-gradient(135deg, #4facfe, #00f2fe)' },
+                { author: 'Pedro', avatar: 'P', title: 'Perspectiva Urbana', color: 'linear-gradient(135deg, #43e97b, #38f9d7)' },
+                { author: 'Lisa', avatar: 'L', title: 'Aquarela Experimental', color: 'linear-gradient(135deg, #fa709a, #fee140)' },
+                { author: 'Carlos', avatar: 'C', title: 'Retrato Sem Rosto', color: 'linear-gradient(135deg, #a8edea, #fed6e3)' }
+            ];
+            
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = artworks.map(art => `
+                <div class="artwork-item">
+                    <div style="width: 100%; height: 100%; background: ${art.color}; display: flex; align-items: center; justify-content: center; font-size: 4rem;">
+                        🎨
+                    </div>
+                    <div class="artwork-overlay">
+                        <div class="artwork-author">
+                            <div class="author-avatar">${art.avatar}</div>
+                            <div>
+                                <strong>${art.title}</strong>
+                                <p style="font-size: 0.9rem; opacity: 0.8;">por @${art.author}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            const bg = document.getElementById('bgCanvas');
+            bg.width = window.innerWidth;
+            bg.height = window.innerHeight;
+        });
     </script>
 
 </body>

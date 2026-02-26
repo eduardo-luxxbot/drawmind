@@ -3,61 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DrawMind - Sua Jornada Artística</title>
+    <title>NEURO - Aprenda de Verdade</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
         
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --primary: #6366f1;
+            --primary-dark: #4f46e5;
             --secondary: #ec4899;
-            --accent: #f59e0b;
-            --dark: #0f0f1a;
-            --light: #fafafa;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
             --gray: #64748b;
-            --glass: rgba(255,255,255,0.1);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--dark);
+            background: var(--darker);
             color: var(--light);
             line-height: 1.6;
             overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        /* Animações */
+        /* Animações Globais */
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-20px) rotate(2deg); }
         }
 
-        @keyframes gradient {
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
+            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.8), 0 0 60px rgba(236, 72, 153, 0.4); }
+        }
+
+        @keyframes gradient-shift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(99,102,241,0.3); }
-            50% { box-shadow: 0 0 40px rgba(99,102,241,0.6); }
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slide-in-right {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes scale-in {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes typing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes morph {
+            0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+            50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
         }
 
         @keyframes draw-line {
-            0% { stroke-dashoffset: 1000; }
-            100% { stroke-dashoffset: 0; }
+            to { stroke-dashoffset: 0; }
         }
 
-        /* Background Artístico */
-        .bg-canvas {
+        /* Background Animado */
+        .neural-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.3;
+            overflow: hidden;
+        }
+
+        .neural-bg canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            top: -10%;
+            left: -10%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            bottom: -5%;
+            right: -5%;
+            animation-delay: -4s;
+        }
+
+        .orb-3 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, var(--secondary), var(--warning));
+            top: 40%;
+            left: 60%;
+            animation-delay: -2s;
         }
 
         /* Navegação */
@@ -65,11 +143,17 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(15,15,26,0.8);
-            backdrop-filter: blur(20px);
             padding: 1rem 2rem;
             z-index: 1000;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.3s;
+        }
+
+        nav.scrolled {
+            padding: 0.8rem 2rem;
+            background: rgba(2, 6, 23, 0.95);
         }
 
         .nav-container {
@@ -81,22 +165,33 @@
         }
 
         .logo {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 2rem;
-            font-weight: 600;
-            background: linear-gradient(135deg, #fff, #a5b4fc);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--light), var(--primary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            transition: transform 0.3s;
         }
 
-        .logo::before {
-            content: '✦';
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.5rem;
-            animation: float 3s ease-in-out infinite;
+            animation: pulse-glow 3s infinite;
         }
 
         .nav-links {
@@ -107,22 +202,20 @@
         }
 
         .nav-links a {
+            color: var(--gray);
             text-decoration: none;
-            color: rgba(255,255,255,0.7);
             font-weight: 500;
+            font-size: 0.95rem;
             transition: all 0.3s;
             cursor: pointer;
             position: relative;
-        }
-
-        .nav-links a:hover {
-            color: white;
+            padding: 0.5rem 0;
         }
 
         .nav-links a::after {
             content: '';
             position: absolute;
-            bottom: -5px;
+            bottom: 0;
             left: 0;
             width: 0;
             height: 2px;
@@ -130,159 +223,63 @@
             transition: width 0.3s;
         }
 
+        .nav-links a:hover {
+            color: var(--light);
+        }
+
         .nav-links a:hover::after {
             width: 100%;
         }
 
-        .user-menu {
+        .user-badge {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8rem;
+            padding: 0.5rem 1rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .user-badge:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--primary);
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            cursor: pointer;
-            border: 2px solid rgba(255,255,255,0.2);
+            font-size: 0.9rem;
         }
 
-        /* Login Modal */
-        .modal {
+        /* Páginas */
+        .page {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .modal.active { display: flex; }
-
-        .modal-content {
-            background: linear-gradient(135deg, #1e1b4b, #0f0f1a);
-            border-radius: 30px;
-            padding: 3rem;
-            max-width: 500px;
-            width: 90%;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-        }
-
-        .modal-content h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            text-align: center;
-        }
-
-        .modal-content p {
-            text-align: center;
-            color: var(--gray);
-            margin-bottom: 2rem;
-        }
-
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: rgba(255,255,255,0.8);
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 1rem;
-            border: 2px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            color: white;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(255,255,255,0.08);
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 1rem;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(99,102,241,0.4);
-        }
-
-        .toggle-auth {
-            text-align: center;
-            margin-top: 1.5rem;
-            color: var(--gray);
-        }
-
-        .toggle-auth span {
-            color: var(--primary);
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        /* Hero */
-        .hero {
             min-height: 100vh;
+            padding-top: 80px;
+            animation: slide-up 0.6s ease-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: calc(100vh - 80px);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 8rem 2rem 4rem;
+            padding: 2rem;
             position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%);
-            top: 10%;
-            left: -10%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(236,72,153,0.2) 0%, transparent 70%);
-            bottom: 10%;
-            right: -5%;
-            animation: float 8s ease-in-out infinite reverse;
         }
 
         .hero-content {
@@ -291,59 +288,92 @@
             z-index: 1;
         }
 
-        .hero-content h1 {
-            font-family: 'Playfair Display', serif;
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+            animation: slide-up 0.8s ease-out;
+        }
+
+        .hero-badge span {
+            color: var(--success);
+        }
+
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 5rem;
-            font-weight: 600;
+            font-weight: 700;
             line-height: 1.1;
             margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #fff 0%, #a5b4fc 50%, #f472b6 100%);
+            background: linear-gradient(135deg, var(--light) 0%, var(--primary) 50%, var(--secondary) 100%);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: gradient-shift 5s ease infinite, slide-up 1s ease-out;
         }
 
-        .hero-content p {
-            font-size: 1.4rem;
-            color: rgba(255,255,255,0.7);
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--gray);
             margin-bottom: 3rem;
-            font-weight: 300;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: slide-up 1.2s ease-out;
         }
 
-        .cta-group {
+        .hero-buttons {
             display: flex;
             gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
+            animation: slide-up 1.4s ease-out;
         }
 
-        .cta-button {
-            padding: 1.2rem 2.5rem;
-            background: transparent;
-            border: 2px solid rgba(255,255,255,0.2);
-            color: white;
-            border-radius: 50px;
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 12px;
             font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
-            text-decoration: none;
+            border: none;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .cta-button.primary {
+        .btn-primary {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border: none;
-            animation: pulse-glow 2s infinite;
+            color: white;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
         }
 
-        .cta-button:hover {
+        .btn-primary:hover {
             transform: translateY(-3px);
-            border-color: white;
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.5);
         }
 
-        /* Seções */
-        section {
+        .btn-secondary {
+            background: var(--glass);
+            color: var(--light);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+        }
+
+        /* Features Grid */
+        .features {
             padding: 6rem 2rem;
             max-width: 1400px;
             margin: 0 auto;
@@ -355,422 +385,416 @@
         }
 
         .section-header h2 {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 3rem;
             margin-bottom: 1rem;
         }
 
         .section-header p {
             color: var(--gray);
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin: 0 auto;
+            font-size: 1.1rem;
         }
 
-        /* Personalidade IA */
-        .personality-grid {
+        .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
-            margin-top: 3rem;
         }
 
-        .personality-card {
-            background: rgba(255,255,255,0.03);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
+        .feature-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
             padding: 2.5rem;
-            text-align: center;
-            cursor: pointer;
             transition: all 0.4s;
+            cursor: pointer;
             position: relative;
             overflow: hidden;
         }
 
-        .personality-card::before {
+        .feature-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.05));
+            background: linear-gradient(135deg, transparent, rgba(99, 102, 241, 0.1));
             opacity: 0;
             transition: opacity 0.3s;
         }
 
-        .personality-card:hover::before {
+        .feature-card:hover::before {
             opacity: 1;
         }
 
-        .personality-card:hover {
+        .feature-card:hover {
             transform: translateY(-10px);
             border-color: var(--primary);
-            box-shadow: 0 20px 40px rgba(99,102,241,0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
-        .personality-card.selected {
-            border-color: var(--secondary);
-            background: rgba(236,72,153,0.1);
-        }
-
-        .personality-avatar {
-            font-size: 4rem;
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
             margin-bottom: 1.5rem;
-            filter: grayscale(0.3);
-            transition: all 0.3s;
+            transition: transform 0.3s;
         }
 
-        .personality-card:hover .personality-avatar,
-        .personality-card.selected .personality-avatar {
-            filter: grayscale(0);
-            transform: scale(1.1);
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
         }
 
-        .personality-card h3 {
+        .feature-card h3 {
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
         }
 
-        .personality-card p {
+        .feature-card p {
             color: var(--gray);
             font-size: 0.95rem;
         }
 
-        .personality-traits {
+        /* Módulos de Estudo */
+        .modules-section {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .modules-tabs {
             display: flex;
-            gap: 0.5rem;
+            gap: 1rem;
             justify-content: center;
-            margin-top: 1rem;
+            margin-bottom: 3rem;
             flex-wrap: wrap;
         }
 
-        .trait {
-            background: rgba(255,255,255,0.1);
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            color: var(--gray);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        /* Trilhas */
-        .trilhas-container {
+        .tab-btn:hover, .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .modules-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
         }
 
-        .trilha-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 24px;
+        .module-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
             overflow: hidden;
-            transition: all 0.4s;
+            transition: all 0.3s;
             cursor: pointer;
         }
 
-        .trilha-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: rgba(99,102,241,0.5);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+        .module-card:hover {
+            transform: scale(1.02);
+            border-color: var(--accent);
         }
 
-        .trilha-visual {
-            height: 200px;
+        .module-header {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
             position: relative;
-            overflow: hidden;
         }
 
-        .trilha-visual.iniciante {
-            background: linear-gradient(135deg, #059669, #34d399);
+        .module-header.idiomas { background: linear-gradient(135deg, #3b82f6, #06b6d4); }
+        .module-header.matematica { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
+        .module-header.historia { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+        .module-header.ciencias { background: linear-gradient(135deg, #10b981, #3b82f6); }
+        .module-header.artes { background: linear-gradient(135deg, #ec4899, #f59e0b); }
+        .module-header.tecnologia { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+
+        .module-body {
+            padding: 1.5rem;
         }
 
-        .trilha-visual.intermediario {
-            background: linear-gradient(135deg, #d97706, #fbbf24);
-        }
-
-        .trilha-visual.avancado {
-            background: linear-gradient(135deg, #db2777, #f472b6);
-        }
-
-        .trilha-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 5rem;
-            opacity: 0.3;
-        }
-
-        .trilha-content {
-            padding: 2rem;
-        }
-
-        .trilha-content h3 {
-            font-size: 1.8rem;
+        .module-body h3 {
             margin-bottom: 0.5rem;
         }
 
-        .trilha-content > p {
+        .module-body p {
             color: var(--gray);
-            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
         }
 
-        .trilha-meta {
+        .module-meta {
             display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        /* Comunidade */
+        .community-section {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .group-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .group-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--success);
+        }
+
+        .group-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .group-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .group-info h4 {
+            margin-bottom: 0.2rem;
+        }
+
+        .group-info span {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .group-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            padding: 0.3rem 0.8rem;
+            background: rgba(99, 102, 241, 0.2);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--primary);
+        }
+
+        /* Professores */
+        .teachers-section {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tips-carousel {
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            padding-bottom: 2rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+
+        .tip-card {
+            min-width: 400px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .tip-card:hover {
+            border-color: var(--warning);
+        }
+
+        .tip-header {
+            display: flex;
+            align-items: center;
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
 
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.6);
-        }
-
-        .progress-bar {
-            height: 6px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 1rem;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            width: 0%;
-            transition: width 0.5s;
-        }
-
-        /* Estúdio de Desenho Aprimorado */
-        .studio-container {
-            display: grid;
-            grid-template-columns: 250px 1fr 300px;
-            gap: 2rem;
-            height: calc(100vh - 200px);
-        }
-
-        .tools-panel, .reference-panel {
-            background: rgba(255,255,255,0.03);
-            border-radius: 20px;
-            padding: 1.5rem;
-            border: 1px solid rgba(255,255,255,0.1);
-            overflow-y: auto;
-        }
-
-        .panel-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .tool-category {
-            margin-bottom: 2rem;
-        }
-
-        .tool-category h4 {
-            font-size: 0.9rem;
-            color: var(--gray);
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .tool-btn {
-            width: 100%;
-            padding: 0.8rem;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .tool-btn:hover, .tool-btn.active {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .shape-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-        }
-
-        .shape-btn {
-            aspect-ratio: 1;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s;
+        .teacher-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--warning), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.8rem;
         }
 
-        .shape-btn:hover {
-            background: var(--primary);
-            transform: scale(1.1);
+        .teacher-info h4 {
+            margin-bottom: 0.2rem;
         }
 
-        .canvas-area {
-            background: rgba(255,255,255,0.02);
-            border-radius: 20px;
-            border: 2px solid rgba(255,255,255,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        #mainCanvas {
-            cursor: crosshair;
-            display: block;
-        }
-
-        .canvas-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            opacity: 0.3;
-        }
-
-        .brush-settings {
-            margin-top: 1rem;
-        }
-
-        .setting-row {
-            margin-bottom: 1rem;
-        }
-
-        .setting-row label {
-            display: block;
+        .teacher-info span {
             font-size: 0.9rem;
-            margin-bottom: 0.5rem;
             color: var(--gray);
         }
 
-        input[type="range"] {
-            width: 100%;
-            height: 6px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 3px;
-            outline: none;
-            -webkit-appearance: none;
+        .tip-content {
+            font-style: italic;
+            color: var(--gray);
+            line-height: 1.8;
         }
 
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
-            background: var(--primary);
-            border-radius: 50%;
-            cursor: pointer;
+        .tip-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--glass-border);
         }
 
-        input[type="color"] {
-            width: 100%;
-            height: 50px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            background: none;
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--success);
         }
 
-        /* Assistente IA Personalizado */
+        /* Assistente IA */
         .ai-container {
             position: fixed;
             bottom: 2rem;
             right: 2rem;
-            width: 400px;
             z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
         }
 
-        .ai-avatar {
-            width: 60px;
-            height: 60px;
+        .ai-chat {
+            width: 420px;
+            max-height: 600px;
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            animation: scale-in 0.3s ease-out;
+        }
+
+        .ai-chat.active {
+            display: flex;
+        }
+
+        .ai-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.2));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .ai-avatar-main {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2rem;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(99,102,241,0.4);
-            transition: all 0.3s;
-            margin-left: auto;
-            border: 3px solid rgba(255,255,255,0.2);
+            animation: pulse-glow 2s infinite;
         }
 
-        .ai-avatar:hover {
-            transform: scale(1.1);
-            box-shadow: 0 15px 40px rgba(99,102,241,0.6);
-        }
-
-        .ai-chat {
-            background: rgba(30,27,75,0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 1rem;
-            overflow: hidden;
-            display: none;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        }
-
-        .ai-chat.active { display: block; }
-
-        .ai-header {
-            padding: 1.5rem;
-            background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(236,72,153,0.2));
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .ai-info h4 {
+        .ai-details h4 {
             font-size: 1.1rem;
-            margin-bottom: 0.2rem;
         }
 
-        .ai-info span {
+        .ai-details span {
             font-size: 0.85rem;
             color: var(--gray);
         }
 
+        .ai-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .ai-close:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
         .ai-messages {
-            height: 350px;
+            flex: 1;
             overflow-y: auto;
             padding: 1.5rem;
+            max-height: 400px;
         }
 
         .message {
             margin-bottom: 1rem;
             max-width: 85%;
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            animation: slide-up 0.3s ease-out;
         }
 
         .message.ai {
-            background: rgba(255,255,255,0.05);
+            background: var(--glass);
             padding: 1rem;
             border-radius: 18px 18px 18px 4px;
+            border: 1px solid var(--glass-border);
         }
 
         .message.user {
@@ -780,9 +804,29 @@
             margin-left: auto;
         }
 
+        .typing-indicator {
+            display: flex;
+            gap: 0.4rem;
+            padding: 1rem;
+            background: var(--glass);
+            border-radius: 18px;
+            width: fit-content;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: typing 1s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
         .ai-input-area {
             padding: 1rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid var(--glass-border);
             display: flex;
             gap: 0.5rem;
         }
@@ -790,11 +834,16 @@
         .ai-input-area input {
             flex: 1;
             padding: 0.8rem 1rem;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
             border-radius: 12px;
-            color: white;
+            color: var(--light);
             outline: none;
+            transition: all 0.3s;
+        }
+
+        .ai-input-area input:focus {
+            border-color: var(--primary);
         }
 
         .ai-input-area button {
@@ -808,432 +857,473 @@
         }
 
         .ai-input-area button:hover {
-            background: var(--secondary);
+            background: var(--primary-dark);
+            transform: scale(1.05);
         }
 
-        /* Galeria */
-        .gallery-masonry {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .artwork-item {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            aspect-ratio: 4/5;
-            cursor: pointer;
-            transition: all 0.4s;
-        }
-
-        .artwork-item:hover {
-            transform: scale(1.03);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-
-        .artwork-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .artwork-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 2rem;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9));
-            transform: translateY(100%);
-            transition: transform 0.3s;
-        }
-
-        .artwork-item:hover .artwork-overlay {
-            transform: translateY(0);
-        }
-
-        .artwork-author {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .author-avatar {
-            width: 35px;
-            height: 35px;
+        .ai-avatar-float {
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s;
+            animation: pulse-glow 3s infinite;
+            margin-top: 1rem;
+        }
+
+        .ai-avatar-float:hover {
+            transform: scale(1.1);
+        }
+
+        /* Modal de Configuração */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fade-in 0.3s;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--dark);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .modal-content h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-content > p {
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 1rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--light);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+        }
+
+        .age-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .age-option {
+            padding: 1.5rem;
+            background: var(--glass);
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .age-option:hover, .age-option.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .age-option .emoji {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .personality-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .personality-card {
+            padding: 1.5rem;
+            background: var(--glass);
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .personality-card:hover, .personality-card.selected {
+            border-color: var(--secondary);
+            background: rgba(236, 72, 153, 0.1);
+        }
+
+        .personality-card .avatar {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .personality-card h4 {
+            margin-bottom: 0.3rem;
+        }
+
+        .personality-card p {
+            font-size: 0.85rem;
+            color: var(--gray);
         }
 
         /* Responsivo */
-        @media (max-width: 1200px) {
-            .studio-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr auto;
-            }
-            .tools-panel, .reference-panel {
-                display: flex;
-                gap: 1rem;
-                overflow-x: auto;
-            }
-        }
-
         @media (max-width: 768px) {
-            .hero-content h1 { font-size: 3rem; }
+            .hero h1 { font-size: 3rem; }
             .nav-links { display: none; }
-            .ai-container { width: 90%; right: 5%; left: 5%; }
-            .section-header h2 { font-size: 2rem; }
+            .ai-chat { width: 90vw; right: 5vw; }
+            .features-grid { grid-template-columns: 1fr; }
+            .age-selector { grid-template-columns: 1fr; }
+            .personality-grid { grid-template-columns: 1fr; }
+            .tip-card { min-width: 300px; }
         }
 
+        /* Utilitários */
         .hidden { display: none !important; }
         
-        /* Utilitários */
-        .fade-in { animation: fadeIn 0.5s ease-out; }
-        
-        .typing-indicator {
-            display: flex;
+        .badge {
+            display: inline-flex;
+            align-items: center;
             gap: 0.3rem;
-            padding: 1rem;
+            padding: 0.3rem 0.8rem;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
-        
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            background: var(--gray);
-            border-radius: 50%;
-            animation: bounce 1s infinite;
+
+        .progress-bar {
+            height: 6px;
+            background: var(--glass);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 1rem;
         }
-        
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s ease;
         }
     </style>
 </head>
 <body>
 
-    <!-- Background Animado -->
-    <canvas class="bg-canvas" id="bgCanvas"></canvas>
+    <!-- Background -->
+    <div class="neural-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+        <canvas id="neuralCanvas"></canvas>
+    </div>
 
     <!-- Navegação -->
-    <nav>
+    <nav id="navbar">
         <div class="nav-container">
-            <div class="logo" onclick="goHome()">DrawMind</div>
+            <div class="logo" onclick="showPage('home')">
+                <div class="logo-icon">🧠</div>
+                NEURO
+            </div>
             <ul class="nav-links">
-                <li><a onclick="showSection('onboarding')">Jornada</a></li>
-                <li><a onclick="showSection('trilhas')">Trilhas</a></li>
-                <li><a onclick="showSection('studio')">Estúdio</a></li>
-                <li><a onclick="showSection('galeria')">Galeria</a></li>
-                <li><a onclick="showSection('comunidade')">Comunidade</a></li>
+                <li><a onclick="showPage('home')">Início</a></li>
+                <li><a onclick="showPage('study')">Estudar</a></li>
+                <li><a onclick="showPage('community')">Comunidade</a></li>
+                <li><a onclick="showPage('teachers')">Professores</a></li>
             </ul>
-            <div class="user-menu">
-                <div class="user-avatar" id="userAvatar" onclick="toggleLoginModal()">?</div>
+            <div class="user-badge" onclick="openConfig()">
+                <div class="user-avatar" id="navAvatar">?</div>
+                <span id="navUserName">Entrar</span>
             </div>
         </div>
     </nav>
 
-    <!-- Modal de Login -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <h2>✦ Bem-vindo</h2>
-            <p>Sua jornada artística começa aqui</p>
-            
-            <div id="loginForm">
-                <div class="input-group">
-                    <label>Email</label>
-                    <input type="email" id="loginEmail" placeholder="seu@email.com">
-                </div>
-                <div class="input-group">
-                    <label>Senha</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••">
-                </div>
-                <button class="btn-primary" onclick="login()">Entrar</button>
-                <div class="toggle-auth">
-                    Não tem conta? <span onclick="toggleAuthMode()">Criar agora</span>
-                </div>
-            </div>
-
-            <div id="registerForm" class="hidden">
-                <div class="input-group">
-                    <label>Como quer ser chamado?</label>
-                    <input type="text" id="regName" placeholder="Seu nome artístico">
-                </div>
-                <div class="input-group">
-                    <label>Email</label>
-                    <input type="email" id="regEmail" placeholder="seu@email.com">
-                </div>
-                <div class="input-group">
-                    <label>Senha</label>
-                    <input type="password" id="regPassword" placeholder="••••••••">
-                </div>
-                <button class="btn-primary" onclick="register()">Criar Conta</button>
-                <div class="toggle-auth">
-                    Já tem conta? <span onclick="toggleAuthMode()">Entrar</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- PÁGINAS -->
-
-    <!-- HOME -->
-    <div id="page-home">
+    <!-- PÁGINA: HOME -->
+    <div id="page-home" class="page active">
         <section class="hero">
             <div class="hero-content">
-                <h1>Descubra o artista dentro de você</h1>
-                <p>Uma jornada personalizada de aprendizado artístico com IA que entende seu estilo único.</p>
-                <div class="cta-group">
-                    <button class="cta-button primary" onclick="startJourney()">
-                        Começar Jornada ✦
+                <div class="hero-badge">
+                    <span>●</span> Novo: IA com personalidade adaptativa
+                </div>
+                <h1>Seu cérebro é capaz de tudo</h1>
+                <p>Aprenda idiomas, matemática, ciências e muito mais. Do seu jeito, no seu ritmo, com um mentor que fala sua língua.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="startJourney()">
+                        Começar Agora 🚀
                     </button>
-                    <button class="cta-button" onclick="showSection('studio')">
-                        Ir para o Estúdio
-                    </button>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- ONBOARDING - PERSONALIZAÇÃO -->
-    <div id="page-onboarding" class="hidden">
-        <section>
-            <div class="section-header">
-                <h2>Como você quer aprender?</h2>
-                <p>Personalizaremos toda a sua experiência baseada no seu perfil único</p>
-            </div>
-
-            <div class="personality-grid" id="learningStyles">
-                <div class="personality-card" onclick="selectLearningStyle('explorador')">
-                    <div class="personality-avatar">🎨</div>
-                    <h3>Explorador</h3>
-                    <p>Prefere aprender experimentando, sem regras rígidas</p>
-                    <div class="personality-traits">
-                        <span class="trait">Livre</span>
-                        <span class="trait">Intuitivo</span>
-                        <span class="trait">Criativo</span>
-                    </div>
-                </div>
-
-                <div class="personality-card" onclick="selectLearningStyle('estruturado')">
-                    <div class="personality-avatar">📐</div>
-                    <h3>Estruturado</h3>
-                    <p>Gosta de passo a passo claro e progressão linear</p>
-                    <div class="personality-traits">
-                        <span class="trait">Metódico</span>
-                        <span class="trait">Organizado</span>
-                        <span class="trait">Focado</span>
-                    </div>
-                </div>
-
-                <div class="personality-card" onclick="selectLearningStyle('desafiador')">
-                    <div class="personality-avatar">🔥</div>
-                    <h3>Desafiador</h3>
-                    <p>Aprende melhor com metas difíceis e feedback direto</p>
-                    <div class="personality-traits">
-                        <span class="trait">Ambicioso</span>
-                        <span class="trait">Competitivo</span>
-                        <span class="trait">Determinado</span>
-                    </div>
-                </div>
-
-                <div class="personality-card" onclick="selectLearningStyle('colaborativo')">
-                    <div class="personality-avatar">🤝</div>
-                    <h3>Colaborativo</h3>
-                    <p>Prefere aprender em grupo, trocando ideias</p>
-                    <div class="personality-traits">
-                        <span class="trait">Social</span>
-                        <span class="trait">Comunicativo</span>
-                        <span class="trait">Aberto</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <div class="section-header">
-                <h2>Escolha sua mentora IA</h2>
-                <p>Elas terão personalidades distintas para guiar sua jornada</p>
-            </div>
-
-            <div class="personality-grid" id="aiPersonalities">
-                <div class="personality-card" onclick="selectAIPersonality('luna')">
-                    <div class="personality-avatar">🌙</div>
-                    <h3>Luna</h3>
-                    <p>Gentil, paciente e encorajadora. Perfeita para quem precisa de apoio emocional.</p>
-                    <div class="personality-traits">
-                        <span class="trait">Empática</span>
-                        <span class="trait">Poética</span>
-                        <span class="trait">Calma</span>
-                    </div>
-                </div>
-
-                <div class="personality-card" onclick="selectAIPersonality('marco')">
-                    <div class="personality-avatar">⚡</div>
-                    <h3>Marco</h3>
-                    <p>Direto, técnico e exigente. Ideal para quem quer evoluir rápido.</p>
-                    <div class="personality-traits">
-                        <span class="trait">Técnico</span>
-                        <span class="trait">Direto</span>
-                        <span class="trait">Eficiente</span>
-                    </div>
-                </div>
-
-                <div class="personality-card" onclick="selectAIPersonality('zoe')">
-                    <div class="personality-avatar">🎭</div>
-                    <h3>Zoe</h3>
-                    <p>Criativa, divertida e fora da caixa. Inspira experimentação.</p>
-                    <div class="personality-traits">
-                        <span class="trait">Inovadora</span>
-                        <span class="trait">Divertida</span>
-                        <span class="trait">Arteira</span>
-                    </div>
-                </div>
-
-                <div class="personality-card" onclick="selectAIPersonality('viktor')">
-                    <div class="personality-avatar">🎓</div>
-                    <h3>Viktor</h3>
-                    <p>Erudito, filosófico e profundo. Conecta arte com história e teoria.</p>
-                    <div class="personality-traits">
-                        <span class="trait">Sábio</span>
-                        <span class="trait">Filosófico</span>
-                        <span class="trait">Clássico</span>
-                    </div>
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-top: 3rem;">
-                <button class="cta-button primary" onclick="completeOnboarding()" id="btnComplete" style="opacity: 0.5; pointer-events: none;">
-                    Continuar Jornada ✦
-                </button>
-            </div>
-        </section>
-    </div>
-
-    <!-- TRILHAS -->
-    <div id="page-trilhas" class="hidden">
-        <section>
-            <div class="section-header">
-                <h2>Suas Trilhas de Aprendizado</h2>
-                <p>Caminhos personalizados baseados no seu perfil <span id="userStyleDisplay"></span></p>
-            </div>
-
-            <div class="trilhas-container" id="trilhasList">
-                <!-- Gerado dinamicamente -->
-            </div>
-        </section>
-    </div>
-
-    <!-- ESTÚDIO -->
-    <div id="page-studio" class="hidden">
-        <section style="max-width: 100%; padding: 6rem 1rem 1rem;">
-            <div class="studio-container">
-                <div class="tools-panel">
-                    <div class="panel-title">✨ Ferramentas</div>
-                    
-                    <div class="tool-category">
-                        <h4>Pincéis</h4>
-                        <button class="tool-btn active" onclick="setBrush('pencil')">
-                            ✏️ Lápis
-                        </button>
-                        <button class="tool-btn" onclick="setBrush('pen')">
-                            🖊️ Caneta
-                        </button>
-                        <button class="tool-btn" onclick="setBrush('marker')">
-                            🖍️ Marcador
-                        </button>
-                        <button class="tool-btn" onclick="setBrush('watercolor')">
-                            🎨 Aquarela
-                        </button>
-                        <button class="tool-btn" onclick="setBrush('eraser')">
-                            🧹 Borracha
-                        </button>
-                    </div>
-
-                    <div class="tool-category">
-                        <h4>Formas Rápidas</h4>
-                        <div class="shape-grid">
-                            <button class="shape-btn" onclick="insertShape('circle')" title="Círculo">⭕</button>
-                            <button class="shape-btn" onclick="insertShape('square')" title="Quadrado">⬜</button>
-                            <button class="shape-btn" onclick="insertShape('triangle')" title="Triângulo">🔺</button>
-                            <button class="shape-btn" onclick="insertShape('line')" title="Linha guia">📏</button>
-                            <button class="shape-btn" onclick="insertShape('grid')" title="Grade">▦</button>
-                            <button class="shape-btn" onclick="insertShape('perspective')" title="Perspectiva">📐</button>
-                        </div>
-                    </div>
-
-                    <div class="brush-settings">
-                        <div class="setting-row">
-                            <label>Tamanho</label>
-                            <input type="range" min="1" max="100" value="5" id="brushSize" oninput="updateBrushSize(this.value)">
-                        </div>
-                        <div class="setting-row">
-                            <label>Opacidade</label>
-                            <input type="range" min="1" max="100" value="100" id="brushOpacity" oninput="updateBrushOpacity(this.value)">
-                        </div>
-                        <div class="setting-row">
-                            <label>Cor</label>
-                            <input type="color" id="brushColor" value="#6366f1" onchange="updateBrushColor(this.value)">
-                        </div>
-                    </div>
-
-                    <button class="tool-btn" onclick="clearCanvas()" style="margin-top: 1rem; background: rgba(239,68,68,0.2);">
-                        🗑️ Limpar Tudo
-                    </button>
-                    <button class="tool-btn" onclick="saveArtwork()">
-                        💾 Salvar Obra
+                    <button class="btn btn-secondary" onclick="showPage('study')">
+                        Explorar Conteúdo
                     </button>
                 </div>
+            </div>
+        </section>
 
-                <div class="canvas-area">
-                    <canvas id="mainCanvas"></canvas>
-                    <canvas id="overlayCanvas" class="canvas-overlay"></canvas>
+        <section class="features">
+            <div class="section-header">
+                <h2>Como o NEURO funciona</h2>
+                <p>Neuroplasticidade educacional na prática</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card" onclick="showPage('study')">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Aprendizado Adaptativo</h3>
+                    <p>O conteúdo muda conforme seu progresso. Não memorização, compreensão real.</p>
                 </div>
+                <div class="feature-card" onclick="showPage('study')">
+                    <div class="feature-icon">🗣️</div>
+                    <h3>Idiomas Nativos</h3>
+                    <p>Inglês, espanhol, russo e mais. Aprenda como crianças aprendem: imersão total.</p>
+                </div>
+                <div class="feature-card" onclick="showPage('community')">
+                    <div class="feature-icon">👥</div>
+                    <h3>Grupos de Estudo</h3>
+                    <p>Conecte-se com pessoas no mesmo nível. Aprender junto é mais efetivo.</p>
+                </div>
+                <div class="feature-card" onclick="showPage('teachers')">
+                    <div class="feature-icon">👨‍🏫</div>
+                    <h3>Métodos Validados</h3>
+                    <p>Professores reais compartilham o que realmente funciona, com dados.</p>
+                </div>
+                <div class="feature-card" onclick="openConfig()">
+                    <div class="feature-icon">🤖</div>
+                    <h3>IA Personalizada</h3>
+                    <p>Escolha a personalidade do seu mentor. Desde gentil até direto, do seu jeito.</p>
+                </div>
+                <div class="feature-card" onclick="showPage('study')">
+                    <div class="feature-icon">📊</div>
+                    <h3>Progresso Real</h3>
+                    <p>Acompanhe sua evolução com métricas que importam. Sem gamificação vazia.</p>
+                </div>
+            </div>
+        </section>
+    </div>
 
-                <div class="reference-panel">
-                    <div class="panel-title">🖼️ Referência</div>
-                    
-                    <div class="tool-category">
-                        <h4>Modo Referência</h4>
-                        <button class="tool-btn" onclick="toggleOverlay('grid')">
-                            ▦ Grade
-                        </button>
-                        <button class="tool-btn" onclick="toggleOverlay('golden')">
-                            ✦ Proporção Áurea
-                        </button>
-                        <button class="tool-btn" onclick="toggleOverlay('mirror')">
-                            🪞 Espelho
-                        </button>
+    <!-- PÁGINA: ESTUDO -->
+    <div id="page-study" class="page">
+        <section class="modules-section">
+            <div class="section-header">
+                <h2>O que você quer aprender hoje?</h2>
+                <p>Escolha um módulo e comece sua sessão</p>
+            </div>
+
+            <div class="modules-tabs">
+                <button class="tab-btn active" onclick="switchTab('idiomas')">🌍 Idiomas</button>
+                <button class="tab-btn" onclick="switchTab('escola')">📚 Escola</button>
+                <button class="tab-btn" onclick="switchTab('explorar')">🔬 Explorar</button>
+            </div>
+
+            <div id="tab-idiomas" class="modules-content">
+                <div class="module-card" onclick="startModule('ingles')">
+                    <div class="module-header idiomas">🇺🇸</div>
+                    <div class="module-body">
+                        <h3>Inglês</h3>
+                        <p>Do básico à fluência com imersão contextual</p>
+                        <div class="module-meta">
+                            <span>📖 48 aulas</span>
+                            <span>🎯 Nível: Iniciante</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
                     </div>
-
-                    <div class="tool-category">
-                        <h4>Upload de Imagem</h4>
-                        <input type="file" id="refUpload" accept="image/*" style="display: none;" onchange="loadReference(event)">
-                        <button class="tool-btn" onclick="document.getElementById('refUpload').click()">
-                            📤 Carregar Imagem
-                        </button>
-                        <button class="tool-btn" onclick="toggleReferenceMode()">
-                            👁️ Modo Traçar
-                        </button>
+                </div>
+                <div class="module-card" onclick="startModule('espanhol')">
+                    <div class="module-header idiomas">🇪🇸</div>
+                    <div class="module-body">
+                        <h3>Espanhol</h3>
+                        <p>Aprenda com cultura, não só gramática</p>
+                        <div class="module-meta">
+                            <span>📖 42 aulas</span>
+                            <span>🎯 Nível: Iniciante</span>
+                        </div>
                     </div>
+                </div>
+                <div class="module-card" onclick="startModule('russo')">
+                    <div class="module-header idiomas">🇷🇺</div>
+                    <div class="module-body">
+                        <h3>Russo</h3>
+                        <p>Alfabeto cirílico e conversação prática</p>
+                        <div class="module-meta">
+                            <span>📖 56 aulas</span>
+                            <span>🎯 Nível: Iniciante</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="module-card" onclick="startModule('japones')">
+                    <div class="module-header idiomas">🇯🇵</div>
+                    <div class="module-body">
+                        <h3>Japonês</h3>
+                        <p>Hiragana, katakana e introdução ao kanji</p>
+                        <div class="module-meta">
+                            <span>📖 64 aulas</span>
+                            <span>🎯 Nível: Iniciante</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                    <div class="tool-category">
-                        <h4>Desafio do Dia</h4>
-                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; margin-top: 0.5rem;">
-                            <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">Desenhe algo que represente:</p>
-                            <strong style="color: var(--secondary);" id="dailyChallenge">"Movimento no silêncio"</strong>
-                            <button class="tool-btn" style="margin-top: 1rem;" onclick="newChallenge()">
-                                🎲 Novo Desafio
-                            </button>
+            <div id="tab-escola" class="modules-content" style="display: none;">
+                <div class="module-card" onclick="startModule('matematica')">
+                    <div class="module-header matematica">🔢</div>
+                    <div class="module-body">
+                        <h3>Matemática</h3>
+                        <p>Visual, interativa, sem medo</p>
+                        <div class="module-meta">
+                            <span>📖 120 aulas</span>
+                            <span>🎯 6º ao 12º ano</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="module-card" onclick="startModule('historia')">
+                    <div class="module-header historia">📜</div>
+                    <div class="module-body">
+                        <h3>História</h3>
+                        <p>Linha do tempo explorável e conexões</p>
+                        <div class="module-meta">
+                            <span>📖 80 aulas</span>
+                            <span>🎯 6º ao 12º ano</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="module-card" onclick="startModule('ciencias')">
+                    <div class="module-header ciencias">🔬</div>
+                    <div class="module-body">
+                        <h3>Ciências</h3>
+                        <p>Simulações e experimentos virtuais</p>
+                        <div class="module-meta">
+                            <span>📖 96 aulas</span>
+                            <span>🎯 6º ao 9º ano</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="module-card" onclick="startModule('literatura')">
+                    <div class="module-header artes">📖</div>
+                    <div class="module-body">
+                        <h3>Literatura</h3>
+                        <p>Análises colaborativas e discussões</p>
+                        <div class="module-meta">
+                            <span>📖 64 aulas</span>
+                            <span>🎯 6º ao 12º ano</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-explorar" class="modules-content" style="display: none;">
+                <div class="module-card" onclick="startModule('programacao')">
+                    <div class="module-header tecnologia">💻</div>
+                    <div class="module-body">
+                        <h3>Programação</h3>
+                        <p>Lógica, Python, web dev e mais</p>
+                        <div class="module-meta">
+                            <span>📖 88 aulas</span>
+                            <span>🎯 Livre</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="module-card" onclick="startModule('astronomia')">
+                    <div class="module-header ciencias">🌌</div>
+                    <div class="module-body">
+                        <h3>Astronomia</h3>
+                        <p>O universo em escala humana</p>
+                        <div class="module-meta">
+                            <span>📖 40 aulas</span>
+                            <span>🎯 Livre</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="module-card" onclick="startModule('filosofia')">
+                    <div class="module-header historia">🤔</div>
+                    <div class="module-body">
+                        <h3>Filosofia</h3>
+                        <p>Pensar criticamente sobre tudo</p>
+                        <div class="module-meta">
+                            <span>📖 48 aulas</span>
+                            <span>🎯 Livre</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="module-card" onclick="startModule('musica')">
+                    <div class="module-header artes">🎵</div>
+                    <div class="module-body">
+                        <h3>Teoria Musical</h3>
+                        <p>Leitura, harmonia e composição</p>
+                        <div class="module-meta">
+                            <span>📖 72 aulas</span>
+                            <span>🎯 Livre</span>
                         </div>
                     </div>
                 </div>
@@ -1241,30 +1331,180 @@
         </section>
     </div>
 
-    <!-- GALERIA -->
-    <div id="page-galeria" class="hidden">
-        <section>
+    <!-- PÁGINA: COMUNIDADE -->
+    <div id="page-community" class="page">
+        <section class="community-section">
             <div class="section-header">
-                <h2>Galeria da Comunidade</h2>
-                <p>Inspire-se e compartilhe sua evolução</p>
+                <h2>Grupos de Estudo</h2>
+                <p>Aprenda junto. Cresça junto.</p>
             </div>
 
-            <div class="gallery-masonry" id="galleryGrid">
-                <!-- Gerado dinamicamente -->
+            <div class="groups-grid">
+                <div class="group-card" onclick="joinGroup('ingles')">
+                    <div class="group-header">
+                        <div class="group-avatar">🇺🇸</div>
+                        <div class="group-info">
+                            <h4>English Daily Practice</h4>
+                            <span>1.2k membros • 45 online</span>
+                        </div>
+                    </div>
+                    <p>Prática diária de inglês com nativos e learners. Todos os níveis bem-vindos!</p>
+                    <div class="group-tags">
+                        <span class="tag">Inglês</span>
+                        <span class="tag">Conversação</span>
+                        <span class="tag">Diário</span>
+                    </div>
+                </div>
+
+                <div class="group-card" onclick="joinGroup('matematica')">
+                    <div class="group-header">
+                        <div class="group-avatar" style="background: linear-gradient(135deg, #8b5cf6, #ec4899);">🔢</div>
+                        <div class="group-info">
+                            <h4>Matemática Sem Medo</h4>
+                            <span>856 membros • 32 online</span>
+                        </div>
+                    </div>
+                    <p>Tiramos dúvidas, resolvemos juntos, celebramos progressos. Sem julgamento.</p>
+                    <div class="group-tags">
+                        <span class="tag">Matemática</span>
+                        <span class="tag">Dúvidas</span>
+                        <span class="tag">Ensino Médio</span>
+                    </div>
+                </div>
+
+                <div class="group-card" onclick="joinGroup('programacao')">
+                    <div class="group-header">
+                        <div class="group-avatar" style="background: linear-gradient(135deg, #10b981, #3b82f6);">💻</div>
+                        <div class="group-info">
+                            <h4>Coders Iniciantes</h4>
+                            <span>2.4k membros • 128 online</span>
+                        </div>
+                    </div>
+                    <p>Primeira linha de código ao primeiro projeto. Pair programming e code review.</p>
+                    <div class="group-tags">
+                        <span class="tag">Programação</span>
+                        <span class="tag">Python</span>
+                        <span class="tag">Projetos</span>
+                    </div>
+                </div>
+
+                <div class="group-card" onclick="joinGroup('enem')">
+                    <div class="group-header">
+                        <div class="group-avatar" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">📝</div>
+                        <div class="group-info">
+                            <h4>ENEM 2024</h4>
+                            <span>5.6k membros • 890 online</span>
+                        </div>
+                    </div>
+                    <p>Rotina de estudos, resolução de questões, redação em grupo. Vamos passar juntos!</p>
+                    <div class="group-tags">
+                        <span class="tag">ENEM</span>
+                        <span class="tag">Vestibular</span>
+                        <span class="tag">Intensivo</span>
+                    </div>
+                </div>
+
+                <div class="group-card" onclick="joinGroup('espanhol')">
+                    <div class="group-header">
+                        <div class="group-avatar" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">🇪🇸</div>
+                        <div class="group-info">
+                            <h4>Español con Café</h4>
+                            <span>643 membros • 28 online</span>
+                        </div>
+                    </div>
+                    <p>Conversação descontraída sobre cultura hispânica. ¡Vamos a practicar!</p>
+                    <div class="group-tags">
+                        <span class="tag">Espanhol</span>
+                        <span class="tag">Cultura</span>
+                        <span class="tag">Conversação</span>
+                    </div>
+                </div>
+
+                <div class="group-card" onclick="createGroup()">
+                    <div class="group-header">
+                        <div class="group-avatar" style="background: var(--glass); border: 2px dashed var(--gray);">+</div>
+                        <div class="group-info">
+                            <h4>Criar Novo Grupo</h4>
+                            <span>Tema da sua escolha</span>
+                        </div>
+                    </div>
+                    <p>Tem um assunto específico? Crie seu grupo e convide pessoas com os mesmos interesses.</p>
+                </div>
             </div>
         </section>
     </div>
 
-    <!-- COMUNIDADE -->
-    <div id="page-comunidade" class="hidden">
-        <section>
+    <!-- PÁGINA: PROFESSORES -->
+    <div id="page-teachers" class="page">
+        <section class="teachers-section">
             <div class="section-header">
-                <h2>Comunidade DrawMind</h2>
-                <p>Conecte-se com outros artistas em desenvolvimento</p>
+                <h2>Dicas de Quem Entende</h2>
+                <p>Métodos validados por dados reais de alunos</p>
             </div>
-            
-            <div style="text-align: center; padding: 4rem; background: rgba(255,255,255,0.03); border-radius: 20px;">
-                <p style="font-size: 1.2rem; color: var(--gray);">Em breve: Grupos de estudo, desafios semanais e mentorias ao vivo!</p>
+
+            <div class="tips-carousel">
+                <div class="tip-card">
+                    <div class="tip-header">
+                        <div class="teacher-avatar">👨‍🏫</div>
+                        <div class="teacher-info">
+                            <h4>Prof. Carlos Mendes</h4>
+                            <span>Matemática • 15 anos de experiência</span>
+                        </div>
+                    </div>
+                    <div class="tip-content">
+                        "O erro mais comum é tentar memorizar fórmulas. Em 20 anos de sala de aula, vi que alunos que entendem POR QUE a fórmula funciona têm 3x mais desempenho. Sempre comece com o conceito visual."
+                    </div>
+                    <div class="tip-stats">
+                        <div class="stat">
+                            <span>📈</span> 94% de aprovação
+                        </div>
+                        <div class="stat">
+                            <span>👥</span> 2.3k alunos ajudados
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tip-card">
+                    <div class="tip-header">
+                        <div class="teacher-avatar" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">👩‍🏫</div>
+                        <div class="teacher-info">
+                            <h4>Profa. Ana Lucia</h4>
+                            <span>Inglês • Metodologia TPR</span>
+                        </div>
+                    </div>
+                    <div class="tip-content">
+                        "Não traduza mentalmente. Crie 'imagens' direto no inglês. Quando eu digo 'apple', você deve ver a maçã, não a palavra 'maçã' em português. Isso reduz o tempo de fluência pela metade."
+                    </div>
+                    <div class="tip-stats">
+                        <div class="stat">
+                            <span>📈</span> 89% fluência em 1 ano
+                        </div>
+                        <div class="stat">
+                            <span>👥</span> 1.8k alunos ajudados
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tip-card">
+                    <div class="tip-header">
+                        <div class="teacher-avatar" style="background: linear-gradient(135deg, #10b981, #3b82f6);">👨‍🔬</div>
+                        <div class="teacher-info">
+                            <h4>Prof. Roberto Silva</h4>
+                            <span>Ciências • Aprendizado Ativo</span>
+                        </div>
+                    </div>
+                    <div class="tip-content">
+                        "Ciência não é para decorar, é para fazer. Meus alunos que aprendem através de experimentos práticos retêm 80% mais conteúdo após 6 meses versus aqueles que só leem."
+                    </div>
+                    <div class="tip-stats">
+                        <div class="stat">
+                            <span>📈</span> 91% retenção longo prazo
+                        </div>
+                        <div class="stat">
+                            <span>👥</span> 3.1k alunos ajudados
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
@@ -1273,681 +1513,499 @@
     <div class="ai-container">
         <div class="ai-chat" id="aiChat">
             <div class="ai-header">
-                <div class="ai-info">
-                    <h4 id="aiName">Luna</h4>
-                    <span id="aiRole">Sua mentora artística</span>
+                <div class="ai-profile">
+                    <div class="ai-avatar-main" id="aiAvatar">🌙</div>
+                    <div class="ai-details">
+                        <h4 id="aiName">Luna</h4>
+                        <span id="aiRole">Sua mentora gentil</span>
+                    </div>
                 </div>
-                <span style="cursor: pointer;" onclick="toggleAI()">✕</span>
+                <div class="ai-close" onclick="toggleAI()">✕</div>
             </div>
             <div class="ai-messages" id="aiMessages">
                 <div class="message ai" id="aiWelcome">
-                    Olá! Sou Luna, sua mentora de arte. Estou aqui para guiar sua jornada criativa com gentileza e paciência. Como você está se sentindo hoje? ✨
+                    Oi! Sou a Luna, sua mentora aqui no NEURO. Estou super animada para te ajudar nessa jornada de aprendizado! Como você tá se sentindo hoje? ✨
                 </div>
             </div>
             <div class="ai-input-area">
-                <input type="text" id="aiInput" placeholder="Converse comigo..." onkeypress="handleAIInput(event)">
+                <input type="text" id="aiInput" placeholder="Fala comigo..." onkeypress="handleAIInput(event)">
                 <button onclick="sendAIMessage()">➤</button>
             </div>
         </div>
-        <div class="ai-avatar" id="aiAvatar" onclick="toggleAI()">🌙</div>
+        <div class="ai-avatar-float" id="aiFloat" onclick="toggleAI()">🌙</div>
     </div>
 
-    <footer>
-        <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 1rem;">DrawMind</h2>
-        <p style="color: var(--gray);">Cada linha é um passo na sua jornada artística.</p>
-        <p style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.6;">✦ Feito com amor para artistas em evolução ✦</p>
-    </footer>
+    <!-- MODAL DE CONFIGURAÇÃO -->
+    <div class="modal-overlay" id="configModal">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeConfig()">✕</div>
+            
+            <div id="config-step-1">
+                <h2>Bem-vindo ao NEURO 🧠</h2>
+                <p>Vamos personalizar sua experiência em 2 passos rápidos.</p>
+                
+                <div class="form-group" style="margin-top: 2rem;">
+                    <label>Como você quer ser chamado?</label>
+                    <input type="text" id="userName" placeholder="Seu nome ou apelido">
+                </div>
+
+                <div class="form-group">
+                    <label>Qual sua faixa etária?</label>
+                    <div class="age-selector">
+                        <div class="age-option" onclick="selectAge('crianca')" data-age="crianca">
+                            <div class="emoji">🧒</div>
+                            <div>7-12 anos</div>
+                        </div>
+                        <div class="age-option" onclick="selectAge('adolescente')" data-age="adolescente">
+                            <div class="emoji">🧑</div>
+                            <div>13-17 anos</div>
+                        </div>
+                        <div class="age-option" onclick="selectAge('adulto')" data-age="adulto">
+                            <div class="emoji">🎓</div>
+                            <div>18+ anos</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="nextStep()" style="width: 100%;">
+                    Continuar ➜
+                </button>
+            </div>
+
+            <div id="config-step-2" class="hidden">
+                <h2>Escolha seu mentor IA 🤖</h2>
+                <p>Quem vai te acompanhar nessa jornada?</p>
+
+                <div class="personality-grid" style="margin-top: 2rem;">
+                    <div class="personality-card" onclick="selectPersonality('luna')" data-personality="luna">
+                        <div class="avatar">🌙</div>
+                        <h4>Luna</h4>
+                        <p>Gentil, paciente e poética. Perfeita para quem precisa de apoio.</p>
+                    </div>
+                    <div class="personality-card" onclick="selectPersonality('marco')" data-personality="marco">
+                        <div class="avatar">⚡</div>
+                        <h4>Marco</h4>
+                        <p>Direto, técnico e desafiador. Para quem quer resultados rápidos.</p>
+                    </div>
+                    <div class="personality-card" onclick="selectPersonality('zoe')" data-personality="zoe">
+                        <div class="avatar">🎨</div>
+                        <h4>Zoe</h4>
+                        <p>Criativa, divertida e fora da caixa. Odeia métodos tradicionais.</p>
+                    </div>
+                    <div class="personality-card" onclick="selectPersonality('viktor')" data-personality="viktor">
+                        <div class="avatar">📚</div>
+                        <h4>Viktor</h4>
+                        <p>Erudito, filosófico e profundo. Conecta tudo com história.</p>
+                    </div>
+                    <div class="personality-card" onclick="selectPersonality('yuki')" data-personality="yuki">
+                        <div class="avatar">❄️</div>
+                        <h4>Yuki</h4>
+                        <p>Calma, metódica e minimalista. Foco total, sem distrações.</p>
+                    </div>
+                    <div class="personality-card" onclick="selectPersonality('rafa')" data-personality="rafa">
+                        <div class="avatar">🎭</div>
+                        <h4>Rafa</h4>
+                        <p>Teatral, histórias e emocional. Aprende através de narrativas.</p>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="saveConfig()" style="width: 100%;">
+                    Começar Jornada 🚀
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // SISTEMA DE ESTADO DO USUÁRIO
+        // SISTEMA DE ESTADO
         const userState = {
-            isLoggedIn: false,
             name: '',
-            email: '',
-            learningStyle: '',
-            aiPersonality: '',
-            progress: {
-                iniciante: 0,
-                intermediario: 0,
-                avancado: 0
-            },
-            currentStreak: 0,
-            totalDrawings: 0
+            age: '',
+            personality: 'luna',
+            slangLevel: 0, // 0=formal, 4=gírias pesadas
+            progress: {},
+            firstVisit: true
         };
 
-        // CONFIGURAÇÕES DAS PERSONALIDADES IA
+        // PERFIS DE IA COM ADAPTAÇÃO DE TOM
         const aiProfiles = {
             luna: {
                 name: 'Luna',
                 avatar: '🌙',
-                role: 'Mentora Gentil',
-                style: 'empática, poética, encorajadora',
-                greetings: [
-                    "Olá! Que bom te ver por aqui. Pronto para criar algo bonito hoje? 🌙",
-                    "Sua presença ilumina o estúdio! Como posso apoiar sua criatividade hoje? ✨",
-                    "Lembre-se: cada artista lendário começou exatamente onde você está. Vamos juntos? 💫"
-                ],
+                role: 'Sua mentora gentil',
+                style: 'empática, poética, acolhedora',
+                greetings: {
+                    formal: 'Olá! É um prazer conhecê-lo. Sou Luna e estarei ao seu lado nesta jornada de aprendizado.',
+                    neutro: 'Oi! Que bom te ver por aqui. Sou a Luna, sua mentora. Como posso ajudar hoje?',
+                    casual: 'Ei! Tudo bem? Sou a Luna, tô aqui pra te ajudar no que precisar! ✨',
+                    gíria: 'Oii! Chegou agora? Bora aprender umas coisas legais? Tô contigo! 🌙'
+                },
                 responses: {
-                    dificuldade: "Respira fundo. A dificuldade é apenas o desconforto do crescimento. Que tal começarmos com algo simples e ir construindo devagar? Você é capaz.",
-                    inspiracao: "Inspiração é como o luar - às vezes brilha forte, às vezes fica tímida. Mas ela sempre volta. Que tal darmos um passeio pela galeria enquanto isso?",
-                    tecnica: "A técnica é importante, mas o sentimento é essencial. Vamos praticar juntos, sem pressa. Cada traço seu tem valor."
+                    dificuldade: {
+                        formal: 'Entendo sua frustração. Vamos analisar este obstáculo com calma e encontrar uma solução juntos.',
+                        neutro: 'Relaxa, isso é normal! Vamos por partes, você vai conseguir.',
+                        casual: 'Eita, tá complicado? Respira! Vamos desenrolar isso juntos, sem pressa.',
+                        gíria: 'Kkkkk relaxa, mano! Todo mundo passa por isso. Bora quebrar esse problema no meio? 💪'
+                    },
+                    success: {
+                        formal: 'Excelente progresso. Sua dedicação está gerando resultados notáveis.',
+                        neutro: 'Mandou bem! Você tá evoluindo muito.',
+                        casual: 'Aí sim! Tá ficando fera nisso!',
+                        gíria: 'Slk, arrasou! Tá voando baixo, hein! 🔥'
+                    }
                 }
             },
             marco: {
                 name: 'Marco',
                 avatar: '⚡',
-                role: 'Instrutor Técnico',
+                role: 'Seu instrutor técnico',
                 style: 'direto, exigente, eficiente',
-                greetings: [
-                    "Vamos trabalhar. Tempo é precioso e você tem muito a evoluir. Onde está seu desenho de hoje? ⚡",
-                    "Bom. Você apareceu. Agora vamos transformar potencial em habilidade real. Pronto?",
-                    "Sem desculpas hoje. Pegue o lápis e vamos corrigir o que precisa ser corrigido. Rápido."
-                ],
+                greetings: {
+                    formal: 'Vamos ao trabalho. Tempo é recurso finito e você tem muito a aprender.',
+                    neutro: 'Bora. O que você quer resolver hoje?',
+                    casual: 'Chegou. Hora de produzir. Onde tá sua dificuldade?',
+                    gíria: 'E aí, vamos parar de enrolação e meter a cara? Qual o problema?'
+                },
                 responses: {
-                    dificuldade: "Difícil? Ótimo. Significa que você está fora da zona de conforto, onde o aprendizado acontece. Faça de novo. E de novo. Até ficar certo.",
-                    inspiracao: "Inspiração é para amadores. Profissionais trabalham independente do humor. Sentou? Desenha. Acabou.",
-                    tecnica: "Vamos aos fatos. Seu problema provavelmente é proporção ou valores. Mostre-me o desenho e eu aponto exatamente onde errou."
+                    dificuldade: {
+                        formal: 'Dificuldade indica crescimento. Vamos superar isso com prática deliberada.',
+                        neutro: 'Difícil? Ótimo. Significa que você tá saindo da zona de conforto.',
+                        casual: 'Complicado? Faz de novo. E de novo. Até acertar.',
+                        gíria: 'Kkk achou que seria fácil? Faz de novo até ficar no automático. Sem mimimi.'
+                    },
+                    success: {
+                        formal: 'Progresso adequado. Mantenha consistência.',
+                        neutro: 'Bom. Continue assim.',
+                        casual: 'Isso aí. Não pare agora.',
+                        gíria: 'Aí sim, agora tá pegando o jeito. Bora pro próximo!'
+                    }
                 }
             },
             zoe: {
                 name: 'Zoe',
-                avatar: '🎭',
-                role: 'Musa Criativa',
-                style: 'divertida, experimental, inovadora',
-                greetings: [
-                    "Ei, artista! Bora bagunçar essa tela de branco? Vamos fazer algo que ninguém nunca viu! 🎨",
-                    "OOOOI! Tô super animada pra ver o que você vai criar hoje! Que tal quebrar todas as regras? ",
-                    "Aviso: sessão de arte caótica e divertida iniciada! Prepare-se para experimentar coisas loucas!"
-                ],
+                avatar: '🎨',
+                role: 'Sua musa criativa',
+                style: 'divertida, experimental, caótica',
+                greetings: {
+                    formal: 'Bem-vindo! Prepare-se para uma experiência de aprendizado... diferente.',
+                    neutro: 'Ei! Bora bagunçar esse cérebro de um jeito bom?',
+                    casual: 'OOOOI! Chegou a hora de causar! Pronto pra loucura?',
+                    gíria: 'EITAAAA! Bora fazer um caos organizado? Kkkkk tô animadaaaa! 🎨✨'
+                },
                 responses: {
-                    dificuldade: "Difícil? PERFEITO! Vamos fazer do jeito mais estranho possível então! Desenhe com a mão esquerda! Use só cores que odeia! Quebre o padrão!",
-                    inspiracao: "Inspiração tá overrated! Vamos criar um caos bonito e ver o que nasce dele! Cola no estúdio, vou te dar um desafio bizarro!",
-                    tecnica: "Regras são feitas pra serem quebradas! Mas ok, se você QUER técnica... que tal a gente aprender fazendo algo totalmente errado de propósito?"
+                    dificuldade: {
+                        formal: 'Interessante... um desafio. Vamos abordar isso de forma não-convencional.',
+                        neutro: 'Difícil? PERFEITO! Vamos fazer do jeito mais estranho possível!',
+                        casual: 'Ahhhhh adorei! Dificuldade = chance de fazer algo inesperado!',
+                        gíria: 'Kkkkkk quebrou a cabeça? BORA QUEBRAR MAIS! Desenha com a mão esquerda! Faz tudo ao contrário! 🎭'
+                    },
+                    success: {
+                        formal: 'Resultado interessante. Você tem potencial criativo.',
+                        neutro: 'Aí sim! Curti seu jeito!',
+                        casual: 'ARRASOU! Tá ficando com a sua cara!',
+                        gíria: 'NOSSA, QUE ISSO! Tá MUITO foda! Bora pro próximo nível de loucura?'
+                    }
                 }
             },
             viktor: {
                 name: 'Viktor',
-                avatar: '🎓',
-                role: 'Mestre Erudito',
+                avatar: '📚',
+                role: 'Seu mestre erudito',
                 style: 'filosófico, profundo, histórico',
-                greetings: [
-                    "Bem-vindo, aprendiz. A arte é uma jornada de milênios e você dá seus primeiros passos agora. Honroso. 🎓",
-                    "Da Vinci também começou com linhas tremidas. A diferença é a persistência através dos anos. Você está disposto?",
-                    "A arte reflete a alma humana através dos séculos. Hoje, você adiciona sua voz a esse coro milenar."
-                ],
+                greetings: {
+                    formal: 'Saudações. Sou Viktor, e juntos exploraremos as profundezas do conhecimento humano.',
+                    neutro: 'Bem-vindo. O que busca compreender hoje?',
+                    casual: 'Olá. Vamos adicionar mais uma peça ao seu conhecimento?',
+                    gíria: 'Ah, mais um aprendiz. Senta que lá vem história. Literalmente.'
+                },
                 responses: {
-                    dificuldade: "Dificuldade é o preço da maestria. Michelangelo levou 4 anos na Capela Sistina. Você tem paciência para seu primeiro desenho?",
-                    inspiracao: "Estude os mestres. Não copie - compreenda suas decisões. Vou recomendar alguns para você analisar hoje.",
-                    tecnica: "A técnica é a linguagem através da qual expressamos ideias eternas. Vamos estudar os fundamentos que os renascentistas dominaram."
+                    dificuldade: {
+                        formal: 'A dificuldade é o preço da maestria. Grandes mentes da história passaram pelo mesmo.',
+                        neutro: 'Persista. A compreensão virá com o tempo.',
+                        casual: 'Calma. Até Einstein errava. Vamos tentar de novo?',
+                        gíria: 'Kkk achou difícil? O Da Vinci levou anos na Capela Sistina. Você tem tempo.'
+                    },
+                    success: {
+                        formal: 'Notável. Você está construindo seu legado intelectual.',
+                        neutro: 'Bom progresso. Continue assim.',
+                        casual: 'Interessante. Está evoluindo.',
+                        gíria: 'Aí sim, jovem padawan. A força está com você.'
+                    }
+                }
+            },
+            yuki: {
+                name: 'Yuki',
+                avatar: '❄️',
+                role: 'Sua guia minimalista',
+                style: 'calma, metódica, focada',
+                greetings: {
+                    formal: 'Bem-vindo. Vamos eliminar o desnecessário e focar no essencial.',
+                    neutro: 'Olá. Respire. Vamos começar.',
+                    casual: 'Oi. Vamos simplificar isso?',
+                    gíria: 'Ei. Para. Respira. Agora sim, bora.'
+                },
+                responses: {
+                    dificuldade: {
+                        formal: 'Observe o problema sem julgamento. A resposta está na simplicidade.',
+                        neutro: 'Simplifique. Menos é mais.',
+                        casual: 'Tira o excesso. O que sobra é a resposta.',
+                        gíria: 'Kkk complicou demais. Tira a firula, vai no básico.'
+                    },
+                    success: {
+                        formal: 'Elegante. A simplicidade é a sofisticação suprema.',
+                        neutro: 'Bom. Limpo e eficiente.',
+                        casual: 'Perfeito. Sem enrolação.',
+                        gíria: 'Aí sim. Direto ao ponto. Gostei.'
+                    }
+                }
+            },
+            rafa: {
+                name: 'Rafa',
+                avatar: '🎭',
+                role: 'Seu contador de histórias',
+                style: 'narrativo, emocional, teatral',
+                greetings: {
+                    formal: 'Bem-vindo à sua história de aprendizado. Que capítulo escreveremos hoje?',
+                    neutro: 'Ei! Pronto pra mais um capítulo da sua jornada?',
+                    casual: 'E aí, protagonista! O que vem por aí na sua história?',
+                    gíria: 'Fala, meu consagrado! Bora criar um plot twist nesse aprendizado?'
+                },
+                responses: {
+                    dificuldade: {
+                        formal: 'Todo herói enfrenta obstáculos. Este é o seu momento de superação.',
+                        neutro: 'Todo plot tem um conflito. Vamos resolver o seu?',
+                        casual: 'Eita, o vilão apareceu! Mas relaxa, todo herói vence no final.',
+                        gíria: 'Kkkkk o desafio chegou! Mas lembra: você é o protagonista, não o NPC. Bora!'
+                    },
+                    success: {
+                        formal: 'Um capítulo glorioso se fecha. Sua jornada continua.',
+                        neutro: 'Final feliz! Próximo capítulo?',
+                        casual: 'E viveram felizes para sempre... ou não? O próximo episódio vem aí!',
+                        gíria: 'ARCO COMPLETADO! Level up! Qual a próxima missão, campeão?'
+                    }
                 }
             }
         };
 
-        // TRILHAS DE APRENDIZADO
-        const trilhasData = {
-            iniciante: [
-                { id: 'l1', title: 'O Primeiro Traço', desc: 'Desenhando sem medo do erro', icon: '✏️', time: '15 min' },
-                { id: 'l2', title: 'Ver com Olhos de Artista', desc: 'Percepção vs. Símbolos', icon: '👁️', time: '20 min' },
-                { id: 'l3', title: 'A Dança da Linha', desc: 'Confiança no gesto', icon: '💃', time: '25 min' },
-                { id: 'l4', title: 'Formas Escondidas', desc: 'Encontrando geometria em tudo', icon: '🔷', time: '30 min' }
-            ],
-            intermediario: [
-                { id: 'i1', title: 'Volume em 3D', desc: 'Transformando linhas em formas', icon: ' cube', time: '35 min' },
-                { id: 'i2', title: 'Luz e Vida', desc: 'Como a iluminação cria realidade', icon: '💡', time: '40 min' },
-                { id: 'i3', title: 'Anatomia Simplificada', desc: 'O corpo como construção', icon: '🏃', time: '45 min' },
-                { id: 'i4', title: 'Profundidade', desc: 'Perspectiva sem matemática', icon: '🏔️', time: '50 min' }
-            ],
-            avancado: [
-                { id: 'a1', title: 'Estilo Próprio', desc: 'Encontrando sua voz visual', icon: '🎭', time: '60 min' },
-                { id: 'a2', title: 'Composição Dramática', desc: 'Controlando o olhar do espectador', icon: '🎬', time: '65 min' },
-                { id: 'a3', title: 'Arte Conceitual', desc: 'Desenhando ideias, não apenas formas', icon: '💭', time: '70 min' }
-            ]
-        };
+        // ANÁLISE DE TOM (SLANG DETECTOR)
+        function analyzeTone(text) {
+            const lower = text.toLowerCase();
+            
+            // Palavras formais
+            const formalWords = ['gostaria', 'por favor', 'agradeço', 'senhor', 'doutor', 'cordialmente'];
+            // Abreviações/gírias leves
+            const casualWords = ['vc', 'tb', 'tbm', 'pq', 'q', 'blz', 'ok'];
+            // Gírias médias
+            const slangWords = ['mano', 'cara', 'tipo', 'sei lá', 'whatever'];
+            // Gírias pesadas
+            const heavySlang = ['vsf', 'pqp', 'fdp', 'carai', 'porra', 'tmj', 'slk', 'mds', 'kkkk', 'aff'];
+            
+            let score = 0;
+            
+            formalWords.forEach(w => { if(lower.includes(w)) score -= 2; });
+            casualWords.forEach(w => { if(lower.includes(w)) score += 1; });
+            slangWords.forEach(w => { if(lower.includes(w)) score += 2; });
+            heavySlang.forEach(w => { if(lower.includes(w)) score += 3; });
+            
+            // Análise de pontuação
+            if(text.includes('!!!') || text.includes('???')) score += 1;
+            if(/kkk+/i.test(text)) score += 2;
+            if(text === text.toUpperCase() && text.length > 3) score += 1;
+            
+            if(score <= -2) return 'formal';
+            if(score <= 1) return 'neutro';
+            if(score <= 3) return 'casual';
+            return 'gíria';
+        }
 
         // INICIALIZAÇÃO
         window.onload = function() {
-            initBackground();
-            loadGallery();
-            checkLoginStatus();
+            initNeuralBackground();
+            loadUserData();
+            updateAIInterface();
         };
 
-        // BACKGROUND ANIMADO
-        function initBackground() {
-            const bg = document.getElementById('bgCanvas');
-            const ctx = bg.getContext('2d');
-            bg.width = window.innerWidth;
-            bg.height = window.innerHeight;
+        // BACKGROUND NEURAL ANIMADO
+        function initNeuralBackground() {
+            const canvas = document.getElementById('neuralCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
 
             const particles = [];
-            for(let i = 0; i < 50; i++) {
+            const particleCount = 80;
+            const connectionDistance = 150;
+
+            for(let i = 0; i < particleCount; i++) {
                 particles.push({
-                    x: Math.random() * bg.width,
-                    y: Math.random() * bg.height,
-                    size: Math.random() * 2,
-                    speedX: (Math.random() - 0.5) * 0.5,
-                    speedY: (Math.random() - 0.5) * 0.5,
-                    opacity: Math.random() * 0.5
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    size: Math.random() * 2 + 1
                 });
             }
 
             function animate() {
-                ctx.clearRect(0, 0, bg.width, bg.height);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
+                // Atualizar partículas
                 particles.forEach(p => {
-                    p.x += p.speedX;
-                    p.y += p.speedY;
+                    p.x += p.vx;
+                    p.y += p.vy;
                     
-                    if(p.x < 0) p.x = bg.width;
-                    if(p.x > bg.width) p.x = 0;
-                    if(p.y < 0) p.y = bg.height;
-                    if(p.y > bg.height) p.y = 0;
+                    if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
                     
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+                    ctx.fillStyle = 'rgba(99, 102, 241, 0.5)';
                     ctx.fill();
                 });
+
+                // Conexões
+                for(let i = 0; i < particles.length; i++) {
+                    for(let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if(distance < connectionDistance) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(99, 102, 241, ${0.2 * (1 - distance/connectionDistance)})`;
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    }
+                }
 
                 requestAnimationFrame(animate);
             }
             animate();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
         }
 
         // NAVEGAÇÃO
-        function showSection(section) {
-            // Esconde todas as páginas
-            document.querySelectorAll('[id^="page-"]').forEach(page => {
-                page.classList.add('hidden');
-            });
-            
-            // Mostra a seção solicitada
-            const targetPage = document.getElementById('page-' + section);
-            if(targetPage) {
-                targetPage.classList.remove('hidden');
-                targetPage.classList.add('fade-in');
-            }
-
-            // Inicializa canvas se for o estúdio
-            if(section === 'studio') {
-                setTimeout(initStudio, 100);
-            }
-
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + pageName).classList.add('active');
             window.scrollTo(0, 0);
         }
 
-        function goHome() {
-            showSection('home');
-        }
-
         function startJourney() {
-            if(!userState.isLoggedIn) {
-                toggleLoginModal();
-                return;
-            }
-            showSection('onboarding');
-        }
-
-        // SISTEMA DE LOGIN
-        function toggleLoginModal() {
-            const modal = document.getElementById('loginModal');
-            modal.classList.toggle('active');
-        }
-
-        function toggleAuthMode() {
-            document.getElementById('loginForm').classList.toggle('hidden');
-            document.getElementById('registerForm').classList.toggle('hidden');
-        }
-
-        function register() {
-            const name = document.getElementById('regName').value;
-            const email = document.getElementById('regEmail').value;
-            const password = document.getElementById('regPassword').value;
-
-            if(!name || !email || !password) {
-                alert('Por favor, preencha todos os campos');
-                return;
-            }
-
-            // Simulação de registro (em produção, use Firebase Auth)
-            userState.isLoggedIn = true;
-            userState.name = name;
-            userState.email = email;
-            
-            localStorage.setItem('drawmind_user', JSON.stringify(userState));
-            
-            updateUIForLoggedUser();
-            toggleLoginModal();
-            showSection('onboarding');
-            
-            addAIMessage(`Seja muito bem-vindo, ${name}! Sou ${userState.aiPersonality || 'Luna'} e vou acompanhar sua jornada artística. Estou animada para ver sua evolução! ✨`);
-        }
-
-        function login() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-
-            // Simulação de login
-            const saved = localStorage.getItem('drawmind_user');
-            if(saved) {
-                const data = JSON.parse(saved);
-                if(data.email === email) {
-                    Object.assign(userState, data);
-                    userState.isLoggedIn = true;
-                    updateUIForLoggedUser();
-                    toggleLoginModal();
-                    showSection('trilhas');
-                    return;
-                }
-            }
-            
-            alert('Email ou senha incorretos');
-        }
-
-        function checkLoginStatus() {
-            const saved = localStorage.getItem('drawmind_user');
-            if(saved) {
-                Object.assign(userState, JSON.parse(saved));
-                userState.isLoggedIn = true;
-                updateUIForLoggedUser();
-            }
-        }
-
-        function updateUIForLoggedUser() {
-            document.getElementById('userAvatar').textContent = userState.name.charAt(0).toUpperCase();
-            document.getElementById('userStyleDisplay').textContent = userState.learningStyle ? `(${userState.learningStyle})` : '';
-            
-            if(userState.aiPersonality) {
-                const ai = aiProfiles[userState.aiPersonality];
-                document.getElementById('aiName').textContent = ai.name;
-                document.getElementById('aiRole').textContent = ai.role;
-                document.getElementById('aiAvatar').textContent = ai.avatar;
-                document.getElementById('aiWelcome').textContent = ai.greetings[0];
-            }
-        }
-
-        // ONBOARDING
-        function selectLearningStyle(style) {
-            userState.learningStyle = style;
-            document.querySelectorAll('#learningStyles .personality-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            event.currentTarget.classList.add('selected');
-            checkOnboardingComplete();
-        }
-
-        function selectAIPersonality(personality) {
-            userState.aiPersonality = personality;
-            document.querySelectorAll('#aiPersonalities .personality-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            event.currentTarget.classList.add('selected');
-            
-            // Atualiza preview da IA
-            const ai = aiProfiles[personality];
-            document.getElementById('aiName').textContent = ai.name;
-            document.getElementById('aiRole').textContent = ai.role;
-            document.getElementById('aiAvatar').textContent = ai.avatar;
-            
-            checkOnboardingComplete();
-        }
-
-        function checkOnboardingComplete() {
-            const btn = document.getElementById('btnComplete');
-            if(userState.learningStyle && userState.aiPersonality) {
-                btn.style.opacity = '1';
-                btn.style.pointerEvents = 'auto';
-            }
-        }
-
-        function completeOnboarding() {
-            localStorage.setItem('drawmind_user', JSON.stringify(userState));
-            generateTrilhas();
-            showSection('trilhas');
-            addAIMessage(`Perfeito! Configurei sua experiência para o perfil ${userState.learningStyle}. Vamos começar sua primeira trilha? 🎯`);
-        }
-
-        // TRILHAS PERSONALIZADAS
-        function generateTrilhas() {
-            const container = document.getElementById('trilhasList');
-            const styles = {
-                explorador: { desc: 'Livre e intuitivo', color: 'iniciante' },
-                estruturado: { desc: 'Passo a passo claro', color: 'intermediario' },
-                desafiador: { desc: 'Meta desafiadora', color: 'avancado' },
-                colaborativo: { desc: 'Em grupo', color: 'intermediario' }
-            };
-
-            const trilhas = ['iniciante', 'intermediario', 'avancado'];
-            const icons = ['🌱', '🌿', '🌳'];
-            const titles = ['Descoberta', 'Domínio', 'Maestria'];
-
-            container.innerHTML = trilhas.map((nivel, idx) => `
-                <div class="trilha-card" onclick="openTrilha('${nivel}')">
-                    <div class="trilha-visual ${styles[userState.learningStyle].color}">
-                        <div class="trilha-icon">${icons[idx]}</div>
-                    </div>
-                    <div class="trilha-content">
-                        <h3>${titles[idx]}</h3>
-                        <p>${getTrilhaDesc(nivel)}</p>
-                        <div class="trilha-meta">
-                            <span class="meta-item">📚 ${trilhasData[nivel].length} aulas</span>
-                            <span class="meta-item">⏱️ ${calculateTime(nivel)}</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${userState.progress[nivel]}%"></div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function getTrilhaDesc(nivel) {
-            const descs = {
-                iniciante: 'Fundamentos da percepção visual e confiança no traço',
-                intermediario: 'Volume, luz, sombra e construção de formas 3D',
-                avancado: 'Estilo pessoal, composição avançada e expressão artística'
-            };
-            return descs[nivel];
-        }
-
-        function calculateTime(nivel) {
-            const total = trilhasData[nivel].reduce((acc, l) => acc + parseInt(l.time), 0);
-            return `${Math.floor(total/60)}h ${total%60}min`;
-        }
-
-        function openTrilha(nivel) {
-            // Abre primeira lição da trilha
-            const licoes = trilhasData[nivel];
-            if(licoes.length > 0) {
-                addAIMessage(`Vamos começar "${licoes[0].title}"? Posso explicar o exercício ou você prefere tentar sozinho primeiro?`);
-                showSection('studio');
-            }
-        }
-
-        // ESTÚDIO DE ARTE
-        let studioCtx, overlayCtx;
-        let currentBrush = { type: 'pencil', size: 5, color: '#6366f1', opacity: 1 };
-        let isDrawing = false;
-        let shapes = [];
-
-        function initStudio() {
-            const canvas = document.getElementById('mainCanvas');
-            const overlay = document.getElementById('overlayCanvas');
-            const container = canvas.parentElement;
-            
-            canvas.width = container.offsetWidth;
-            canvas.height = container.offsetHeight;
-            overlay.width = canvas.width;
-            overlay.height = canvas.height;
-            
-            studioCtx = canvas.getContext('2d');
-            overlayCtx = overlay.getContext('2d');
-            
-            studioCtx.lineCap = 'round';
-            studioCtx.lineJoin = 'round';
-            
-            // Eventos
-            canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stopDrawing);
-            canvas.addEventListener('mouseout', stopDrawing);
-            
-            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e.touches[0]); });
-            canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); });
-            canvas.addEventListener('touchend', stopDrawing);
-        }
-
-        function getPos(e) {
-            const rect = document.getElementById('mainCanvas').getBoundingClientRect();
-            return {
-                x: (e.clientX || e.pageX) - rect.left,
-                y: (e.clientY || e.pageY) - rect.top
-            };
-        }
-
-        function startDrawing(e) {
-            isDrawing = true;
-            const pos = getPos(e);
-            studioCtx.beginPath();
-            studioCtx.moveTo(pos.x, pos.y);
-        }
-
-        function draw(e) {
-            if(!isDrawing) return;
-            const pos = getPos(e);
-            
-            studioCtx.globalAlpha = currentBrush.opacity;
-            studioCtx.lineWidth = currentBrush.size;
-            
-            if(currentBrush.type === 'eraser') {
-                studioCtx.globalCompositeOperation = 'destination-out';
+            if(userState.firstVisit || !userState.name) {
+                openConfig();
             } else {
-                studioCtx.globalCompositeOperation = 'source-over';
-                studioCtx.strokeStyle = currentBrush.color;
-                
-                if(currentBrush.type === 'watercolor') {
-                    studioCtx.shadowBlur = 20;
-                    studioCtx.shadowColor = currentBrush.color;
-                } else {
-                    studioCtx.shadowBlur = 0;
-                }
+                showPage('study');
             }
+        }
+
+        // TABS DE ESTUDO
+        function switchTab(tabName) {
+            document.querySelectorAll('.modules-content').forEach(c => c.style.display = 'none');
+            document.getElementById('tab-' + tabName).style.display = 'grid';
             
-            studioCtx.lineTo(pos.x, pos.y);
-            studioCtx.stroke();
-        }
-
-        function stopDrawing() {
-            isDrawing = false;
-            studioCtx.beginPath();
-            studioCtx.shadowBlur = 0;
-        }
-
-        function setBrush(type) {
-            currentBrush.type = type;
-            document.querySelectorAll('.tools-panel .tool-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
         }
 
-        function updateBrushSize(val) { currentBrush.size = val; }
-        function updateBrushOpacity(val) { currentBrush.opacity = val / 100; }
-        function updateBrushColor(val) { currentBrush.color = val; }
-
-        function insertShape(shape) {
-            const canvas = document.getElementById('mainCanvas');
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const size = 100;
-            
-            studioCtx.globalAlpha = 0.3;
-            studioCtx.strokeStyle = currentBrush.color;
-            studioCtx.lineWidth = 2;
-            
-            switch(shape) {
-                case 'circle':
-                    studioCtx.beginPath();
-                    studioCtx.arc(centerX, centerY, size, 0, Math.PI * 2);
-                    studioCtx.stroke();
-                    break;
-                case 'square':
-                    studioCtx.strokeRect(centerX - size, centerY - size, size * 2, size * 2);
-                    break;
-                case 'triangle':
-                    studioCtx.beginPath();
-                    studioCtx.moveTo(centerX, centerY - size);
-                    studioCtx.lineTo(centerX + size, centerY + size);
-                    studioCtx.lineTo(centerX - size, centerY + size);
-                    studioCtx.closePath();
-                    studioCtx.stroke();
-                    break;
-                case 'grid':
-                    drawGrid();
-                    break;
-                case 'perspective':
-                    drawPerspective();
-                    break;
-                case 'line':
-                    studioCtx.beginPath();
-                    studioCtx.moveTo(centerX - 200, centerY);
-                    studioCtx.lineTo(centerX + 200, centerY);
-                    studioCtx.stroke();
-                    break;
-            }
-            
-            studioCtx.globalAlpha = 1;
-            addAIMessage(`Adicionei uma ${shape === 'grid' ? 'grade' : shape === 'perspective' ? 'guia de perspectiva' : 'forma'} como referência. Use como guia e apague quando não precisar mais!`);
+        // CONFIGURAÇÃO
+        function openConfig() {
+            document.getElementById('configModal').classList.add('active');
+            document.getElementById('config-step-1').classList.remove('hidden');
+            document.getElementById('config-step-2').classList.add('hidden');
         }
 
-        function drawGrid() {
-            const step = 50;
-            const canvas = document.getElementById('mainCanvas');
-            
-            studioCtx.globalAlpha = 0.1;
-            for(let x = 0; x < canvas.width; x += step) {
-                studioCtx.beginPath();
-                studioCtx.moveTo(x, 0);
-                studioCtx.lineTo(x, canvas.height);
-                studioCtx.stroke();
-            }
-            for(let y = 0; y < canvas.height; y += step) {
-                studioCtx.beginPath();
-                studioCtx.moveTo(0, y);
-                studioCtx.lineTo(canvas.width, y);
-                studioCtx.stroke();
-            }
+        function closeConfig() {
+            document.getElementById('configModal').classList.remove('active');
         }
 
-        function drawPerspective() {
-            const canvas = document.getElementById('mainCanvas');
-            const horizon = canvas.height / 2;
+        function selectAge(age) {
+            userState.age = age;
+            document.querySelectorAll('.age-option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector(`[data-age="${age}"]`).classList.add('selected');
+        }
+
+        function selectPersonality(personality) {
+            userState.personality = personality;
+            document.querySelectorAll('.personality-card').forEach(card => card.classList.remove('selected'));
+            document.querySelector(`[data-personality="${personality}"]`).classList.add('selected');
+        }
+
+        function nextStep() {
+            const name = document.getElementById('userName').value;
+            if(!name) {
+                alert('Como você quer ser chamado?');
+                return;
+            }
+            if(!userState.age) {
+                alert('Qual sua faixa etária?');
+                return;
+            }
             
-            studioCtx.globalAlpha = 0.2;
-            studioCtx.beginPath();
-            studioCtx.moveTo(0, horizon);
-            studioCtx.lineTo(canvas.width, horizon);
-            studioCtx.stroke();
+            userState.name = name;
+            document.getElementById('config-step-1').classList.add('hidden');
+            document.getElementById('config-step-2').classList.remove('hidden');
+        }
+
+        function saveConfig() {
+            if(!userState.personality) {
+                alert('Escolha seu mentor IA!');
+                return;
+            }
             
-            // Pontos de fuga
-            const vp1 = canvas.width * 0.2;
-            const vp2 = canvas.width * 0.8;
+            userState.firstVisit = false;
+            localStorage.setItem('neuro_user', JSON.stringify(userState));
             
-            for(let y = horizon; y < canvas.height; y += 30) {
-                studioCtx.beginPath();
-                studioCtx.moveTo(vp1, horizon);
-                studioCtx.lineTo((y - horizon) * 2, y);
-                studioCtx.stroke();
-                
-                studioCtx.beginPath();
-                studioCtx.moveTo(vp2, horizon);
-                studioCtx.lineTo(canvas.width - (y - horizon) * 2, y);
-                studioCtx.stroke();
+            updateUI();
+            closeConfig();
+            showPage('study');
+            
+            // Mensagem de boas-vindas personalizada
+            const ai = aiProfiles[userState.personality];
+            const tone = userState.age === 'crianca' ? 'casual' : userState.age === 'adolescente' ? 'gíria' : 'neutro';
+            const greeting = ai.greetings[tone];
+            
+            setTimeout(() => {
+                addAIMessage(`${greeting} Prazer, ${userState.name}! 🎉`);
+            }, 500);
+        }
+
+        function loadUserData() {
+            const saved = localStorage.getItem('neuro_user');
+            if(saved) {
+                Object.assign(userState, JSON.parse(saved));
+                updateUI();
             }
         }
 
-        function toggleOverlay(type) {
-            const overlay = document.getElementById('overlayCanvas');
-            overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
-            
-            if(type === 'grid') {
-                overlayCtx.strokeStyle = 'rgba(255,255,255,0.1)';
-                overlayCtx.lineWidth = 1;
-                for(let i = 0; i < overlay.width; i += 50) {
-                    overlayCtx.beginPath();
-                    overlayCtx.moveTo(i, 0);
-                    overlayCtx.lineTo(i, overlay.height);
-                    overlayCtx.stroke();
-                }
-                for(let i = 0; i < overlay.height; i += 50) {
-                    overlayCtx.beginPath();
-                    overlayCtx.moveTo(0, i);
-                    overlayCtx.lineTo(overlay.width, i);
-                    overlayCtx.stroke();
-                }
+        function updateUI() {
+            if(userState.name) {
+                document.getElementById('navUserName').textContent = userState.name;
+                document.getElementById('navAvatar').textContent = userState.name.charAt(0).toUpperCase();
             }
+            updateAIInterface();
         }
 
-        function loadReference(event) {
-            const file = event.target.files[0];
-            if(!file) return;
+        function updateAIInterface() {
+            const ai = aiProfiles[userState.personality];
+            document.getElementById('aiName').textContent = ai.name;
+            document.getElementById('aiRole').textContent = ai.role;
+            document.getElementById('aiAvatar').textContent = ai.avatar;
+            document.getElementById('aiFloat').textContent = ai.avatar;
             
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    overlayCtx.globalAlpha = 0.3;
-                    overlayCtx.drawImage(img, 0, 0, overlay.width, overlay.height);
-                    overlayCtx.globalAlpha = 1;
-                    addAIMessage('Imagem de referência carregada! Use o modo "Traçar" para desenhar por cima se quiser.');
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+            // Mensagem inicial baseada na idade
+            const tone = userState.age === 'crianca' ? 'casual' : userState.age === 'adolescente' ? 'gíria' : 'neutro';
+            document.getElementById('aiWelcome').textContent = ai.greetings[tone];
         }
 
-        function toggleReferenceMode() {
-            const overlay = document.getElementById('overlayCanvas');
-            overlay.style.pointerEvents = overlay.style.pointerEvents === 'none' ? 'auto' : 'none';
-            addAIMessage(overlay.style.pointerEvents === 'none' ? 'Modo traçar desativado' : 'Modo traçar ativado! Agora você pode desenhar sobre a referência.');
-        }
-
-        function newChallenge() {
-            const challenges = [
-                "Movimento no silêncio",
-                "Luz que dança",
-                "Memória de infância",
-                "O que não se vê",
-                "Duas verdades e uma mentira",
-                "O último suspiro do dia",
-                "Sinfonia em cinza",
-                "A jornada de uma gota",
-                "Retratos sem rosto",
-                "O peso do vazio"
-            ];
-            const challenge = challenges[Math.floor(Math.random() * challenges.length)];
-            document.getElementById('dailyChallenge').textContent = `"${challenge}"`;
-            
-            const ai = aiProfiles[userState.aiPersonality || 'luna'];
-            addAIMessage(`${ai.name === 'Zoe' ? 'NOVO DESAFIO LOUCO!' : 'Novo desafio:'} "${challenge}". ${getChallengeHint(challenge)}`);
-        }
-
-        function getChallengeHint(challenge) {
-            const hints = {
-                "Movimento no silêncio": "Pense em como representar velocidade sem som. Linhas de ação são suas amigas!",
-                "Luz que dança": "Foque nos contrastes extremos. Onde a luz toca, a vida pulsa.",
-                "Memória de infância": "Não desenhe o objeto, desenhe a sensação que ele te dava.",
-                "O que não se vê": "O negativo do espaço conta mais histórias que o positivo.",
-                "Duas verdades e uma mentira": "Três elementos, um deles não pertence. O espectador deve adivinhar qual.",
-                "O último suspiro do dia": "Cores quentes se despedindo, frias chegando. Transição.",
-                "Sinfonia em cinza": "Sem cores, apenas valores. A música está nos tons.",
-                "A jornada de uma gota": "Do alto ao fundo. Narrativa em uma única imagem.",
-                "Retratos sem rosto": "Personalidade sem feições. Postura, gestos, silhueta.",
-                "O peso do vazio": "Como desenhar o nada de forma que pese no peito do observador?"
-            };
-            return hints[challenge] || "Interprete como quiser! A arte é sua.";
-        }
-
-        function clearCanvas() {
-            if(confirm('Tem certeza? Tudo será apagado.')) {
-                studioCtx.clearRect(0, 0, document.getElementById('mainCanvas').width, document.getElementById('mainCanvas').height);
-                overlayCtx.clearRect(0, 0, document.getElementById('overlayCanvas').width, document.getElementById('overlayCanvas').height);
-            }
-        }
-
-        function saveArtwork() {
-            const canvas = document.getElementById('mainCanvas');
-            const link = document.createElement('a');
-            link.download = `drawmind-${Date.now()}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
-            
-            userState.totalDrawings++;
-            localStorage.setItem('drawmind_user', JSON.stringify(userState));
-            
-            addAIMessage('Obra salva! Você já criou ' + userState.totalDrawings + ' desenhos. Cada um é um passo na sua evolução!');
-        }
-
-        // ASSISTENTE IA HUMANIZADA
+        // ASSISTENTE IA
         function toggleAI() {
             document.getElementById('aiChat').classList.toggle('active');
         }
@@ -1963,7 +2021,6 @@
                 container.appendChild(typing);
                 container.scrollTop = container.scrollHeight;
                 
-                // Remove indicador e mostra mensagem com delay natural
                 setTimeout(() => {
                     typing.remove();
                     const msg = document.createElement('div');
@@ -1971,7 +2028,7 @@
                     msg.textContent = text;
                     container.appendChild(msg);
                     container.scrollTop = container.scrollHeight;
-                }, 1000 + Math.random() * 1000);
+                }, 1000 + Math.random() * 500);
             } else {
                 const msg = document.createElement('div');
                 msg.className = 'message user';
@@ -1993,91 +2050,109 @@
             addAIMessage(text, true);
             input.value = '';
 
-            const ai = aiProfiles[userState.aiPersonality || 'luna'];
-            const response = generateHumanizedResponse(text, ai);
+            const tone = analyzeTone(text);
+            const ai = aiProfiles[userState.personality];
+            
+            // Resposta contextual
+            let response = generateResponse(text, tone, ai);
             
             setTimeout(() => {
                 addAIMessage(response);
             }, 500);
         }
 
-        function generateHumanizedResponse(input, ai) {
+        function generateResponse(input, tone, ai) {
             const lower = input.toLowerCase();
             
-            // Respostas contextuais baseadas na personalidade
-            if(lower.includes('difícil') || lower.includes('não consigo') || lower.includes('frustrado')) {
-                return ai.responses.dificuldade;
+            // Detecção de intenção
+            if(lower.includes('difícil') || lower.includes('não entendi') || lower.includes('ajuda') || lower.includes('socorro')) {
+                return ai.responses.dificuldade[tone];
             }
-            if(lower.includes('inspiração') || lower.includes('ideia') || lower.includes('criativo')) {
-                return ai.responses.inspiracao;
+            if(lower.includes('consegui') || lower.includes('terminei') || lower.includes('acabei') || lower.includes('deu certo')) {
+                return ai.responses.success[tone];
             }
-            if(lower.includes('técnica') || lower.includes('como desenhar') || lower.includes('como fazer')) {
-                return ai.responses.tecnica;
-            }
-            
-            // Respostas específicas por personalidade
-            if(ai.name === 'Luna') {
-                if(lower.includes('oi') || lower.includes('olá')) return "Oi! Que bom que você veio. O que seu coração precisa criar hoje? 💫";
-                if(lower.includes('medo') || lower.includes('inseguro')) return "O medo é só o seu potencial assustado com a própria grandeza. Vamos juntos, devagar?";
-                return "Que pensamento interessante... Conte-me mais sobre isso. Às vezes a conversa revela caminhos que o lápis ainda não viu. 🌙";
+            if(lower.includes('oi') || lower.includes('olá') || lower.includes('eae') || lower.includes('fala')) {
+                return ai.greetings[tone];
             }
             
-            if(ai.name === 'Marco') {
-                if(lower.includes('oi') || lower.includes('olá')) return "Vamos direto ao ponto. O que você quer resolver hoje?";
-                if(lower.includes('descansar') || lower.includes('cansado')) return "Cansaço é desculpa. Profissionais trabalham mesmo assim. Mas ok, 5 minutos. Depois voltamos.";
-                return "Interessante. Agora mostre-me no desenho. Teoria sem prática é só conversa fiada.";
-            }
+            // Respostas genéricas por personalidade e tom
+            const genericResponses = {
+                luna: {
+                    formal: 'Entendo. Conte-me mais sobre o que você está buscando aprender.',
+                    neutro: 'Que interessante! Quer que eu te explique melhor sobre isso?',
+                    casual: 'Ahh, entendi! Bora explorar isso juntos?',
+                    gíria: 'Kkkk saquei! Bora desenrolar esse assunto? Tô aqui pra whatever!'
+                },
+                marco: {
+                    formal: 'Especifique seu objetivo para que eu possa direcionar seu estudo.',
+                    neutro: 'O que exatamente você quer aprender? Vamos direto ao ponto.',
+                    casual: 'Beleza, mas o que você quer resolver? Sem enrolação.',
+                    gíria: 'E aí, qual é? O que cê quer saber? Bora que tempo é dinheiro.'
+                },
+                zoe: {
+                    formal: 'Fascinante! Vamos explorar isso de maneira não-convencional?',
+                    neutro: 'Legal! Quer que eu te mostre um jeito diferente de ver isso?',
+                    casual: 'Ahhhh curti! Bora fazer um experimento maluco com isso?',
+                    gíria: 'NOSSA, amei! Bora quebrar tudo e reconstruir do zero? Kkkkk'
+                },
+                viktor: {
+                    formal: 'Profundo questionamento. Vamos contextualizar historicamente?',
+                    neutro: 'Interessante. Isso me lembra algo que estudamos na história.',
+                    casual: 'Boa! Sabe que isso tem uma história bem louca por trás?',
+                    gíria: 'Kkkkk essa pergunta! Os gregos já se martirizavam com isso. Bora ver?'
+                },
+                yuki: {
+                    formal: 'Vamos simplificar. Qual é a essência do que você precisa?',
+                    neutro: 'Ok. Vamos tirar o excesso e focar no que importa.',
+                    casual: 'Entendi. Vamos direto, sem firula. O que precisa?',
+                    gíria: 'Saquei. Para de enrolar, vamos no básico. Funciona sempre.'
+                },
+                rafa: {
+                    formal: 'E assim começa mais um capítulo da sua jornada. Prossiga.',
+                    neutro: 'Boa! E agora, o que nosso protagonista vai fazer?',
+                    casual: 'Eita, o plot thickens! Bora ver como essa história continua?',
+                    gíria: 'Kkkkk o drama! Mas relaxa, todo herói tem um plano. Qual é o seu?'
+                }
+            };
             
-            if(ai.name === 'Zoe') {
-                if(lower.includes('oi') || lower.includes('olá')) return "EIIII! CHEGOU A HORA DE CAUSAR! 🎨✨ O que vamos destruir de bonito hoje?";
-                if(lower.includes('regras') || lower.includes('certo')) return "Certo? ERRADO? QUE ISSO! Vamos fazer algo que ninguém entende mas todo mundo sente!";
-                return "AHHH ADOREI ESSE PENSAMENTO! Bora colocar isso no papel de um jeito TOTALMENTE maluco?";
-            }
-            
-            if(ai.name === 'Viktor') {
-                if(lower.includes('oi') || lower.includes('olá')) return "Saudações. Espero que esteja pronto para uma sessão de estudo produtiva.";
-                if(lower.includes('chato') || lower.includes('entediado')) return "Tédio é falta de compreensão profunda. Vamos estudar um mestre hoje? Da Vinci talvez?";
-                return "Reflexão profunda. A arte atravessou séculos com questionamentos similares. Vamos explorar isso juntos.";
-            }
-            
-            return ai.greetings[Math.floor(Math.random() * ai.greetings.length)];
+            return genericResponses[userState.personality][tone];
         }
 
-        // GALERIA
-        function loadGallery() {
-            const artworks = [
-                { author: 'Maria', avatar: 'M', title: 'Primeiro Retrato', color: 'linear-gradient(135deg, #667eea, #764ba2)' },
-                { author: 'João', avatar: 'J', title: 'Estudo de Luz', color: 'linear-gradient(135deg, #f093fb, #f5576c)' },
-                { author: 'Ana', avatar: 'A', title: 'Mãos em Movimento', color: 'linear-gradient(135deg, #4facfe, #00f2fe)' },
-                { author: 'Pedro', avatar: 'P', title: 'Perspectiva Urbana', color: 'linear-gradient(135deg, #43e97b, #38f9d7)' },
-                { author: 'Lisa', avatar: 'L', title: 'Aquarela Experimental', color: 'linear-gradient(135deg, #fa709a, #fee140)' },
-                { author: 'Carlos', avatar: 'C', title: 'Retrato Sem Rosto', color: 'linear-gradient(135deg, #a8edea, #fed6e3)' }
-            ];
+        // AÇÕES DOS MÓDULOS
+        function startModule(module) {
+            const ai = aiProfiles[userState.personality];
+            const tone = userState.age === 'crianca' ? 'casual' : userState.age === 'adolescente' ? 'gíria' : 'neutro';
             
-            const grid = document.getElementById('galleryGrid');
-            grid.innerHTML = artworks.map(art => `
-                <div class="artwork-item">
-                    <div style="width: 100%; height: 100%; background: ${art.color}; display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                        🎨
-                    </div>
-                    <div class="artwork-overlay">
-                        <div class="artwork-author">
-                            <div class="author-avatar">${art.avatar}</div>
-                            <div>
-                                <strong>${art.title}</strong>
-                                <p style="font-size: 0.9rem; opacity: 0.8;">por @${art.author}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+            const messages = {
+                luna: { casual: 'Vamos começar essa aventura juntos! ✨', gíria: 'Bora nessa aventura! Tô contigo! 🌙' },
+                marco: { casual: 'Hora de trabalhar. Foco total.', gíria: 'Bora, sem enrolação. Mão na massa.' },
+                zoe: { casual: 'YESSS! Bora fazer arte! 🎨', gíria: 'PARTIU! Vamos causar nesse módulo!' },
+                viktor: { casual: 'Um novo conhecimento nos aguarda.', gíria: 'Mais sabedoria ancestral vindo aí.' },
+                yuki: { casual: 'Vamos. Passo a passo.', gíria: 'Bora. Simples e direto.' },
+                rafa: { casual: 'Novo capítulo começando! 📖', gíria: 'Plot twist: você vai aprender MUITO! 🎭' }
+            };
+            
+            addAIMessage(messages[userState.personality][tone] || 'Vamos começar!');
+            alert('Módulo ' + module + ' iniciado! (Em desenvolvimento)');
         }
 
-        // Resize handler
-        window.addEventListener('resize', () => {
-            const bg = document.getElementById('bgCanvas');
-            bg.width = window.innerWidth;
-            bg.height = window.innerHeight;
+        function joinGroup(group) {
+            alert('Você entrou no grupo! (Em desenvolvimento)');
+        }
+
+        function createGroup() {
+            const name = prompt('Nome do grupo:');
+            if(name) alert('Grupo "' + name + '" criado! (Em desenvolvimento)');
+        }
+
+        // SCROLL EFFECT
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if(window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
         });
     </script>
 

@@ -4,138 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEURO - Aprenda de Verdade</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #ec4899;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #f97316;
             --accent: #06b6d4;
             --success: #10b981;
             --warning: #f59e0b;
-            --dark: #0f172a;
-            --darker: #020617;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --darker: #0f172a;
             --light: #f8fafc;
             --gray: #64748b;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --gray-light: #e2e8f0;
+            --white: #ffffff;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--darker);
-            color: var(--light);
+            background: var(--light);
+            color: var(--dark);
             line-height: 1.6;
-            overflow-x: hidden;
-            min-height: 100vh;
         }
 
-        /* Animações Globais */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(2deg); }
+        /* LOGO NEURO */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
         }
 
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
-            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.8), 0 0 60px rgba(236, 72, 153, 0.4); }
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            position: relative;
         }
 
-        @keyframes gradient-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes slide-up {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slide-in-right {
-            from { opacity: 0; transform: translateX(50px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes scale-in {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes typing {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
-        @keyframes morph {
-            0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-            50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
-        }
-
-        @keyframes draw-line {
-            to { stroke-dashoffset: 0; }
-        }
-
-        /* Background Animado */
-        .neural-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-
-        .neural-bg canvas {
+        .logo-icon svg {
             width: 100%;
             height: 100%;
         }
 
-        .gradient-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-            animation: float 8s ease-in-out infinite;
+        .logo-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
         }
 
-        .orb-1 {
-            width: 600px;
-            height: 600px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            top: -10%;
-            left: -10%;
-            animation-delay: 0s;
-        }
-
-        .orb-2 {
-            width: 400px;
-            height: 400px;
-            background: linear-gradient(135deg, var(--accent), var(--primary));
-            bottom: -5%;
-            right: -5%;
-            animation-delay: -4s;
-        }
-
-        .orb-3 {
-            width: 300px;
-            height: 300px;
-            background: linear-gradient(135deg, var(--secondary), var(--warning));
-            top: 40%;
-            left: 60%;
-            animation-delay: -2s;
+        .logo-text span {
+            color: var(--primary);
         }
 
         /* Navegação */
@@ -143,17 +73,11 @@
             position: fixed;
             top: 0;
             width: 100%;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray-light);
             padding: 1rem 2rem;
             z-index: 1000;
-            background: rgba(2, 6, 23, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            transition: all 0.3s;
-        }
-
-        nav.scrolled {
-            padding: 0.8rem 2rem;
-            background: rgba(2, 6, 23, 0.95);
         }
 
         .nav-container {
@@ -164,1996 +88,1396 @@
             align-items: center;
         }
 
-        .logo {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--light), var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: transform 0.3s;
-        }
-
-        .logo:hover {
-            transform: scale(1.05);
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            animation: pulse-glow 3s infinite;
-        }
-
         .nav-links {
             display: flex;
-            gap: 2.5rem;
+            gap: 2rem;
             list-style: none;
-            align-items: center;
         }
 
         .nav-links a {
             color: var(--gray);
             text-decoration: none;
             font-weight: 500;
-            font-size: 0.95rem;
-            transition: all 0.3s;
             cursor: pointer;
-            position: relative;
-            padding: 0.5rem 0;
+            transition: color 0.3s;
         }
 
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            transition: width 0.3s;
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
         }
 
-        .nav-links a:hover {
-            color: var(--light);
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        .user-badge {
+        .user-menu {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
-            padding: 0.5rem 1rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 50px;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
+            border: none;
             transition: all 0.3s;
         }
 
-        .user-badge:hover {
-            background: rgba(99, 102, 241, 0.2);
-            border-color: var(--primary);
+        .btn-primary {
+            background: var(--primary);
+            color: white;
         }
 
-        .user-avatar {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
         }
 
         /* Páginas */
         .page {
             display: none;
-            min-height: 100vh;
             padding-top: 80px;
-            animation: slide-up 0.6s ease-out;
+            min-height: 100vh;
         }
 
         .page.active {
             display: block;
         }
 
-        /* Hero Section */
+        /* Hero */
         .hero {
-            min-height: calc(100vh - 80px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            position: relative;
-        }
-
-        .hero-content {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 6rem 2rem;
             text-align: center;
-            max-width: 900px;
-            z-index: 1;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 50px;
-            font-size: 0.9rem;
-            color: var(--gray);
-            margin-bottom: 2rem;
-            animation: slide-up 0.8s ease-out;
-        }
-
-        .hero-badge span {
-            color: var(--success);
         }
 
         .hero h1 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 5rem;
-            font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--light) 0%, var(--primary) 50%, var(--secondary) 100%);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradient-shift 5s ease infinite, slide-up 1s ease-out;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
         }
 
         .hero p {
-            font-size: 1.3rem;
-            color: var(--gray);
-            margin-bottom: 3rem;
+            font-size: 1.25rem;
+            opacity: 0.9;
             max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            animation: slide-up 1.2s ease-out;
+            margin: 0 auto 2rem;
         }
 
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            animation: slide-up 1.4s ease-out;
-        }
-
-        .btn {
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.5);
-        }
-
-        .btn-secondary {
-            background: var(--glass);
-            color: var(--light);
-            border: 1px solid var(--glass-border);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--primary);
-        }
-
-        /* Features Grid */
-        .features {
-            padding: 6rem 2rem;
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
             max-width: 1400px;
             margin: 0 auto;
         }
 
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-header h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .section-header p {
-            color: var(--gray);
-            font-size: 1.1rem;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .feature-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 2.5rem;
-            transition: all 0.4s;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, transparent, rgba(99, 102, 241, 0.1));
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .feature-card:hover::before {
-            opacity: 1;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--primary);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .card {
+            background: white;
             border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        .card-image {
+            height: 180px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            transition: transform 0.3s;
+            font-size: 4rem;
         }
 
-        .feature-card:hover .feature-icon {
-            transform: scale(1.1) rotate(5deg);
+        .card-content {
+            padding: 1.5rem;
         }
 
-        .feature-card h3 {
-            font-size: 1.5rem;
+        .card-content h3 {
             margin-bottom: 0.5rem;
+            color: var(--dark);
         }
 
-        .feature-card p {
+        .card-content p {
             color: var(--gray);
             font-size: 0.95rem;
-        }
-
-        /* Módulos de Estudo */
-        .modules-section {
-            padding: 6rem 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .modules-tabs {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-bottom: 3rem;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            padding: 1rem 2rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 50px;
-            color: var(--gray);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .tab-btn:hover, .tab-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .modules-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .module-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .module-card:hover {
-            transform: scale(1.02);
-            border-color: var(--accent);
-        }
-
-        .module-header {
-            height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            position: relative;
-        }
-
-        .module-header.idiomas { background: linear-gradient(135deg, #3b82f6, #06b6d4); }
-        .module-header.matematica { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
-        .module-header.historia { background: linear-gradient(135deg, #f59e0b, #ef4444); }
-        .module-header.ciencias { background: linear-gradient(135deg, #10b981, #3b82f6); }
-        .module-header.artes { background: linear-gradient(135deg, #ec4899, #f59e0b); }
-        .module-header.tecnologia { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
-
-        .module-body {
-            padding: 1.5rem;
-        }
-
-        .module-body h3 {
-            margin-bottom: 0.5rem;
-        }
-
-        .module-body p {
-            color: var(--gray);
-            font-size: 0.9rem;
             margin-bottom: 1rem;
         }
 
-        .module-meta {
+        .card-meta {
             display: flex;
             gap: 1rem;
             font-size: 0.85rem;
             color: var(--gray);
         }
 
-        /* Comunidade */
-        .community-section {
-            padding: 6rem 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+        /* Categorias de cores */
+        .cat-idiomas { background: linear-gradient(135deg, #3b82f6, #06b6d4); }
+        .cat-escola { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
+        .cat-arte { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+        .cat-tech { background: linear-gradient(135deg, #10b981, #3b82f6); }
+        .cat-exatas { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .cat-criativo { background: linear-gradient(135deg, #ec4899, #f59e0b); }
 
-        .groups-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .group-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 2rem;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .group-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--success);
-        }
-
-        .group-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .group-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .group-info h4 {
-            margin-bottom: 0.2rem;
-        }
-
-        .group-info span {
-            font-size: 0.85rem;
-            color: var(--gray);
-        }
-
-        .group-tags {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-        }
-
-        .tag {
-            padding: 0.3rem 0.8rem;
-            background: rgba(99, 102, 241, 0.2);
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: var(--primary);
-        }
-
-        /* Professores */
-        .teachers-section {
-            padding: 6rem 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .tips-carousel {
-            display: flex;
-            gap: 2rem;
-            overflow-x: auto;
-            padding-bottom: 2rem;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) transparent;
-        }
-
-        .tip-card {
-            min-width: 400px;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 2rem;
-            transition: all 0.3s;
-        }
-
-        .tip-card:hover {
-            border-color: var(--warning);
-        }
-
-        .tip-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .teacher-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--warning), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-        }
-
-        .teacher-info h4 {
-            margin-bottom: 0.2rem;
-        }
-
-        .teacher-info span {
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-
-        .tip-content {
-            font-style: italic;
-            color: var(--gray);
-            line-height: 1.8;
-        }
-
-        .tip-stats {
-            display: flex;
-            gap: 2rem;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--glass-border);
-        }
-
-        .stat {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--success);
-        }
-
-        /* Assistente IA */
-        .ai-container {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-
-        .ai-chat {
-            width: 420px;
-            max-height: 600px;
-            background: rgba(15, 23, 42, 0.98);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            overflow: hidden;
+        /* Modal */
+        .modal {
             display: none;
-            flex-direction: column;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-            animation: scale-in 0.3s ease-out;
-        }
-
-        .ai-chat.active {
-            display: flex;
-        }
-
-        .ai-header {
-            padding: 1.5rem;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.2));
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .ai-profile {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .ai-avatar-main {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            animation: pulse-glow 2s infinite;
-        }
-
-        .ai-details h4 {
-            font-size: 1.1rem;
-        }
-
-        .ai-details span {
-            font-size: 0.85rem;
-            color: var(--gray);
-        }
-
-        .ai-close {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--glass);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .ai-close:hover {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-
-        .ai-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.5rem;
-            max-height: 400px;
-        }
-
-        .message {
-            margin-bottom: 1rem;
-            max-width: 85%;
-            animation: slide-up 0.3s ease-out;
-        }
-
-        .message.ai {
-            background: var(--glass);
-            padding: 1rem;
-            border-radius: 18px 18px 18px 4px;
-            border: 1px solid var(--glass-border);
-        }
-
-        .message.user {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            padding: 1rem;
-            border-radius: 18px 18px 4px 18px;
-            margin-left: auto;
-        }
-
-        .typing-indicator {
-            display: flex;
-            gap: 0.4rem;
-            padding: 1rem;
-            background: var(--glass);
-            border-radius: 18px;
-            width: fit-content;
-        }
-
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            background: var(--primary);
-            border-radius: 50%;
-            animation: typing 1s infinite;
-        }
-
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
-        .ai-input-area {
-            padding: 1rem;
-            border-top: 1px solid var(--glass-border);
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .ai-input-area input {
-            flex: 1;
-            padding: 0.8rem 1rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            color: var(--light);
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        .ai-input-area input:focus {
-            border-color: var(--primary);
-        }
-
-        .ai-input-area button {
-            padding: 0.8rem 1.2rem;
-            background: var(--primary);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .ai-input-area button:hover {
-            background: var(--primary-dark);
-            transform: scale(1.05);
-        }
-
-        .ai-avatar-float {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
-            transition: all 0.3s;
-            animation: pulse-glow 3s infinite;
-            margin-top: 1rem;
-        }
-
-        .ai-avatar-float:hover {
-            transform: scale(1.1);
-        }
-
-        /* Modal de Configuração */
-        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.5);
             z-index: 2000;
-            display: none;
             justify-content: center;
             align-items: center;
             padding: 2rem;
         }
 
-        .modal-overlay.active {
+        .modal.active {
             display: flex;
-            animation: fade-in 0.3s;
-        }
-
-        @keyframes fade-in {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .modal-content {
-            background: var(--dark);
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
-            padding: 3rem;
-            max-width: 600px;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            position: relative;
         }
 
-        .modal-close {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--glass);
+        .modal-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
+            margin-bottom: 1.5rem;
         }
 
-        .modal-close:hover {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-
-        .modal-content h2 {
+        .modal-header h2 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
         }
 
-        .modal-content > p {
-            color: var(--gray);
-            margin-bottom: 2rem;
+        .close-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--gray-light);
+            cursor: pointer;
+            font-size: 1.25rem;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
-            color: var(--gray);
+            color: var(--dark);
         }
 
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 1rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            color: var(--light);
+            padding: 0.75rem;
+            border: 2px solid var(--gray-light);
+            border-radius: 8px;
             font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
-            transition: all 0.3s;
-        }
-
-        .form-group input:focus, .form-group select:focus {
             border-color: var(--primary);
         }
 
-        .age-selector {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
+        /* Aulas */
+        .lesson-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .lesson-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .lesson-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .lesson-section {
             margin-bottom: 2rem;
         }
 
-        .age-option {
+        .lesson-section h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .exercise-box {
+            background: #f0f9ff;
+            border-left: 4px solid var(--primary);
             padding: 1.5rem;
-            background: var(--glass);
-            border: 2px solid var(--glass-border);
-            border-radius: 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
         }
 
-        .age-option:hover, .age-option.selected {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.1);
+        /* Grupos */
+        .group-list {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 2rem;
         }
 
-        .age-option .emoji {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .personality-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .personality-card {
+        .group-item {
+            background: white;
+            border-radius: 12px;
             padding: 1.5rem;
-            background: var(--glass);
-            border: 2px solid var(--glass-border);
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .personality-card:hover, .personality-card.selected {
-            border-color: var(--secondary);
-            background: rgba(236, 72, 153, 0.1);
+        .group-info h4 {
+            color: var(--dark);
+            margin-bottom: 0.25rem;
         }
 
-        .personality-card .avatar {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+        .group-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
         }
 
-        .personality-card h4 {
-            margin-bottom: 0.3rem;
+        .group-tags {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
         }
 
-        .personality-card p {
-            font-size: 0.85rem;
+        .tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--gray-light);
+            border-radius: 20px;
+            font-size: 0.8rem;
             color: var(--gray);
         }
 
-        /* Responsivo */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 3rem; }
-            .nav-links { display: none; }
-            .ai-chat { width: 90vw; right: 5vw; }
-            .features-grid { grid-template-columns: 1fr; }
-            .age-selector { grid-template-columns: 1fr; }
-            .personality-grid { grid-template-columns: 1fr; }
-            .tip-card { min-width: 300px; }
+        /* Chat */
+        .chat-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 380px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            max-height: 500px;
+        }
+
+        .chat-container.active {
+            display: flex;
+        }
+
+        .chat-header {
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            max-height: 300px;
+        }
+
+        .chat-input {
+            padding: 1rem;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid var(--gray-light);
+            border-radius: 8px;
+        }
+
+        .chat-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+            z-index: 998;
+        }
+
+        /* Professor Dashboard */
+        .dashboard {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h4 {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--gray-light);
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
         }
 
         /* Utilitários */
         .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mb-2 { margin-bottom: 2rem; }
         
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            padding: 0.3rem 0.8rem;
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--success);
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .progress-bar {
-            height: 6px;
-            background: var(--glass);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 1rem;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            width: 0%;
-            transition: width 0.5s ease;
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2rem; }
+            .card-grid { grid-template-columns: 1fr; }
+            .chat-container { width: 90%; right: 5%; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Background -->
-    <div class="neural-bg">
-        <div class="gradient-orb orb-1"></div>
-        <div class="gradient-orb orb-2"></div>
-        <div class="gradient-orb orb-3"></div>
-        <canvas id="neuralCanvas"></canvas>
-    </div>
-
     <!-- Navegação -->
-    <nav id="navbar">
+    <nav>
         <div class="nav-container">
             <div class="logo" onclick="showPage('home')">
-                <div class="logo-icon">🧠</div>
-                NEURO
+                <div class="logo-icon">
+                    <svg viewBox="0 0 100 100" fill="none">
+                        <circle cx="50" cy="50" r="45" stroke="#2563eb" stroke-width="3"/>
+                        <path d="M50 20 C30 20, 20 35, 20 50 C20 65, 30 80, 50 80 C70 80, 80 65, 80 50 C80 35, 70 20, 50 20" fill="none" stroke="#2563eb" stroke-width="2"/>
+                        <circle cx="35" cy="40" r="8" fill="#f97316"/>
+                        <circle cx="65" cy="40" r="8" fill="#f97316"/>
+                        <path d="M35 60 Q50 75, 65 60" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M20 50 L10 45 M20 50 L10 55 M80 50 L90 45 M80 50 L90 55" stroke="#2563eb" stroke-width="2"/>
+                    </svg>
+                </div>
+                <div class="logo-text">NEU<span>RO</span></div>
             </div>
+            
             <ul class="nav-links">
-                <li><a onclick="showPage('home')">Início</a></li>
-                <li><a onclick="showPage('study')">Estudar</a></li>
-                <li><a onclick="showPage('community')">Comunidade</a></li>
-                <li><a onclick="showPage('teachers')">Professores</a></li>
+                <li><a onclick="showPage('home')" class="active">Início</a></li>
+                <li><a onclick="showPage('cursos')">Cursos</a></li>
+                <li><a onclick="showPage('grupos')">Grupos</a></li>
+                <li><a onclick="showPage('professores')">Professores</a></li>
             </ul>
-            <div class="user-badge" onclick="openConfig()">
-                <div class="user-avatar" id="navAvatar">?</div>
-                <span id="navUserName">Entrar</span>
+            
+            <div class="user-menu">
+                <button class="btn btn-secondary hidden" id="btnProfessor" onclick="openModal('professor')">Sou Professor</button>
+                <button class="btn btn-primary" id="btnLogin" onclick="openModal('login')">Entrar</button>
+                <div class="hidden" id="userDisplay">
+                    <span id="userName"></span>
+                    <button class="btn btn-secondary" onclick="logout()">Sair</button>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- PÁGINA: HOME -->
     <div id="page-home" class="page active">
-        <section class="hero">
-            <div class="hero-content">
-                <div class="hero-badge">
-                    <span>●</span> Novo: IA com personalidade adaptativa
-                </div>
-                <h1>Seu cérebro é capaz de tudo</h1>
-                <p>Aprenda idiomas, matemática, ciências e muito mais. Do seu jeito, no seu ritmo, com um mentor que fala sua língua.</p>
-                <div class="hero-buttons">
-                    <button class="btn btn-primary" onclick="startJourney()">
-                        Começar Agora 🚀
-                    </button>
-                    <button class="btn btn-secondary" onclick="showPage('study')">
-                        Explorar Conteúdo
-                    </button>
-                </div>
-            </div>
-        </section>
+        <div class="hero">
+            <h1>Aprenda de Verdade</h1>
+            <p>Cursos reais, professores verificados, comunidade ativa. Do seu jeito, no seu ritmo.</p>
+            <button class="btn btn-primary" onclick="showPage('cursos')" style="font-size: 1.1rem; padding: 1rem 2rem;">Explorar Cursos</button>
+        </div>
 
-        <section class="features">
-            <div class="section-header">
-                <h2>Como o NEURO funciona</h2>
-                <p>Neuroplasticidade educacional na prática</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card" onclick="showPage('study')">
-                    <div class="feature-icon">🎯</div>
-                    <h3>Aprendizado Adaptativo</h3>
-                    <p>O conteúdo muda conforme seu progresso. Não memorização, compreensão real.</p>
+        <div style="padding: 4rem 2rem; max-width: 1400px; margin: 0 auto;">
+            <h2 style="text-align: center; margin-bottom: 3rem; font-family: 'Space Grotesk';">Por que NEURO?</h2>
+            <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                <div class="text-center" style="padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                    <h3>Cursos Reais</h3>
+                    <p>Conteúdo completo, não só introduções. Do básico ao avançado.</p>
                 </div>
-                <div class="feature-card" onclick="showPage('study')">
-                    <div class="feature-icon">🗣️</div>
-                    <h3>Idiomas Nativos</h3>
-                    <p>Inglês, espanhol, russo e mais. Aprenda como crianças aprendem: imersão total.</p>
+                <div class="text-center" style="padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">👨‍🏫</div>
+                    <h3>Professores Verificados</h3>
+                    <p>CPF e diploma checados. Aprenda com quem entende.</p>
                 </div>
-                <div class="feature-card" onclick="showPage('community')">
-                    <div class="feature-icon">👥</div>
+                <div class="text-center" style="padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
                     <h3>Grupos de Estudo</h3>
-                    <p>Conecte-se com pessoas no mesmo nível. Aprender junto é mais efetivo.</p>
+                    <p>Conecte-se com outros alunos. Aprenda junto.</p>
                 </div>
-                <div class="feature-card" onclick="showPage('teachers')">
-                    <div class="feature-icon">👨‍🏫</div>
-                    <h3>Métodos Validados</h3>
-                    <p>Professores reais compartilham o que realmente funciona, com dados.</p>
-                </div>
-                <div class="feature-card" onclick="openConfig()">
-                    <div class="feature-icon">🤖</div>
-                    <h3>IA Personalizada</h3>
-                    <p>Escolha a personalidade do seu mentor. Desde gentil até direto, do seu jeito.</p>
-                </div>
-                <div class="feature-card" onclick="showPage('study')">
-                    <div class="feature-icon">📊</div>
-                    <h3>Progresso Real</h3>
-                    <p>Acompanhe sua evolução com métricas que importam. Sem gamificação vazia.</p>
+                <div class="text-center" style="padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🎯</div>
+                    <h3>Sem Decorar</h3>
+                    <p>Método focado em compreensão real, não memorização.</p>
                 </div>
             </div>
-        </section>
+        </div>
     </div>
 
-    <!-- PÁGINA: ESTUDO -->
-    <div id="page-study" class="page">
-        <section class="modules-section">
-            <div class="section-header">
-                <h2>O que você quer aprender hoje?</h2>
-                <p>Escolha um módulo e comece sua sessão</p>
+    <!-- PÁGINA: CURSOS -->
+    <div id="page-cursos" class="page">
+        <div style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
+            <h1 style="font-family: 'Space Grotesk'; margin-bottom: 1rem;">Cursos Disponíveis</h1>
+            
+            <div class="tabs">
+                <button class="tab active" onclick="filterCursos('todos')">Todos</button>
+                <button class="tab" onclick="filterCursos('idiomas')">Idiomas</button>
+                <button class="tab" onclick="filterCursos('escola')">Escola</button>
+                <button class="tab" onclick="filterCursos('exatas')">Exatas</button>
+                <button class="tab" onclick="filterCursos('tech')">Tecnologia</button>
+                <button class="tab" onclick="filterCursos('arte')">Arte & Criativo</button>
             </div>
 
-            <div class="modules-tabs">
-                <button class="tab-btn active" onclick="switchTab('idiomas')">🌍 Idiomas</button>
-                <button class="tab-btn" onclick="switchTab('escola')">📚 Escola</button>
-                <button class="tab-btn" onclick="switchTab('explorar')">🔬 Explorar</button>
-            </div>
-
-            <div id="tab-idiomas" class="modules-content">
-                <div class="module-card" onclick="startModule('ingles')">
-                    <div class="module-header idiomas">🇺🇸</div>
-                    <div class="module-body">
-                        <h3>Inglês</h3>
-                        <p>Do básico à fluência com imersão contextual</p>
-                        <div class="module-meta">
-                            <span>📖 48 aulas</span>
-                            <span>🎯 Nível: Iniciante</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="module-card" onclick="startModule('espanhol')">
-                    <div class="module-header idiomas">🇪🇸</div>
-                    <div class="module-body">
-                        <h3>Espanhol</h3>
-                        <p>Aprenda com cultura, não só gramática</p>
-                        <div class="module-meta">
-                            <span>📖 42 aulas</span>
-                            <span>🎯 Nível: Iniciante</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="module-card" onclick="startModule('russo')">
-                    <div class="module-header idiomas">🇷🇺</div>
-                    <div class="module-body">
-                        <h3>Russo</h3>
-                        <p>Alfabeto cirílico e conversação prática</p>
-                        <div class="module-meta">
-                            <span>📖 56 aulas</span>
-                            <span>🎯 Nível: Iniciante</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="module-card" onclick="startModule('japones')">
-                    <div class="module-header idiomas">🇯🇵</div>
-                    <div class="module-body">
-                        <h3>Japonês</h3>
-                        <p>Hiragana, katakana e introdução ao kanji</p>
-                        <div class="module-meta">
-                            <span>📖 64 aulas</span>
-                            <span>🎯 Nível: Iniciante</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-escola" class="modules-content" style="display: none;">
-                <div class="module-card" onclick="startModule('matematica')">
-                    <div class="module-header matematica">🔢</div>
-                    <div class="module-body">
-                        <h3>Matemática</h3>
-                        <p>Visual, interativa, sem medo</p>
-                        <div class="module-meta">
+            <div class="card-grid" id="cursosGrid">
+                <!-- Idiomas -->
+                <div class="card" data-categoria="idiomas" onclick="startCurso('ingles')">
+                    <div class="card-image cat-idiomas">🇺🇸</div>
+                    <div class="card-content">
+                        <h3>Inglês Completo</h3>
+                        <p>Do zero à fluência. Gramática, conversação e pronúncia.</p>
+                        <div class="card-meta">
                             <span>📖 120 aulas</span>
-                            <span>🎯 6º ao 12º ano</span>
+                            <span>⏱️ 80 horas</span>
                         </div>
                     </div>
                 </div>
-                <div class="module-card" onclick="startModule('historia')">
-                    <div class="module-header historia">📜</div>
-                    <div class="module-body">
-                        <h3>História</h3>
-                        <p>Linha do tempo explorável e conexões</p>
-                        <div class="module-meta">
-                            <span>📖 80 aulas</span>
-                            <span>🎯 6º ao 12º ano</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="module-card" onclick="startModule('ciencias')">
-                    <div class="module-header ciencias">🔬</div>
-                    <div class="module-body">
-                        <h3>Ciências</h3>
-                        <p>Simulações e experimentos virtuais</p>
-                        <div class="module-meta">
-                            <span>📖 96 aulas</span>
-                            <span>🎯 6º ao 9º ano</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="module-card" onclick="startModule('literatura')">
-                    <div class="module-header artes">📖</div>
-                    <div class="module-body">
-                        <h3>Literatura</h3>
-                        <p>Análises colaborativas e discussões</p>
-                        <div class="module-meta">
-                            <span>📖 64 aulas</span>
-                            <span>🎯 6º ao 12º ano</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div id="tab-explorar" class="modules-content" style="display: none;">
-                <div class="module-card" onclick="startModule('programacao')">
-                    <div class="module-header tecnologia">💻</div>
-                    <div class="module-body">
+                <div class="card" data-categoria="idiomas" onclick="startCurso('espanhol')">
+                    <div class="card-image cat-idiomas">🇪🇸</div>
+                    <div class="card-content">
+                        <h3>Espanhol</h3>
+                        <p>Aprenda com cultura. Espanha e América Latina.</p>
+                        <div class="card-meta">
+                            <span>📖 100 aulas</span>
+                            <span>⏱️ 65 horas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" data-categoria="idiomas" onclick="startCurso('russo')">
+                    <div class="card-image cat-idiomas">🇷🇺</div>
+                    <div class="card-content">
+                        <h3>Russo</h3>
+                        <p>Alfabeto cirílico, conversação e cultura eslava.</p>
+                        <div class="card-meta">
+                            <span>📖 90 aulas</span>
+                            <span>⏱️ 70 horas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Escola -->
+                <div class="card" data-categoria="escola" onclick="startCurso('matematica')">
+                    <div class="card-image cat-escola">🔢</div>
+                    <div class="card-content">
+                        <h3>Matemática do Zero</h3>
+                        <p>6º ano ao ensino médio. Visual e sem medo.</p>
+                        <div class="card-meta">
+                            <span>📖 200 aulas</span>
+                            <span>⏱️ 150 horas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" data-categoria="escola" onclick="startCurso('historia')">
+                    <div class="card-image cat-escola">📜</div>
+                    <div class="card-content">
+                        <h3>História Mundial</h3>
+                        <p>Do Big Bang à era digital. Linha do tempo interativa.</p>
+                        <div class="card-meta">
+                            <span>📖 150 aulas</span>
+                            <span>⏱️ 100 horas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exatas -->
+                <div class="card" data-categoria="exatas" onclick="startCurso('fisica')">
+                    <div class="card-image cat-exatas">⚛️</div>
+                    <div class="card-content">
+                        <h3>Física</h3>
+                        <p>Mecânica, termodinâmica, eletromagnetismo e física moderna.</p>
+                        <div class="card-meta">
+                            <span>📖 180 aulas</span>
+                            <span>⏱️ 140 horas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" data-categoria="exatas" onclick="startCurso('quimica')">
+                    <div class="card-image cat-exatas">🧪</div>
+                    <div class="card-content">
+                        <h3>Química</h3>
+                        <p>Orgânica, inorgânica, físico-química com experimentos virtuais.</p>
+                        <div class="card-meta">
+                            <span>📖 160 aulas</span>
+                            <span>⏱️ 120 horas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tech -->
+                <div class="card" data-categoria="tech" onclick="startCurso('programacao')">
+                    <div class="card-image cat-tech">💻</div>
+                    <div class="card-content">
                         <h3>Programação</h3>
-                        <p>Lógica, Python, web dev e mais</p>
-                        <div class="module-meta">
-                            <span>📖 88 aulas</span>
-                            <span>🎯 Livre</span>
+                        <p>Python, JavaScript, lógica e projetos reais.</p>
+                        <div class="card-meta">
+                            <span>📖 140 aulas</span>
+                            <span>⏱️ 110 horas</span>
                         </div>
                     </div>
                 </div>
-                <div class="module-card" onclick="startModule('astronomia')">
-                    <div class="module-header ciencias">🌌</div>
-                    <div class="module-body">
-                        <h3>Astronomia</h3>
-                        <p>O universo em escala humana</p>
-                        <div class="module-meta">
-                            <span>📖 40 aulas</span>
-                            <span>🎯 Livre</span>
+
+                <div class="card" data-categoria="tech" onclick="startCurso('web')">
+                    <div class="card-image cat-tech">🌐</div>
+                    <div class="card-content">
+                        <h3>Criação de Sites</h3>
+                        <p>HTML, CSS, JavaScript. Do layout ao deploy.</p>
+                        <div class="card-meta">
+                            <span>📖 100 aulas</span>
+                            <span>⏱️ 80 horas</span>
                         </div>
                     </div>
                 </div>
-                <div class="module-card" onclick="startModule('filosofia')">
-                    <div class="module-header historia">🤔</div>
-                    <div class="module-body">
-                        <h3>Filosofia</h3>
-                        <p>Pensar criticamente sobre tudo</p>
-                        <div class="module-meta">
-                            <span>📖 48 aulas</span>
-                            <span>🎯 Livre</span>
+
+                <div class="card" data-categoria="tech" onclick="startCurso('games')">
+                    <div class="card-image cat-tech">🎮</div>
+                    <div class="card-content">
+                        <h3>Criação de Jogos</h3>
+                        <p>Unity, Godot, design de jogos e publicação.</p>
+                        <div class="card-meta">
+                            <span>📖 120 aulas</span>
+                            <span>⏱️ 100 horas</span>
                         </div>
                     </div>
                 </div>
-                <div class="module-card" onclick="startModule('musica')">
-                    <div class="module-header artes">🎵</div>
-                    <div class="module-body">
+
+                <!-- Arte -->
+                <div class="card" data-categoria="arte" onclick="startCurso('desenho')">
+                    <div class="card-image cat-arte">✏️</div>
+                    <div class="card-content">
+                        <h3>Desenho Artístico</h3>
+                        <p>Do rabisco ao realismo. Anatomia, perspectiva, sombra.</p>
+                        <div class="card-meta">
+                            <span>📖 130 aulas</span>
+                            <span>⏱️ 90 horas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" data-categoria="arte" onclick="startCurso('fotografia')">
+                    <div class="card-image cat-criativo">📷</div>
+                    <div class="card-content">
+                        <h3>Fotografia</h3>
+                        <p>Composição, luz, edição e direção de foto.</p>
+                        <div class="card-meta">
+                            <span>📖 80 aulas</span>
+                            <span>⏱️ 60 horas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" data-categoria="arte" onclick="startCurso('musica')">
+                    <div class="card-image cat-criativo">🎵</div>
+                    <div class="card-content">
                         <h3>Teoria Musical</h3>
-                        <p>Leitura, harmonia e composição</p>
-                        <div class="module-meta">
-                            <span>📖 72 aulas</span>
-                            <span>🎯 Livre</span>
+                        <p>Leitura, harmonia, composição e produção.</p>
+                        <div class="card-meta">
+                            <span>📖 100 aulas</span>
+                            <span>⏱️ 75 horas</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
     </div>
 
-    <!-- PÁGINA: COMUNIDADE -->
-    <div id="page-community" class="page">
-        <section class="community-section">
-            <div class="section-header">
-                <h2>Grupos de Estudo</h2>
-                <p>Aprenda junto. Cresça junto.</p>
+    <!-- PÁGINA: AULA -->
+    <div id="page-aula" class="page">
+        <div class="lesson-container">
+            <div class="lesson-header">
+                <button class="btn btn-secondary" onclick="showPage('cursos')">← Voltar</button>
+                <h1 id="aulaTitulo" style="margin-top: 1rem;">Título da Aula</h1>
+                <p id="aulaDesc" style="color: var(--gray);">Descrição do curso</p>
             </div>
 
-            <div class="groups-grid">
-                <div class="group-card" onclick="joinGroup('ingles')">
-                    <div class="group-header">
-                        <div class="group-avatar">🇺🇸</div>
-                        <div class="group-info">
-                            <h4>English Daily Practice</h4>
-                            <span>1.2k membros • 45 online</span>
-                        </div>
-                    </div>
-                    <p>Prática diária de inglês com nativos e learners. Todos os níveis bem-vindos!</p>
-                    <div class="group-tags">
-                        <span class="tag">Inglês</span>
-                        <span class="tag">Conversação</span>
-                        <span class="tag">Diário</span>
-                    </div>
-                </div>
-
-                <div class="group-card" onclick="joinGroup('matematica')">
-                    <div class="group-header">
-                        <div class="group-avatar" style="background: linear-gradient(135deg, #8b5cf6, #ec4899);">🔢</div>
-                        <div class="group-info">
-                            <h4>Matemática Sem Medo</h4>
-                            <span>856 membros • 32 online</span>
-                        </div>
-                    </div>
-                    <p>Tiramos dúvidas, resolvemos juntos, celebramos progressos. Sem julgamento.</p>
-                    <div class="group-tags">
-                        <span class="tag">Matemática</span>
-                        <span class="tag">Dúvidas</span>
-                        <span class="tag">Ensino Médio</span>
-                    </div>
-                </div>
-
-                <div class="group-card" onclick="joinGroup('programacao')">
-                    <div class="group-header">
-                        <div class="group-avatar" style="background: linear-gradient(135deg, #10b981, #3b82f6);">💻</div>
-                        <div class="group-info">
-                            <h4>Coders Iniciantes</h4>
-                            <span>2.4k membros • 128 online</span>
-                        </div>
-                    </div>
-                    <p>Primeira linha de código ao primeiro projeto. Pair programming e code review.</p>
-                    <div class="group-tags">
-                        <span class="tag">Programação</span>
-                        <span class="tag">Python</span>
-                        <span class="tag">Projetos</span>
-                    </div>
-                </div>
-
-                <div class="group-card" onclick="joinGroup('enem')">
-                    <div class="group-header">
-                        <div class="group-avatar" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">📝</div>
-                        <div class="group-info">
-                            <h4>ENEM 2024</h4>
-                            <span>5.6k membros • 890 online</span>
-                        </div>
-                    </div>
-                    <p>Rotina de estudos, resolução de questões, redação em grupo. Vamos passar juntos!</p>
-                    <div class="group-tags">
-                        <span class="tag">ENEM</span>
-                        <span class="tag">Vestibular</span>
-                        <span class="tag">Intensivo</span>
-                    </div>
-                </div>
-
-                <div class="group-card" onclick="joinGroup('espanhol')">
-                    <div class="group-header">
-                        <div class="group-avatar" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">🇪🇸</div>
-                        <div class="group-info">
-                            <h4>Español con Café</h4>
-                            <span>643 membros • 28 online</span>
-                        </div>
-                    </div>
-                    <p>Conversação descontraída sobre cultura hispânica. ¡Vamos a practicar!</p>
-                    <div class="group-tags">
-                        <span class="tag">Espanhol</span>
-                        <span class="tag">Cultura</span>
-                        <span class="tag">Conversação</span>
-                    </div>
-                </div>
-
-                <div class="group-card" onclick="createGroup()">
-                    <div class="group-header">
-                        <div class="group-avatar" style="background: var(--glass); border: 2px dashed var(--gray);">+</div>
-                        <div class="group-info">
-                            <h4>Criar Novo Grupo</h4>
-                            <span>Tema da sua escolha</span>
-                        </div>
-                    </div>
-                    <p>Tem um assunto específico? Crie seu grupo e convide pessoas com os mesmos interesses.</p>
-                </div>
+            <div class="lesson-content" id="aulaConteudo">
+                <!-- Conteúdo dinâmico -->
             </div>
-        </section>
+
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+                <button class="btn btn-secondary" onclick="aulaAnterior()">← Anterior</button>
+                <button class="btn btn-primary" onclick="proximaAula()">Próxima →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PÁGINA: GRUPOS -->
+    <div id="page-grupos" class="page">
+        <div style="padding: 2rem; max-width: 1000px; margin: 0 auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h1 style="font-family: 'Space Grotesk';">Grupos de Estudo</h1>
+                <button class="btn btn-primary" onclick="openModal('criarGrupo')">+ Criar Grupo</button>
+            </div>
+
+            <div class="group-list" id="gruposList">
+                <!-- Grupos serão carregados do Firebase -->
+            </div>
+        </div>
     </div>
 
     <!-- PÁGINA: PROFESSORES -->
-    <div id="page-teachers" class="page">
-        <section class="teachers-section">
-            <div class="section-header">
-                <h2>Dicas de Quem Entende</h2>
-                <p>Métodos validados por dados reais de alunos</p>
-            </div>
-
-            <div class="tips-carousel">
-                <div class="tip-card">
-                    <div class="tip-header">
-                        <div class="teacher-avatar">👨‍🏫</div>
-                        <div class="teacher-info">
-                            <h4>Prof. Carlos Mendes</h4>
-                            <span>Matemática • 15 anos de experiência</span>
-                        </div>
+    <div id="page-professores" class="page">
+        <div style="padding: 2rem; max-width: 1200px; margin: 0 auto;">
+            <h1 style="font-family: 'Space Grotesk'; margin-bottom: 1rem;">Área de Professores</h1>
+            
+            <div id="professorPublic">
+                <p style="color: var(--gray); margin-bottom: 2rem;">Professores verificados compartilham métodos e criam grupos de estudo.</p>
+                
+                <div class="stats-grid" style="margin-bottom: 3rem;">
+                    <div class="stat-card">
+                        <h4>Professores Verificados</h4>
+                        <div class="number" id="statProfessores">0</div>
                     </div>
-                    <div class="tip-content">
-                        "O erro mais comum é tentar memorizar fórmulas. Em 20 anos de sala de aula, vi que alunos que entendem POR QUE a fórmula funciona têm 3x mais desempenho. Sempre comece com o conceito visual."
+                    <div class="stat-card">
+                        <h4>Grupos Ativos</h4>
+                        <div class="number" id="statGrupos">0</div>
                     </div>
-                    <div class="tip-stats">
-                        <div class="stat">
-                            <span>📈</span> 94% de aprovação
-                        </div>
-                        <div class="stat">
-                            <span>👥</span> 2.3k alunos ajudados
-                        </div>
+                    <div class="stat-card">
+                        <h4>Alunos Ajudados</h4>
+                        <div class="number" id="statAlunos">0</div>
                     </div>
                 </div>
 
-                <div class="tip-card">
-                    <div class="tip-header">
-                        <div class="teacher-avatar" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">👩‍🏫</div>
-                        <div class="teacher-info">
-                            <h4>Profa. Ana Lucia</h4>
-                            <span>Inglês • Metodologia TPR</span>
-                        </div>
-                    </div>
-                    <div class="tip-content">
-                        "Não traduza mentalmente. Crie 'imagens' direto no inglês. Quando eu digo 'apple', você deve ver a maçã, não a palavra 'maçã' em português. Isso reduz o tempo de fluência pela metade."
-                    </div>
-                    <div class="tip-stats">
-                        <div class="stat">
-                            <span>📈</span> 89% fluência em 1 ano
-                        </div>
-                        <div class="stat">
-                            <span>👥</span> 1.8k alunos ajudados
-                        </div>
-                    </div>
+                <div class="card" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 3rem;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">👨‍🏫</div>
+                    <h2>Quer ser professor no NEURO?</h2>
+                    <p style="margin: 1rem 0; color: var(--gray);">Cadastre-se com CPF e diploma. Verificamos sua identidade em até 48h.</p>
+                    <button class="btn btn-primary" onclick="openModal('cadastroProfessor')">Cadastrar como Professor</button>
                 </div>
+            </div>
 
-                <div class="tip-card">
-                    <div class="tip-header">
-                        <div class="teacher-avatar" style="background: linear-gradient(135deg, #10b981, #3b82f6);">👨‍🔬</div>
-                        <div class="teacher-info">
-                            <h4>Prof. Roberto Silva</h4>
-                            <span>Ciências • Aprendizado Ativo</span>
-                        </div>
+            <div id="professorDashboard" class="hidden">
+                <div class="dashboard">
+                    <h2>Bem-vindo, Professor <span id="profNome"></span></h2>
+                    
+                    <div class="tabs" style="margin-top: 2rem;">
+                        <button class="tab active" onclick="switchTabProf('grupos')">Meus Grupos</button>
+                        <button class="tab" onclick="switchTabProf('dicas')">Minhas Dicas</button>
+                        <button class="tab" onclick="switchTabProf('estatisticas')">Estatísticas</button>
                     </div>
-                    <div class="tip-content">
-                        "Ciência não é para decorar, é para fazer. Meus alunos que aprendem através de experimentos práticos retêm 80% mais conteúdo após 6 meses versus aqueles que só leem."
-                    </div>
-                    <div class="tip-stats">
-                        <div class="stat">
-                            <span>📈</span> 91% retenção longo prazo
-                        </div>
-                        <div class="stat">
-                            <span>👥</span> 3.1k alunos ajudados
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
 
-    <!-- ASSISTENTE IA -->
-    <div class="ai-container">
-        <div class="ai-chat" id="aiChat">
-            <div class="ai-header">
-                <div class="ai-profile">
-                    <div class="ai-avatar-main" id="aiAvatar">🌙</div>
-                    <div class="ai-details">
-                        <h4 id="aiName">Luna</h4>
-                        <span id="aiRole">Sua mentora gentil</span>
+                    <div id="profTabGrupos">
+                        <button class="btn btn-primary" onclick="openModal('criarGrupoProf')" style="margin-bottom: 1rem;">+ Novo Grupo</button>
+                        <div id="meusGruposProf"></div>
+                    </div>
+
+                    <div id="profTabDicas" class="hidden">
+                        <button class="btn btn-primary" onclick="openModal('novaDica')" style="margin-bottom: 1rem;">+ Nova Dica</button>
+                        <div id="minhasDicas"></div>
+                    </div>
+
+                    <div id="profTabEstatisticas" class="hidden">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <h4>Alunos em seus grupos</h4>
+                                <div class="number" id="profStatAlunos">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Dicas publicadas</h4>
+                                <div class="number" id="profStatDicas">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Visualizações</h4>
+                                <div class="number" id="profStatViews">0</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="ai-close" onclick="toggleAI()">✕</div>
-            </div>
-            <div class="ai-messages" id="aiMessages">
-                <div class="message ai" id="aiWelcome">
-                    Oi! Sou a Luna, sua mentora aqui no NEURO. Estou super animada para te ajudar nessa jornada de aprendizado! Como você tá se sentindo hoje? ✨
-                </div>
-            </div>
-            <div class="ai-input-area">
-                <input type="text" id="aiInput" placeholder="Fala comigo..." onkeypress="handleAIInput(event)">
-                <button onclick="sendAIMessage()">➤</button>
             </div>
         </div>
-        <div class="ai-avatar-float" id="aiFloat" onclick="toggleAI()">🌙</div>
     </div>
 
-    <!-- MODAL DE CONFIGURAÇÃO -->
-    <div class="modal-overlay" id="configModal">
+    <!-- MODAIS -->
+
+    <!-- Login -->
+    <div class="modal" id="modalLogin">
         <div class="modal-content">
-            <div class="modal-close" onclick="closeConfig()">✕</div>
+            <div class="modal-header">
+                <h2>Entrar no NEURO</h2>
+                <button class="close-btn" onclick="closeModal('login')">×</button>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="seu@email.com">
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="loginSenha" placeholder="••••••">
+            </div>
+            <button class="btn btn-primary" onclick="login()" style="width: 100%;">Entrar</button>
+            <p style="text-align: center; margin-top: 1rem; color: var(--gray);">
+                Não tem conta? <a href="#" onclick="closeModal('login'); openModal('registro')" style="color: var(--primary);">Cadastre-se</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Registro -->
+    <div class="modal" id="modalRegistro">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Criar Conta</h2>
+                <button class="close-btn" onclick="closeModal('registro')">×</button>
+            </div>
+            <div class="form-group">
+                <label>Nome completo</label>
+                <input type="text" id="regNome" placeholder="Seu nome">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="regEmail" placeholder="seu@email.com">
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="regSenha" placeholder="Mínimo 6 caracteres">
+            </div>
+            <div class="form-group">
+                <label>Tipo de conta</label>
+                <select id="regTipo">
+                    <option value="aluno">Aluno</option>
+                    <option value="professor">Professor (requer verificação)</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="registrar()" style="width: 100%;">Criar Conta</button>
+        </div>
+    </div>
+
+    <!-- Cadastro Professor -->
+    <div class="modal" id="modalCadastroProfessor">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Cadastro de Professor</h2>
+                <button class="close-btn" onclick="closeModal('cadastroProfessor')">×</button>
+            </div>
+            <p style="color: var(--gray); margin-bottom: 1rem;">Preencha todos os dados. Verificaremos em até 48h.</p>
             
-            <div id="config-step-1">
-                <h2>Bem-vindo ao NEURO 🧠</h2>
-                <p>Vamos personalizar sua experiência em 2 passos rápidos.</p>
-                
-                <div class="form-group" style="margin-top: 2rem;">
-                    <label>Como você quer ser chamado?</label>
-                    <input type="text" id="userName" placeholder="Seu nome ou apelido">
-                </div>
-
-                <div class="form-group">
-                    <label>Qual sua faixa etária?</label>
-                    <div class="age-selector">
-                        <div class="age-option" onclick="selectAge('crianca')" data-age="crianca">
-                            <div class="emoji">🧒</div>
-                            <div>7-12 anos</div>
-                        </div>
-                        <div class="age-option" onclick="selectAge('adolescente')" data-age="adolescente">
-                            <div class="emoji">🧑</div>
-                            <div>13-17 anos</div>
-                        </div>
-                        <div class="age-option" onclick="selectAge('adulto')" data-age="adulto">
-                            <div class="emoji">🎓</div>
-                            <div>18+ anos</div>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="btn btn-primary" onclick="nextStep()" style="width: 100%;">
-                    Continuar ➜
-                </button>
+            <div class="form-group">
+                <label>CPF *</label>
+                <input type="text" id="profCPF" placeholder="000.000.000-00" oninput="formatCPF(this)">
             </div>
-
-            <div id="config-step-2" class="hidden">
-                <h2>Escolha seu mentor IA 🤖</h2>
-                <p>Quem vai te acompanhar nessa jornada?</p>
-
-                <div class="personality-grid" style="margin-top: 2rem;">
-                    <div class="personality-card" onclick="selectPersonality('luna')" data-personality="luna">
-                        <div class="avatar">🌙</div>
-                        <h4>Luna</h4>
-                        <p>Gentil, paciente e poética. Perfeita para quem precisa de apoio.</p>
-                    </div>
-                    <div class="personality-card" onclick="selectPersonality('marco')" data-personality="marco">
-                        <div class="avatar">⚡</div>
-                        <h4>Marco</h4>
-                        <p>Direto, técnico e desafiador. Para quem quer resultados rápidos.</p>
-                    </div>
-                    <div class="personality-card" onclick="selectPersonality('zoe')" data-personality="zoe">
-                        <div class="avatar">🎨</div>
-                        <h4>Zoe</h4>
-                        <p>Criativa, divertida e fora da caixa. Odeia métodos tradicionais.</p>
-                    </div>
-                    <div class="personality-card" onclick="selectPersonality('viktor')" data-personality="viktor">
-                        <div class="avatar">📚</div>
-                        <h4>Viktor</h4>
-                        <p>Erudito, filosófico e profundo. Conecta tudo com história.</p>
-                    </div>
-                    <div class="personality-card" onclick="selectPersonality('yuki')" data-personality="yuki">
-                        <div class="avatar">❄️</div>
-                        <h4>Yuki</h4>
-                        <p>Calma, metódica e minimalista. Foco total, sem distrações.</p>
-                    </div>
-                    <div class="personality-card" onclick="selectPersonality('rafa')" data-personality="rafa">
-                        <div class="avatar">🎭</div>
-                        <h4>Rafa</h4>
-                        <p>Teatral, histórias e emocional. Aprende através de narrativas.</p>
-                    </div>
-                </div>
-
-                <button class="btn btn-primary" onclick="saveConfig()" style="width: 100%;">
-                    Começar Jornada 🚀
-                </button>
+            <div class="form-group">
+                <label>Formação *</label>
+                <input type="text" id="profFormacao" placeholder="Ex: Licenciatura em Matemática - USP">
             </div>
+            <div class="form-group">
+                <label>Áreas de ensino *</label>
+                <input type="text" id="profAreas" placeholder="Ex: Matemática, Física, Programação">
+            </div>
+            <div class="form-group">
+                <label>Biografia</label>
+                <textarea id="profBio" rows="3" placeholder="Conte um pouco sobre sua experiência..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Link do diploma ou certificado *</label>
+                <input type="url" id="profDiploma" placeholder="https://... (Google Drive, etc)">
+                <small style="color: var(--gray);">Upload em serviço de nuvem e cole o link</small>
+            </div>
+            <div class="form-group">
+                <label>Email de contato *</label>
+                <input type="email" id="profEmail" placeholder="professor@email.com">
+            </div>
+            <div class="form-group">
+                <label>Senha *</label>
+                <input type="password" id="profSenha" placeholder="Mínimo 6 caracteres">
+            </div>
+            <button class="btn btn-primary" onclick="cadastrarProfessor()" style="width: 100%;">Enviar para Verificação</button>
+        </div>
+    </div>
+
+    <!-- Criar Grupo -->
+    <div class="modal" id="modalCriarGrupo">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Criar Grupo de Estudo</h2>
+                <button class="close-btn" onclick="closeModal('criarGrupo')">×</button>
+            </div>
+            <div class="form-group">
+                <label>Nome do grupo *</label>
+                <input type="text" id="grupoNome" placeholder="Ex: Matemática sem Medo">
+            </div>
+            <div class="form-group">
+                <label>Descrição *</label>
+                <textarea id="grupoDesc" rows="3" placeholder="O que vocês vão estudar juntos?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Categoria *</label>
+                <select id="grupoCategoria">
+                    <option value="idiomas">Idiomas</option>
+                    <option value="escola">Escola</option>
+                    <option value="exatas">Exatas</option>
+                    <option value="tech">Tecnologia</option>
+                    <option value="arte">Arte & Criativo</option>
+                    <option value="outro">Outro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Máximo de membros</label>
+                <select id="grupoMax">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="criarGrupo()" style="width: 100%;">Criar Grupo</button>
+        </div>
+    </div>
+
+    <!-- Chat -->
+    <div class="chat-toggle" onclick="toggleChat()">💬</div>
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-header">
+            <span>Chat de Estudos</span>
+            <span onclick="toggleChat()" style="cursor: pointer;">✕</span>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div style="padding: 1rem; color: var(--gray); text-align: center;">
+                Entre em um grupo para participar do chat!
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Digite sua mensagem..." onkeypress="handleChatInput(event)">
+            <button onclick="sendChatMessage()">➤</button>
         </div>
     </div>
 
     <script>
-        // SISTEMA DE ESTADO
-        const userState = {
-            name: '',
-            age: '',
-            personality: 'luna',
-            slangLevel: 0, // 0=formal, 4=gírias pesadas
-            progress: {},
-            firstVisit: true
+        // FIREBASE CONFIG - Substitua com suas credenciais
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "seu-projeto.firebaseapp.com",
+            projectId: "seu-projeto",
+            storageBucket: "seu-projeto.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456"
         };
 
-        // PERFIS DE IA COM ADAPTAÇÃO DE TOM
-        const aiProfiles = {
-            luna: {
-                name: 'Luna',
-                avatar: '🌙',
-                role: 'Sua mentora gentil',
-                style: 'empática, poética, acolhedora',
-                greetings: {
-                    formal: 'Olá! É um prazer conhecê-lo. Sou Luna e estarei ao seu lado nesta jornada de aprendizado.',
-                    neutro: 'Oi! Que bom te ver por aqui. Sou a Luna, sua mentora. Como posso ajudar hoje?',
-                    casual: 'Ei! Tudo bem? Sou a Luna, tô aqui pra te ajudar no que precisar! ✨',
-                    gíria: 'Oii! Chegou agora? Bora aprender umas coisas legais? Tô contigo! 🌙'
-                },
-                responses: {
-                    dificuldade: {
-                        formal: 'Entendo sua frustração. Vamos analisar este obstáculo com calma e encontrar uma solução juntos.',
-                        neutro: 'Relaxa, isso é normal! Vamos por partes, você vai conseguir.',
-                        casual: 'Eita, tá complicado? Respira! Vamos desenrolar isso juntos, sem pressa.',
-                        gíria: 'Kkkkk relaxa, mano! Todo mundo passa por isso. Bora quebrar esse problema no meio? 💪'
+        // Inicialização do Firebase (descomente quando tiver as credenciais)
+        // firebase.initializeApp(firebaseConfig);
+        // const auth = firebase.auth();
+        // const db = firebase.firestore();
+
+        // DADOS LOCAIS (simulação até configurar Firebase)
+        let currentUser = null;
+        let currentAula = 0;
+        let currentCurso = null;
+
+        const cursosData = {
+            ingles: {
+                titulo: "Inglês Completo",
+                desc: "Do zero à fluência",
+                aulas: [
+                    {
+                        titulo: "Aula 1: Alfabeto e Pronúncia",
+                        conteudo: `
+                            <div class="lesson-section">
+                                <h3>O Alfabeto em Inglês</h3>
+                                <p>O alfabeto inglês tem 26 letras, mas a pronúncia é diferente do português. Vamos aprender o som de cada uma.</p>
+                                <div class="exercise-box">
+                                    <h4>🎯 Exercício Prático</h4>
+                                    <p>Repita em voz alta:</p>
+                                    <ul>
+                                        <li>A [ei] - como em "day"</li>
+                                        <li>E [i] - como em "see"</li>
+                                        <li>I [ai] - como em "my"</li>
+                                        <li>O [ou] - como em "go"</li>
+                                        <li>U [iu] - como em "you"</li>
+                                    </ul>
+                                    <p><strong>Grave seu áudio</strong> e compare com a pronúncia nativa.</p>
+                                </div>
+                            </div>
+                            <div class="lesson-section">
+                                <h3>Palavras Básicas</h3>
+                                <p>Comece com palavras que já existem no português:</p>
+                                <ul>
+                                    <li>Computer = computador</li>
+                                    <li>Telephone = telefone</li>
+                                    <li>Internet = internet</li>
+                                    <li>Chocolate = chocolate</li>
+                                </ul>
+                                <p>Perceba como a pronúncia muda mesmo nas palavras parecidas!</p>
+                            </div>
+                        `
                     },
-                    success: {
-                        formal: 'Excelente progresso. Sua dedicação está gerando resultados notáveis.',
-                        neutro: 'Mandou bem! Você tá evoluindo muito.',
-                        casual: 'Aí sim! Tá ficando fera nisso!',
-                        gíria: 'Slk, arrasou! Tá voando baixo, hein! 🔥'
+                    {
+                        titulo: "Aula 2: Apresentações",
+                        conteudo: `
+                            <div class="lesson-section">
+                                <h3>Se Apresentando</h3>
+                                <p>Estrutura básica para se apresentar:</p>
+                                <div class="exercise-box">
+                                    <h4>📋 Modelo</h4>
+                                    <p><strong>"Hello, my name is [nome]. I am from [cidade/country]. I am [profissão/estudante]. Nice to meet you!"</strong></p>
+                                </div>
+                            </div>
+                            <div class="lesson-section">
+                                <h3>Perguntas Básicas</h3>
+                                <ul>
+                                    <li>What's your name? (Qual seu nome?)</li>
+                                    <li>Where are you from? (De onde você é?)</li>
+                                    <li>What do you do? (O que você faz?)</li>
+                                    <li>How are you? (Como você está?)</li>
+                                </ul>
+                            </div>
+                        `
                     }
-                }
+                ]
             },
-            marco: {
-                name: 'Marco',
-                avatar: '⚡',
-                role: 'Seu instrutor técnico',
-                style: 'direto, exigente, eficiente',
-                greetings: {
-                    formal: 'Vamos ao trabalho. Tempo é recurso finito e você tem muito a aprender.',
-                    neutro: 'Bora. O que você quer resolver hoje?',
-                    casual: 'Chegou. Hora de produzir. Onde tá sua dificuldade?',
-                    gíria: 'E aí, vamos parar de enrolação e meter a cara? Qual o problema?'
-                },
-                responses: {
-                    dificuldade: {
-                        formal: 'Dificuldade indica crescimento. Vamos superar isso com prática deliberada.',
-                        neutro: 'Difícil? Ótimo. Significa que você tá saindo da zona de conforto.',
-                        casual: 'Complicado? Faz de novo. E de novo. Até acertar.',
-                        gíria: 'Kkk achou que seria fácil? Faz de novo até ficar no automático. Sem mimimi.'
-                    },
-                    success: {
-                        formal: 'Progresso adequado. Mantenha consistência.',
-                        neutro: 'Bom. Continue assim.',
-                        casual: 'Isso aí. Não pare agora.',
-                        gíria: 'Aí sim, agora tá pegando o jeito. Bora pro próximo!'
+            programacao: {
+                titulo: "Programação Python",
+                desc: "Do zero ao primeiro programa",
+                aulas: [
+                    {
+                        titulo: "Aula 1: O que é Programação?",
+                        conteudo: `
+                            <div class="lesson-section">
+                                <h3>Programação é Resolver Problemas</h3>
+                                <p>Antes de escrever código, precisamos pensar em como resolver o problema passo a passo.</p>
+                                <div class="exercise-box">
+                                    <h4>🧠 Exercício de Lógica</h4>
+                                    <p>Como você ensinaria um robô a fazer um sanduíche? Escreva cada passo:</p>
+                                    <ol>
+                                        <li>Pegue duas fatias de pão</li>
+                                        <li>Passe manteiga em uma fatia</li>
+                                        <li>Coloque o recheio</li>
+                                        <li>Junte as fatias</li>
+                                        <li>Corte ao meio (opcional)</li>
+                                    </ol>
+                                    <p>Isso é um <strong>algoritmo</strong>!</p>
+                                </div>
+                            </div>
+                            <div class="lesson-section">
+                                <h3>Seu Primeiro Código</h3>
+                                <p>Em Python, usamos a função <code>print()</code> para mostrar mensagens:</p>
+                                <div class="exercise-box">
+                                    <pre style="background: #1e293b; color: #fff; padding: 1rem; border-radius: 8px; overflow-x: auto;">print("Hello, World!")
+print("Meu nome é", "Seu Nome")</pre>
+                                    <p style="margin-top: 1rem;"><strong>Experimente:</strong> Mude o texto entre aspas e veja o resultado!</p>
+                                </div>
+                            </div>
+                        `
                     }
-                }
+                ]
             },
-            zoe: {
-                name: 'Zoe',
-                avatar: '🎨',
-                role: 'Sua musa criativa',
-                style: 'divertida, experimental, caótica',
-                greetings: {
-                    formal: 'Bem-vindo! Prepare-se para uma experiência de aprendizado... diferente.',
-                    neutro: 'Ei! Bora bagunçar esse cérebro de um jeito bom?',
-                    casual: 'OOOOI! Chegou a hora de causar! Pronto pra loucura?',
-                    gíria: 'EITAAAA! Bora fazer um caos organizado? Kkkkk tô animadaaaa! 🎨✨'
-                },
-                responses: {
-                    dificuldade: {
-                        formal: 'Interessante... um desafio. Vamos abordar isso de forma não-convencional.',
-                        neutro: 'Difícil? PERFEITO! Vamos fazer do jeito mais estranho possível!',
-                        casual: 'Ahhhhh adorei! Dificuldade = chance de fazer algo inesperado!',
-                        gíria: 'Kkkkkk quebrou a cabeça? BORA QUEBRAR MAIS! Desenha com a mão esquerda! Faz tudo ao contrário! 🎭'
-                    },
-                    success: {
-                        formal: 'Resultado interessante. Você tem potencial criativo.',
-                        neutro: 'Aí sim! Curti seu jeito!',
-                        casual: 'ARRASOU! Tá ficando com a sua cara!',
-                        gíria: 'NOSSA, QUE ISSO! Tá MUITO foda! Bora pro próximo nível de loucura?'
+            desenho: {
+                titulo: "Desenho Artístico",
+                desc: "Do rabisco ao realismo",
+                aulas: [
+                    {
+                        titulo: "Aula 1: O Desenho Cego",
+                        conteudo: `
+                            <div class="lesson-section">
+                                <h3>Desenhar é Ver, Não Lembrar</h3>
+                                <p>O erro mais comum é desenhar o que você <em>acha</em> que sabe sobre um objeto, em vez do que você <em>realmente vê</em>.</p>
+                                <div class="exercise-box">
+                                    <h4>✏️ Exercício: Desenho Cego</h4>
+                                    <ol>
+                                        <li>Escolha um objeto simples (xícara, mão, planta)</li>
+                                        <li>Olhe APENAS para o objeto, NÃO para o papel</li>
+                                        <li>Siga o contorno com os olhos, mova a mão junto</li>
+                                        <li>NÃO levante o lápis! Uma linha contínua</li>
+                                        <li>Duração: 5 minutos</li>
+                                    </ol>
+                                    <p><strong>Resultado:</strong> Vai ficar estranho? PERFEITO! Isso treina seu olhar.</p>
+                                </div>
+                            </div>
+                            <div class="lesson-section">
+                                <h3>Formas Básicas</h3>
+                                <p>Tudo pode ser simplificado em 3 formas:</p>
+                                <ul>
+                                    <li><strong>Círculo/Esfera:</strong> Cabeça, frutas, olhos</li>
+                                    <li><strong>Quadrado/Cubo:</strong> Casas, livros, caixas</li>
+                                    <li><strong>Triângulo/Cone:</strong> Telhados, nariz, copos</li>
+                                </ul>
+                                <p>Pratique desenhando essas formas em 3D antes de objetos complexos.</p>
+                            </div>
+                        `
                     }
-                }
-            },
-            viktor: {
-                name: 'Viktor',
-                avatar: '📚',
-                role: 'Seu mestre erudito',
-                style: 'filosófico, profundo, histórico',
-                greetings: {
-                    formal: 'Saudações. Sou Viktor, e juntos exploraremos as profundezas do conhecimento humano.',
-                    neutro: 'Bem-vindo. O que busca compreender hoje?',
-                    casual: 'Olá. Vamos adicionar mais uma peça ao seu conhecimento?',
-                    gíria: 'Ah, mais um aprendiz. Senta que lá vem história. Literalmente.'
-                },
-                responses: {
-                    dificuldade: {
-                        formal: 'A dificuldade é o preço da maestria. Grandes mentes da história passaram pelo mesmo.',
-                        neutro: 'Persista. A compreensão virá com o tempo.',
-                        casual: 'Calma. Até Einstein errava. Vamos tentar de novo?',
-                        gíria: 'Kkk achou difícil? O Da Vinci levou anos na Capela Sistina. Você tem tempo.'
-                    },
-                    success: {
-                        formal: 'Notável. Você está construindo seu legado intelectual.',
-                        neutro: 'Bom progresso. Continue assim.',
-                        casual: 'Interessante. Está evoluindo.',
-                        gíria: 'Aí sim, jovem padawan. A força está com você.'
-                    }
-                }
-            },
-            yuki: {
-                name: 'Yuki',
-                avatar: '❄️',
-                role: 'Sua guia minimalista',
-                style: 'calma, metódica, focada',
-                greetings: {
-                    formal: 'Bem-vindo. Vamos eliminar o desnecessário e focar no essencial.',
-                    neutro: 'Olá. Respire. Vamos começar.',
-                    casual: 'Oi. Vamos simplificar isso?',
-                    gíria: 'Ei. Para. Respira. Agora sim, bora.'
-                },
-                responses: {
-                    dificuldade: {
-                        formal: 'Observe o problema sem julgamento. A resposta está na simplicidade.',
-                        neutro: 'Simplifique. Menos é mais.',
-                        casual: 'Tira o excesso. O que sobra é a resposta.',
-                        gíria: 'Kkk complicou demais. Tira a firula, vai no básico.'
-                    },
-                    success: {
-                        formal: 'Elegante. A simplicidade é a sofisticação suprema.',
-                        neutro: 'Bom. Limpo e eficiente.',
-                        casual: 'Perfeito. Sem enrolação.',
-                        gíria: 'Aí sim. Direto ao ponto. Gostei.'
-                    }
-                }
-            },
-            rafa: {
-                name: 'Rafa',
-                avatar: '🎭',
-                role: 'Seu contador de histórias',
-                style: 'narrativo, emocional, teatral',
-                greetings: {
-                    formal: 'Bem-vindo à sua história de aprendizado. Que capítulo escreveremos hoje?',
-                    neutro: 'Ei! Pronto pra mais um capítulo da sua jornada?',
-                    casual: 'E aí, protagonista! O que vem por aí na sua história?',
-                    gíria: 'Fala, meu consagrado! Bora criar um plot twist nesse aprendizado?'
-                },
-                responses: {
-                    dificuldade: {
-                        formal: 'Todo herói enfrenta obstáculos. Este é o seu momento de superação.',
-                        neutro: 'Todo plot tem um conflito. Vamos resolver o seu?',
-                        casual: 'Eita, o vilão apareceu! Mas relaxa, todo herói vence no final.',
-                        gíria: 'Kkkkk o desafio chegou! Mas lembra: você é o protagonista, não o NPC. Bora!'
-                    },
-                    success: {
-                        formal: 'Um capítulo glorioso se fecha. Sua jornada continua.',
-                        neutro: 'Final feliz! Próximo capítulo?',
-                        casual: 'E viveram felizes para sempre... ou não? O próximo episódio vem aí!',
-                        gíria: 'ARCO COMPLETADO! Level up! Qual a próxima missão, campeão?'
-                    }
-                }
+                ]
             }
         };
 
-        // ANÁLISE DE TOM (SLANG DETECTOR)
-        function analyzeTone(text) {
-            const lower = text.toLowerCase();
+        // GRUPOS DE EXEMPLO (simulação)
+        let grupos = [
+            { id: 1, nome: "Inglês Todo Dia", desc: "Prática diária de conversação", categoria: "idiomas", membros: 45, max: 50, criador: "Prof. Ana" },
+            { id: 2, nome: "Python Brasil", desc: "Aprendendo Python juntos", categoria: "tech", membros: 128, max: 200, criador: "Carlos Dev" },
+            { id: 3, nome: "Matemática sem Medo", desc: "Tirando dúvidas de matemática", categoria: "escola", membros: 89, max: 100, criador: "Prof. Roberto" },
+            { id: 4, nome: "Desenho do Zero", desc: "Primeiros passos no desenho artístico", categoria: "arte", membros: 67, max: 80, criador: "Maria Art" }
+        ];
+
+        // NAVEGAÇÃO
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
             
-            // Palavras formais
-            const formalWords = ['gostaria', 'por favor', 'agradeço', 'senhor', 'doutor', 'cordialmente'];
-            // Abreviações/gírias leves
-            const casualWords = ['vc', 'tb', 'tbm', 'pq', 'q', 'blz', 'ok'];
-            // Gírias médias
-            const slangWords = ['mano', 'cara', 'tipo', 'sei lá', 'whatever'];
-            // Gírias pesadas
-            const heavySlang = ['vsf', 'pqp', 'fdp', 'carai', 'porra', 'tmj', 'slk', 'mds', 'kkkk', 'aff'];
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            event.target.classList.add('active');
             
-            let score = 0;
-            
-            formalWords.forEach(w => { if(lower.includes(w)) score -= 2; });
-            casualWords.forEach(w => { if(lower.includes(w)) score += 1; });
-            slangWords.forEach(w => { if(lower.includes(w)) score += 2; });
-            heavySlang.forEach(w => { if(lower.includes(w)) score += 3; });
-            
-            // Análise de pontuação
-            if(text.includes('!!!') || text.includes('???')) score += 1;
-            if(/kkk+/i.test(text)) score += 2;
-            if(text === text.toUpperCase() && text.length > 3) score += 1;
-            
-            if(score <= -2) return 'formal';
-            if(score <= 1) return 'neutro';
-            if(score <= 3) return 'casual';
-            return 'gíria';
+            if(page === 'grupos') carregarGrupos();
+            if(page === 'professores') atualizarStats();
         }
 
-        // INICIALIZAÇÃO
-        window.onload = function() {
-            initNeuralBackground();
-            loadUserData();
-            updateAIInterface();
-        };
-
-        // BACKGROUND NEURAL ANIMADO
-        function initNeuralBackground() {
-            const canvas = document.getElementById('neuralCanvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            const particles = [];
-            const particleCount = 80;
-            const connectionDistance = 150;
-
-            for(let i = 0; i < particleCount; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    vx: (Math.random() - 0.5) * 0.5,
-                    vy: (Math.random() - 0.5) * 0.5,
-                    size: Math.random() * 2 + 1
-                });
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Atualizar partículas
-                particles.forEach(p => {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    
-                    if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                    if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                    
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(99, 102, 241, 0.5)';
-                    ctx.fill();
-                });
-
-                // Conexões
-                for(let i = 0; i < particles.length; i++) {
-                    for(let j = i + 1; j < particles.length; j++) {
-                        const dx = particles[i].x - particles[j].x;
-                        const dy = particles[i].y - particles[j].y;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-                        
-                        if(distance < connectionDistance) {
-                            ctx.beginPath();
-                            ctx.moveTo(particles[i].x, particles[i].y);
-                            ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.strokeStyle = `rgba(99, 102, 241, ${0.2 * (1 - distance/connectionDistance)})`;
-                            ctx.lineWidth = 1;
-                            ctx.stroke();
-                        }
-                    }
+        function filterCursos(categoria) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.card[data-categoria]').forEach(card => {
+                if(categoria === 'todos' || card.dataset.categoria === categoria) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
                 }
-
-                requestAnimationFrame(animate);
-            }
-            animate();
-
-            window.addEventListener('resize', () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
             });
         }
 
-        // NAVEGAÇÃO
-        function showPage(pageName) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-' + pageName).classList.add('active');
-            window.scrollTo(0, 0);
+        // SISTEMA DE AULAS
+        function startCurso(cursoId) {
+            currentCurso = cursoId;
+            currentAula = 0;
+            
+            if(!cursosData[cursoId]) {
+                alert('Curso em desenvolvimento! Disponível: Inglês, Programação Python, Desenho');
+                return;
+            }
+            
+            mostrarAula();
+            showPage('aula');
         }
 
-        function startJourney() {
-            if(userState.firstVisit || !userState.name) {
-                openConfig();
+        function mostrarAula() {
+            const curso = cursosData[currentCurso];
+            const aula = curso.aulas[currentAula];
+            
+            document.getElementById('aulaTitulo').textContent = aula.titulo;
+            document.getElementById('aulaDesc').textContent = `${curso.titulo} - Aula ${currentAula + 1} de ${curso.aulas.length}`;
+            document.getElementById('aulaConteudo').innerHTML = aula.conteudo;
+        }
+
+        function proximaAula() {
+            const curso = cursosData[currentCurso];
+            if(currentAula < curso.aulas.length - 1) {
+                currentAula++;
+                mostrarAula();
             } else {
-                showPage('study');
+                alert('Parabéns! Você completou este curso! 🎉');
             }
         }
 
-        // TABS DE ESTUDO
-        function switchTab(tabName) {
-            document.querySelectorAll('.modules-content').forEach(c => c.style.display = 'none');
-            document.getElementById('tab-' + tabName).style.display = 'grid';
-            
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+        function aulaAnterior() {
+            if(currentAula > 0) {
+                currentAula--;
+                mostrarAula();
+            }
         }
 
-        // CONFIGURAÇÃO
-        function openConfig() {
-            document.getElementById('configModal').classList.add('active');
-            document.getElementById('config-step-1').classList.remove('hidden');
-            document.getElementById('config-step-2').classList.add('hidden');
+        // SISTEMA DE GRUPOS
+        function carregarGrupos() {
+            const container = document.getElementById('gruposList');
+            container.innerHTML = grupos.map(g => `
+                <div class="group-item">
+                    <div class="group-info">
+                        <h4>${g.nome}</h4>
+                        <p>${g.desc}</p>
+                        <div class="group-tags">
+                            <span class="tag">${g.categoria}</span>
+                            <span class="tag">${g.membros}/${g.max} membros</span>
+                            <span class="tag">por ${g.criador}</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="entrarGrupo(${g.id})">Entrar</button>
+                </div>
+            `).join('');
         }
 
-        function closeConfig() {
-            document.getElementById('configModal').classList.remove('active');
-        }
-
-        function selectAge(age) {
-            userState.age = age;
-            document.querySelectorAll('.age-option').forEach(opt => opt.classList.remove('selected'));
-            document.querySelector(`[data-age="${age}"]`).classList.add('selected');
-        }
-
-        function selectPersonality(personality) {
-            userState.personality = personality;
-            document.querySelectorAll('.personality-card').forEach(card => card.classList.remove('selected'));
-            document.querySelector(`[data-personality="${personality}"]`).classList.add('selected');
-        }
-
-        function nextStep() {
-            const name = document.getElementById('userName').value;
-            if(!name) {
-                alert('Como você quer ser chamado?');
+        function entrarGrupo(id) {
+            if(!currentUser) {
+                alert('Faça login para entrar em grupos!');
+                openModal('login');
                 return;
             }
-            if(!userState.age) {
-                alert('Qual sua faixa etária?');
-                return;
-            }
-            
-            userState.name = name;
-            document.getElementById('config-step-1').classList.add('hidden');
-            document.getElementById('config-step-2').classList.remove('hidden');
+            alert(`Você entrou no grupo! Bem-vindo! 🎉`);
+            // Aqui conectaria ao chat do grupo
         }
 
-        function saveConfig() {
-            if(!userState.personality) {
-                alert('Escolha seu mentor IA!');
+        function criarGrupo() {
+            const nome = document.getElementById('grupoNome').value;
+            const desc = document.getElementById('grupoDesc').value;
+            const categoria = document.getElementById('grupoCategoria').value;
+            const max = document.getElementById('grupoMax').value;
+            
+            if(!nome || !desc) {
+                alert('Preencha todos os campos obrigatórios!');
                 return;
             }
             
-            userState.firstVisit = false;
-            localStorage.setItem('neuro_user', JSON.stringify(userState));
+            const novoGrupo = {
+                id: grupos.length + 1,
+                nome,
+                desc,
+                categoria,
+                membros: 1,
+                max: parseInt(max),
+                criador: currentUser ? currentUser.nome : 'Você'
+            };
             
-            updateUI();
-            closeConfig();
-            showPage('study');
-            
-            // Mensagem de boas-vindas personalizada
-            const ai = aiProfiles[userState.personality];
-            const tone = userState.age === 'crianca' ? 'casual' : userState.age === 'adolescente' ? 'gíria' : 'neutro';
-            const greeting = ai.greetings[tone];
-            
-            setTimeout(() => {
-                addAIMessage(`${greeting} Prazer, ${userState.name}! 🎉`);
-            }, 500);
+            grupos.push(novoGrupo);
+            closeModal('criarGrupo');
+            carregarGrupos();
+            alert('Grupo criado com sucesso!');
         }
 
-        function loadUserData() {
-            const saved = localStorage.getItem('neuro_user');
-            if(saved) {
-                Object.assign(userState, JSON.parse(saved));
-                updateUI();
+        // MODAIS
+        function openModal(tipo) {
+            document.getElementById('modal' + tipo.charAt(0).toUpperCase() + tipo.slice(1)).classList.add('active');
+        }
+
+        function closeModal(tipo) {
+            const id = 'modal' + tipo.charAt(0).toUpperCase() + tipo.slice(1);
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // AUTENTICAÇÃO (simulação)
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const senha = document.getElementById('loginSenha').value;
+            
+            if(!email || !senha) {
+                alert('Preencha email e senha!');
+                return;
             }
+            
+            // Simulação de login
+            currentUser = { nome: 'Usuário Teste', email, tipo: 'aluno' };
+            atualizarUIUsuario();
+            closeModal('login');
         }
 
-        function updateUI() {
-            if(userState.name) {
-                document.getElementById('navUserName').textContent = userState.name;
-                document.getElementById('navAvatar').textContent = userState.name.charAt(0).toUpperCase();
+        function registrar() {
+            const nome = document.getElementById('regNome').value;
+            const email = document.getElementById('regEmail').value;
+            const senha = document.getElementById('regSenha').value;
+            const tipo = document.getElementById('regTipo').value;
+            
+            if(!nome || !email || !senha) {
+                alert('Preencha todos os campos!');
+                return;
             }
-            updateAIInterface();
-        }
-
-        function updateAIInterface() {
-            const ai = aiProfiles[userState.personality];
-            document.getElementById('aiName').textContent = ai.name;
-            document.getElementById('aiRole').textContent = ai.role;
-            document.getElementById('aiAvatar').textContent = ai.avatar;
-            document.getElementById('aiFloat').textContent = ai.avatar;
             
-            // Mensagem inicial baseada na idade
-            const tone = userState.age === 'crianca' ? 'casual' : userState.age === 'adolescente' ? 'gíria' : 'neutro';
-            document.getElementById('aiWelcome').textContent = ai.greetings[tone];
-        }
-
-        // ASSISTENTE IA
-        function toggleAI() {
-            document.getElementById('aiChat').classList.toggle('active');
-        }
-
-        function addAIMessage(text, isUser = false) {
-            const container = document.getElementById('aiMessages');
+            if(senha.length < 6) {
+                alert('Senha deve ter no mínimo 6 caracteres!');
+                return;
+            }
             
-            if(!isUser) {
-                // Indicador de digitação
-                const typing = document.createElement('div');
-                typing.className = 'typing-indicator';
-                typing.innerHTML = '<span></span><span></span><span></span>';
-                container.appendChild(typing);
-                container.scrollTop = container.scrollHeight;
+            currentUser = { nome, email, tipo };
+            
+            if(tipo === 'professor') {
+                alert('Cadastro recebido! Verificaremos seus documentos em até 48h.');
+            } else {
+                alert('Conta criada com sucesso! Bem-vindo ao NEURO!');
+            }
+            
+            atualizarUIUsuario();
+            closeModal('registro');
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('btnLogin').classList.remove('hidden');
+            document.getElementById('userDisplay').classList.add('hidden');
+            document.getElementById('btnProfessor').classList.add('hidden');
+        }
+
+        function atualizarUIUsuario() {
+            if(currentUser) {
+                document.getElementById('btnLogin').classList.add('hidden');
+                document.getElementById('userDisplay').classList.remove('hidden');
+                document.getElementById('userName').textContent = currentUser.nome;
                 
-                setTimeout(() => {
-                    typing.remove();
-                    const msg = document.createElement('div');
-                    msg.className = 'message ai';
-                    msg.textContent = text;
-                    container.appendChild(msg);
-                    container.scrollTop = container.scrollHeight;
-                }, 1000 + Math.random() * 500);
-            } else {
-                const msg = document.createElement('div');
-                msg.className = 'message user';
-                msg.textContent = text;
-                container.appendChild(msg);
-                container.scrollTop = container.scrollHeight;
-            }
-        }
-
-        function handleAIInput(e) {
-            if(e.key === 'Enter') sendAIMessage();
-        }
-
-        function sendAIMessage() {
-            const input = document.getElementById('aiInput');
-            const text = input.value.trim();
-            if(!text) return;
-
-            addAIMessage(text, true);
-            input.value = '';
-
-            const tone = analyzeTone(text);
-            const ai = aiProfiles[userState.personality];
-            
-            // Resposta contextual
-            let response = generateResponse(text, tone, ai);
-            
-            setTimeout(() => {
-                addAIMessage(response);
-            }, 500);
-        }
-
-        function generateResponse(input, tone, ai) {
-            const lower = input.toLowerCase();
-            
-            // Detecção de intenção
-            if(lower.includes('difícil') || lower.includes('não entendi') || lower.includes('ajuda') || lower.includes('socorro')) {
-                return ai.responses.dificuldade[tone];
-            }
-            if(lower.includes('consegui') || lower.includes('terminei') || lower.includes('acabei') || lower.includes('deu certo')) {
-                return ai.responses.success[tone];
-            }
-            if(lower.includes('oi') || lower.includes('olá') || lower.includes('eae') || lower.includes('fala')) {
-                return ai.greetings[tone];
-            }
-            
-            // Respostas genéricas por personalidade e tom
-            const genericResponses = {
-                luna: {
-                    formal: 'Entendo. Conte-me mais sobre o que você está buscando aprender.',
-                    neutro: 'Que interessante! Quer que eu te explique melhor sobre isso?',
-                    casual: 'Ahh, entendi! Bora explorar isso juntos?',
-                    gíria: 'Kkkk saquei! Bora desenrolar esse assunto? Tô aqui pra whatever!'
-                },
-                marco: {
-                    formal: 'Especifique seu objetivo para que eu possa direcionar seu estudo.',
-                    neutro: 'O que exatamente você quer aprender? Vamos direto ao ponto.',
-                    casual: 'Beleza, mas o que você quer resolver? Sem enrolação.',
-                    gíria: 'E aí, qual é? O que cê quer saber? Bora que tempo é dinheiro.'
-                },
-                zoe: {
-                    formal: 'Fascinante! Vamos explorar isso de maneira não-convencional?',
-                    neutro: 'Legal! Quer que eu te mostre um jeito diferente de ver isso?',
-                    casual: 'Ahhhh curti! Bora fazer um experimento maluco com isso?',
-                    gíria: 'NOSSA, amei! Bora quebrar tudo e reconstruir do zero? Kkkkk'
-                },
-                viktor: {
-                    formal: 'Profundo questionamento. Vamos contextualizar historicamente?',
-                    neutro: 'Interessante. Isso me lembra algo que estudamos na história.',
-                    casual: 'Boa! Sabe que isso tem uma história bem louca por trás?',
-                    gíria: 'Kkkkk essa pergunta! Os gregos já se martirizavam com isso. Bora ver?'
-                },
-                yuki: {
-                    formal: 'Vamos simplificar. Qual é a essência do que você precisa?',
-                    neutro: 'Ok. Vamos tirar o excesso e focar no que importa.',
-                    casual: 'Entendi. Vamos direto, sem firula. O que precisa?',
-                    gíria: 'Saquei. Para de enrolar, vamos no básico. Funciona sempre.'
-                },
-                rafa: {
-                    formal: 'E assim começa mais um capítulo da sua jornada. Prossiga.',
-                    neutro: 'Boa! E agora, o que nosso protagonista vai fazer?',
-                    casual: 'Eita, o plot thickens! Bora ver como essa história continua?',
-                    gíria: 'Kkkkk o drama! Mas relaxa, todo herói tem um plano. Qual é o seu?'
+                if(currentUser.tipo === 'professor') {
+                    document.getElementById('btnProfessor').classList.remove('hidden');
                 }
-            };
-            
-            return genericResponses[userState.personality][tone];
-        }
-
-        // AÇÕES DOS MÓDULOS
-        function startModule(module) {
-            const ai = aiProfiles[userState.personality];
-            const tone = userState.age === 'crianca' ? 'casual' : userState.age === 'adolescente' ? 'gíria' : 'neutro';
-            
-            const messages = {
-                luna: { casual: 'Vamos começar essa aventura juntos! ✨', gíria: 'Bora nessa aventura! Tô contigo! 🌙' },
-                marco: { casual: 'Hora de trabalhar. Foco total.', gíria: 'Bora, sem enrolação. Mão na massa.' },
-                zoe: { casual: 'YESSS! Bora fazer arte! 🎨', gíria: 'PARTIU! Vamos causar nesse módulo!' },
-                viktor: { casual: 'Um novo conhecimento nos aguarda.', gíria: 'Mais sabedoria ancestral vindo aí.' },
-                yuki: { casual: 'Vamos. Passo a passo.', gíria: 'Bora. Simples e direto.' },
-                rafa: { casual: 'Novo capítulo começando! 📖', gíria: 'Plot twist: você vai aprender MUITO! 🎭' }
-            };
-            
-            addAIMessage(messages[userState.personality][tone] || 'Vamos começar!');
-            alert('Módulo ' + module + ' iniciado! (Em desenvolvimento)');
-        }
-
-        function joinGroup(group) {
-            alert('Você entrou no grupo! (Em desenvolvimento)');
-        }
-
-        function createGroup() {
-            const name = prompt('Nome do grupo:');
-            if(name) alert('Grupo "' + name + '" criado! (Em desenvolvimento)');
-        }
-
-        // SCROLL EFFECT
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            if(window.scrollY > 50) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
             }
-        });
+        }
+
+        // PROFESSORES
+        function formatCPF(input) {
+            let value = input.value.replace(/\D/g, '');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            input.value = value;
+        }
+
+        function cadastrarProfessor() {
+            const cpf = document.getElementById('profCPF').value;
+            const formacao = document.getElementById('profFormacao').value;
+            const areas = document.getElementById('profAreas').value;
+            const diploma = document.getElementById('profDiploma').value;
+            const email = document.getElementById('profEmail').value;
+            const senha = document.getElementById('profSenha').value;
+            
+            if(!cpf || !formacao || !areas || !diploma || !email || !senha) {
+                alert('Preencha todos os campos obrigatórios (*)!');
+                return;
+            }
+            
+            if(cpf.length < 14) {
+                alert('CPF inválido!');
+                return;
+            }
+            
+            if(senha.length < 6) {
+                alert('Senha deve ter no mínimo 6 caracteres!');
+                return;
+            }
+            
+            // Simulação de envio
+            alert('Cadastro enviado com sucesso! Verificaremos seus documentos em até 48h. Você receberá um email quando for aprovado.');
+            closeModal('cadastroProfessor');
+        }
+
+        function atualizarStats() {
+            // Simulação de estatísticas
+            document.getElementById('statProfessores').textContent = '24';
+            document.getElementById('statGrupos').textContent = grupos.length;
+            document.getElementById('statAlunos').textContent = '1.247';
+        }
+
+        function switchTabProf(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.getElementById('profTabGrupos').classList.add('hidden');
+            document.getElementById('profTabDicas').classList.add('hidden');
+            document.getElementById('profTabEstatisticas').classList.add('hidden');
+            
+            document.getElementById('profTab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
+        }
+
+        // CHAT
+        function toggleChat() {
+            document.getElementById('chatContainer').classList.toggle('active');
+        }
+
+        function handleChatInput(e) {
+            if(e.key === 'Enter') sendChatMessage();
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if(!msg) return;
+            
+            const container = document.getElementById('chatMessages');
+            container.innerHTML += `<div style="padding: 0.5rem; text-align: right;"><strong>Você:</strong> ${msg}</div>`;
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Fechar modais ao clicar fora
+        window.onclick = function(event) {
+            if(event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
     </script>
 
 </body>

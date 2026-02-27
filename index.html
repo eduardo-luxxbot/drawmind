@@ -2965,3 +2965,1135 @@
     </script>
 </body>
 </html>
+<!-- ==================== PARTE 2: GUILDAS + SISTEMA 1V1 ==================== -->
+<!-- Adicione este código antes do fechamento </body> do arquivo anterior -->
+
+<!-- MODAL: CRIAR GUILDA -->
+<div class="modal" id="modalCriarGuilda">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>🏰 Criar Nova Guilda</h2>
+            <button class="close-btn" onclick="closeModal('criarGuilda')">×</button>
+        </div>
+        
+        <div class="form-group">
+            <label>Nome da Guilda</label>
+            <input type="text" id="guildaNome" placeholder="Ex: Os NeuroNerds" maxlength="30">
+        </div>
+        
+        <div class="form-group">
+            <label>Sigla (3-4 letras)</label>
+            <input type="text" id="guildaSigla" placeholder="Ex: NRD" maxlength="4" style="text-transform: uppercase;">
+        </div>
+        
+        <div class="form-group">
+            <label>Descrição</label>
+            <textarea id="guildaDescricao" placeholder="Descreva sua guilda..." rows="3"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Cor da Guilda</label>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button onclick="selectGuildaCor('#ef4444')" style="width: 40px; height: 40px; border-radius: 50%; background: #ef4444; border: 3px solid transparent;" class="cor-guilda-btn"></button>
+                <button onclick="selectGuildaCor('#f59e0b')" style="width: 40px; height: 40px; border-radius: 50%; background: #f59e0b; border: 3px solid transparent;" class="cor-guilda-btn"></button>
+                <button onclick="selectGuildaCor('#10b981')" style="width: 40px; height: 40px; border-radius: 50%; background: #10b981; border: 3px solid transparent;" class="cor-guilda-btn"></button>
+                <button onclick="selectGuildaCor('#3b82f6')" style="width: 40px; height: 40px; border-radius: 50%; background: #3b82f6; border: 3px solid transparent;" class="cor-guilda-btn"></button>
+                <button onclick="selectGuildaCor('#8b5cf6')" style="width: 40px; height: 40px; border-radius: 50%; background: #8b5cf6; border: 3px solid transparent;" class="cor-guilda-btn"></button>
+                <button onclick="selectGuildaCor('#ec4899')" style="width: 40px; height: 40px; border-radius: 50%; background: #ec4899; border: 3px solid transparent;" class="cor-guilda-btn"></button>
+                <button onclick="selectGuildaCor('#06b6d4')" style="width: 40px; height: 40px; border-radius: 50%; background: #06b6d4; border: 3px solid transparent;" class="cor-guilda-btn"></button>
+                <button onclick="selectGuildaCor('#6366f1')" style="width: 40px; height: 40px; border-radius: 50%; background: #6366f1; border: 3px solid transparent;" class="cor-guilda-btn"></button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Tipo de Guilda</label>
+            <div class="option-grid">
+                <div class="option-card" onclick="selectGuildaTipo('casual')">
+                    <span class="emoji">😊</span>
+                    <h4>Casual</h4>
+                    <p>Sem pressão, aprendizado relaxado</p>
+                </div>
+                <div class="option-card" onclick="selectGuildaTipo('competitiva')">
+                    <span class="emoji">🏆</span>
+                    <h4>Competitiva</h4>
+                    <p>Foco no ranking e batalhas</p>
+                </div>
+                <div class="option-card" onclick="selectGuildaTipo('estudo')">
+                    <span class="emoji">📚</span>
+                    <h4>Grupo de Estudo</h4>
+                    <p>Foco específico em matérias</p>
+                </div>
+                <div class="option-card" onclick="selectGuildaTipo('idiomas')">
+                    <span class="emoji">🌍</span>
+                    <h4>Poliglota</h4>
+                    <p>Foco em idiomas</p>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn btn-primary" onclick="criarGuilda()" style="width: 100%;">Criar Guilda (Custo: 1000 pts)</button>
+    </div>
+</div>
+
+<!-- MODAL: GUILDA DETALHES -->
+<div class="modal" id="modalGuilda">
+    <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header">
+            <h2 id="guildaModalTitulo">🏰 Nome da Guilda</h2>
+            <button class="close-btn" onclick="closeModal('guilda')">×</button>
+        </div>
+        
+        <div id="guildaModalContent">
+            <!-- Conteúdo dinâmico -->
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: CONVITE BATALHA -->
+<div class="modal" id="modalConviteBatalha">
+    <div class="modal-content" style="max-width: 400px;">
+        <div style="text-align: center; padding: 2rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">⚔️</div>
+            <h3 id="conviteTitulo">Desafio Recebido!</h3>
+            <p id="conviteTexto" style="color: var(--gray); margin: 1rem 0;">Pedro quer batalhar com você!</p>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button class="btn btn-secondary" onclick="recusarBatalha()" style="flex: 1;">Recusar</button>
+                <button class="btn btn-primary" onclick="aceitarBatalha()" style="flex: 1;">Aceitar!</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: BATALHA 1V1 COMPLETO -->
+<div class="modal" id="modalBatalhaCompleto">
+    <div class="modal-content" style="max-width: 600px; height: 80vh; display: flex; flex-direction: column;">
+        <div class="modal-header">
+            <h2>⚔️ Batalha 1v1</h2>
+            <button class="close-btn" onclick="desistirBatalha()">×</button>
+        </div>
+        
+        <!-- Tela de Espera -->
+        <div id="batalhaTelaEspera" style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <div style="font-size: 5rem; margin-bottom: 1rem;">⏳</div>
+            <h3>Aguardando oponente...</h3>
+            <p style="color: var(--gray); margin: 1rem 0;">Convite enviado para <span id="batalhaOponenteNome">Jogador</span></p>
+            <div class="progress-bar" style="width: 200px; margin-top: 1rem;">
+                <div class="progress-fill" style="width: 50%; animation: pulse-glow 1s infinite;"></div>
+            </div>
+            <button class="btn btn-secondary" onclick="cancelarConvite()" style="margin-top: 2rem;">Cancelar</button>
+        </div>
+        
+        <!-- Tela de Contagem -->
+        <div id="batalhaTelaContagem" class="hidden" style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <div id="contagemNumero" style="font-size: 8rem; font-weight: 800; color: var(--primary);">3</div>
+            <p>Prepare-se!</p>
+        </div>
+        
+        <!-- Tela de Quiz -->
+        <div id="batalhaTelaQuiz" class="hidden" style="flex: 1; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 1rem; background: var(--glass); border-radius: 12px;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span id="batalhaMeuPlacar">Você: 0</span>
+                </div>
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning);" id="batalhaTimer">10</div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span id="batalhaOponentePlacar">Oponente: 0</span>
+                </div>
+            </div>
+            
+            <div style="flex: 1; overflow-y: auto;">
+                <div id="batalhaPerguntaContainer" style="margin-bottom: 1.5rem;">
+                    <!-- Pergunta dinâmica -->
+                </div>
+                
+                <div id="batalhaOpcoes" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <!-- Opções dinâmicas -->
+                </div>
+            </div>
+            
+            <div id="batalhaBarraTempo" style="height: 4px; background: var(--glass); border-radius: 2px; margin-top: 1rem; overflow: hidden;">
+                <div id="batalhaTempoRestante" style="height: 100%; background: linear-gradient(90deg, var(--success), var(--warning), var(--danger)); width: 100%; transition: width 0.1s linear;"></div>
+            </div>
+        </div>
+        
+        <!-- Tela de Resultado -->
+        <div id="batalhaTelaResultado" class="hidden" style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+            <div id="batalhaResultadoIcon" style="font-size: 5rem; margin-bottom: 1rem;">🏆</div>
+            <h2 id="batalhaResultadoTitulo">Vitória!</h2>
+            <p id="batalhaResultadoDescricao" style="color: var(--gray); margin: 1rem 0;">Você venceu por 4 a 2!</p>
+            <div style="display: flex; gap: 2rem; margin: 1.5rem 0;">
+                <div style="text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--success);" id="batalhaXPGanho">+100 XP</div>
+                    <div style="font-size: 0.8rem; color: var(--gray);">XP Ganho</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--warning);" id="batalhaPontosGanhos">+50 pts</div>
+                    <div style="font-size: 0.8rem; color: var(--gray);">Pontos</div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="fecharBatalha()">Continuar</button>
+        </div>
+    </div>
+</div>
+
+<!-- PÁGINA: GUILDA DETALHADA (substitui a página de guildas quando entra em uma) -->
+<div id="page-guilda-detalhe" class="page">
+    <div class="section">
+        <button class="btn btn-secondary mb-2" onclick="sairDaGuilda()">← Sair da Guilda</button>
+        
+        <div style="background: linear-gradient(135deg, var(--glass), rgba(99,102,241,0.1)); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem; margin-bottom: 2rem; position: relative; overflow: hidden;">
+            <div id="guildaBanner" style="position: absolute; top: 0; left: 0; right: 0; height: 100px; background: linear-gradient(135deg, var(--primary), var(--secondary)); opacity: 0.3;"></div>
+            
+            <div style="position: relative; z-index: 1; display: flex; align-items: flex-end; gap: 1.5rem; margin-top: 50px;">
+                <div id="guildaIconGrande" style="width: 100px; height: 100px; border-radius: 20px; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 3rem; border: 4px solid var(--dark);">🏰</div>
+                <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                        <span id="guildaSiglaDisplay" style="background: var(--primary); padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">TAG</span>
+                        <span id="guildaTipoDisplay" style="background: var(--glass); padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.75rem;">Casual</span>
+                    </div>
+                    <h1 id="guildaNomeDisplay" style="font-family: 'Space Grotesk'; font-size: 2rem;">Nome da Guilda</h1>
+                    <p id="guildaDescDisplay" style="color: var(--gray); margin-top: 0.5rem;">Descrição da guilda aqui...</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--warning);" id="guildaPontos">⚡ 0</div>
+                    <div style="font-size: 0.85rem; color: var(--gray);">Pontos Totais</div>
+                    <div style="margin-top: 0.5rem; font-size: 1.25rem; font-weight: 600;" id="guildaRank">Rank #--</div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 350px; gap: 2rem;">
+            <div>
+                <div class="tabs">
+                    <button class="tab active" onclick="showGuildaTab('membros')">👥 Membros</button>
+                    <button class="tab" onclick="showGuildaTab('batalhas')">⚔️ Batalhas</button>
+                    <button class="tab" onclick="showGuildaTab('desafios')">🎯 Desafios</button>
+                    <button class="tab" onclick="showGuildaTab('estatisticas')">📊 Estatísticas</button>
+                </div>
+                
+                <div id="guildaTabMembros">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Membros (<span id="guildaTotalMembros">0</span>)</h3>
+                        <button class="btn btn-secondary" onclick="convidarMembro()">+ Convidar</button>
+                    </div>
+                    <div id="guildaListaMembros" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <!-- Membros dinâmicos -->
+                    </div>
+                </div>
+                
+                <div id="guildaTabBatalhas" class="hidden">
+                    <h3 class="mb-2">Histórico de Batalhas</h3>
+                    <div id="guildaHistoricoBatalhas" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <!-- Histórico -->
+                    </div>
+                </div>
+                
+                <div id="guildaTabDesafios" class="hidden">
+                    <h3 class="mb-2">Desafios da Semana</h3>
+                    <div id="guildaDesafiosLista" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Desafios -->
+                    </div>
+                </div>
+                
+                <div id="guildaTabEstatisticas" class="hidden">
+                    <h3 class="mb-2">Estatísticas da Guilda</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                        <div style="background: var(--glass); padding: 1.5rem; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary);" id="guildaStatAulas">0</div>
+                            <div style="color: var(--gray); font-size: 0.9rem;">Aulas Completadas</div>
+                        </div>
+                        <div style="background: var(--glass); padding: 1.5rem; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--success);" id="guildaStatBatalhas">0</div>
+                            <div style="color: var(--gray); font-size: 0.9rem;">Batalhas Vencidas</div>
+                        </div>
+                        <div style="background: var(--glass); padding: 1.5rem; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--warning);" id="guildaStatStreak">0</div>
+                            <div style="color: var(--gray); font-size: 0.9rem;">Maior Streak</div>
+                        </div>
+                        <div style="background: var(--glass); padding: 1.5rem; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--secondary);" id="guildaStatMembrosAtivos">0</div>
+                            <div style="color: var(--gray); font-size: 0.9rem;">Membros Ativos Hoje</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat da Guilda -->
+            <div style="background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; display: flex; flex-direction: column; height: 600px;">
+                <div style="padding: 1rem; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="font-size: 1.5rem;">💬</span>
+                    <span style="font-weight: 600;">Chat da Guilda</span>
+                    <span style="margin-left: auto; width: 8px; height: 8px; background: var(--success); border-radius: 50%;"></span>
+                    <span style="font-size: 0.8rem; color: var(--gray);" id="guildaChatOnline">5 online</span>
+                </div>
+                
+                <div id="guildaChatMensagens" style="flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <!-- Mensagens -->
+                </div>
+                
+                <div style="padding: 1rem; border-top: 1px solid var(--glass-border); display: flex; gap: 0.5rem;">
+                    <input type="text" id="guildaChatInput" placeholder="Mensagem para a guilda..." style="flex: 1; padding: 0.75rem 1rem; border: none; border-radius: 12px; background: rgba(255,255,255,0.05); color: white; outline: none;" onkeypress="handleGuildaChatInput(event)">
+                    <button onclick="enviarMensagemGuilda()" style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); border: none; color: white; cursor: pointer;">➤</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PÁGINA: RANKING DE GUILDAS -->
+<div id="page-ranking-guildas" class="page">
+    <div class="section">
+        <h1 class="section-title">🏰 Ranking de Guildas</h1>
+        <p class="section-subtitle">As guildas mais poderosas do NEURO 3.0</p>
+        
+        <div style="background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden;">
+            <div style="display: grid; grid-template-columns: 80px 1fr 150px 150px 100px; padding: 1rem 1.5rem; background: rgba(255,255,255,0.03); font-weight: 600; font-size: 0.9rem; color: var(--gray);">
+                <div>Rank</div>
+                <div>Guilda</div>
+                <div style="text-align: center;">Membros</div>
+                <div style="text-align: center;">Pontos</div>
+                <div style="text-align: center;">Ação</div>
+            </div>
+            <div id="rankingGuildasLista">
+                <!-- Guildas ranqueadas -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos adicionais para guildas e batalhas */
+    .guilda-membro {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--glass);
+        border-radius: 12px;
+        transition: all 0.3s;
+    }
+    
+    .guilda-membro:hover {
+        background: rgba(255,255,255,0.08);
+    }
+    
+    .guilda-cargo {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    
+    .cargo-lider {
+        background: linear-gradient(135deg, var(--warning), var(--danger));
+        color: white;
+    }
+    
+    .cargo-oficial {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .cargo-membro {
+        background: var(--glass);
+        color: var(--gray);
+    }
+    
+    .batalha-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--glass);
+        border-radius: 12px;
+        border-left: 4px solid var(--primary);
+    }
+    
+    .batalha-vitoria {
+        border-left-color: var(--success);
+    }
+    
+    .batalha-derrota {
+        border-left-color: var(--danger);
+    }
+    
+    .desafio-card {
+        padding: 1.5rem;
+        background: var(--glass);
+        border-radius: 12px;
+        border: 2px solid var(--glass-border);
+    }
+    
+    .desafio-progresso {
+        width: 100%;
+        height: 8px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 0.75rem;
+    }
+    
+    .desafio-progresso-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+    
+    .cor-guilda-btn:hover, .cor-guilda-btn.selected {
+        transform: scale(1.2);
+        border-color: white !important;
+    }
+    
+    @keyframes batalha-pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    .batalha-aguardando {
+        animation: batalha-pulse 2s infinite;
+    }
+</style>
+
+<script>
+// ==================== SISTEMA DE GUILDAS ====================
+
+let guildas = [];
+let minhaGuilda = null;
+let guildaSelecionada = null;
+let guildaCorSelecionada = '#6366f1';
+let guildaTipoSelecionado = 'casual';
+
+// Dados de exemplo (em produção, virão do Firebase)
+const guildasExemplo = [
+    {
+        id: 'guilda_1',
+        nome: 'NeuroNinjas',
+        sigla: 'NNJ',
+        descricao: 'Guilda focada em produtividade e aprendizado acelerado. Vamos dominar o ranking!',
+        cor: '#ef4444',
+        tipo: 'competitiva',
+        pontos: 45000,
+        membros: [
+            { uid: 'user_1', nome: 'Carlos', avatar: '🥷', cargo: 'lider', pontos: 15000, online: true },
+            { uid: 'user_2', nome: 'Ana', avatar: '👩‍💻', cargo: 'oficial', pontos: 12000, online: true },
+            { uid: 'user_3', nome: 'Pedro', avatar: '🧑‍🎓', cargo: 'membro', pontos: 8000, online: false },
+            { uid: 'user_4', nome: 'Maria', avatar: '👩‍🎨', cargo: 'membro', pontos: 10000, online: true }
+        ],
+        rank: 1,
+        batalhasVencidas: 45,
+        aulasCompletadas: 1250,
+        desafios: [
+            { id: 1, titulo: 'Completar 100 aulas esta semana', atual: 67, total: 100, recompensa: 5000 },
+            { id: 2, titulo: 'Vencer 10 batalhas 1v1', atual: 4, total: 10, recompensa: 3000 }
+        ],
+        chat: [
+            { user: 'Carlos', avatar: '🥷', text: 'Bora estudar pessoal! 🔥', time: '10:30', isLider: true },
+            { user: 'Ana', avatar: '👩‍💻', text: 'Tô fazendo o curso de Python', time: '10:32' },
+            { user: 'Pedro', avatar: '🧑‍🎓', text: 'Alguém quer fazer um grupo de estudo?', time: '10:35' }
+        ]
+    },
+    {
+        id: 'guilda_2',
+        nome: 'Polyglots United',
+        sigla: 'PLY',
+        descricao: 'Aprendendo idiomas juntos! Troca de conversação e dicas de imersão.',
+        cor: '#3b82f6',
+        tipo: 'idiomas',
+        pontos: 32000,
+        membros: [
+            { uid: 'user_5', nome: 'Yuki', avatar: '🇯🇵', cargo: 'lider', pontos: 11000, online: true },
+            { uid: 'user_6', nome: 'Pierre', avatar: '🇫🇷', cargo: 'membro', pontos: 9000, online: false },
+            { uid: 'user_7', nome: 'Hans', avatar: '🇩🇪', cargo: 'membro', pontos: 7000, online: true }
+        ],
+        rank: 2,
+        batalhasVencidas: 23,
+        aulasCompletadas: 890,
+        desafios: [
+            { id: 1, titulo: 'Praticar speaking 30 min/dia', atual: 5, total: 7, recompensa: 2000 }
+        ],
+        chat: []
+    },
+    {
+        id: 'guilda_3',
+        nome: 'Code Wizards',
+        sigla: 'WIZ',
+        descricao: 'Programação é magia moderna. Python, JS, e muito mais!',
+        cor: '#8b5cf6',
+        tipo: 'estudo',
+        pontos: 28000,
+        membros: [],
+        rank: 3,
+        batalhasVencidas: 34,
+        aulasCompletadas: 650,
+        desafios: [],
+        chat: []
+    }
+];
+
+function initGuildas() {
+    guildas = [...guildasExemplo];
+    
+    // Verificar se usuário está em alguma guilda
+    if (userData?.guildaId) {
+        minhaGuilda = guildas.find(g => g.id === userData.guildaId);
+    }
+    
+    renderGuildas();
+}
+
+function renderGuildas() {
+    const grid = document.getElementById('guildasGrid');
+    if (!grid) return;
+    
+    // Se já está em uma guilda, mostrar página da guilda
+    if (minhaGuilda) {
+        showPage('guilda-detalhe');
+        carregarGuildaDetalhe();
+        return;
+    }
+    
+    grid.innerHTML = guildas.map(g => `
+        <div class="card" style="cursor: pointer;" onclick="verGuilda('${g.id}')">
+            <div class="card-image" style="background: linear-gradient(135deg, ${g.cor}33, ${g.cor}11);">
+                <span style="font-size: 4rem;">🏰</span>
+            </div>
+            <div class="card-content">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <span style="background: ${g.cor}; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; color: white;">${g.sigla}</span>
+                    <span style="font-size: 0.8rem; color: var(--gray); text-transform: capitalize;">${g.tipo}</span>
+                </div>
+                <h3>${g.nome}</h3>
+                <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 1rem;">${g.descricao.substring(0, 60)}...</p>
+                <div class="card-meta">
+                    <span>👥 ${g.membros.length} membros</span>
+                    <span>⚡ ${g.pontos.toLocaleString()} pts</span>
+                </div>
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.9rem; color: var(--warning); font-weight: 600;">Rank #${g.rank}</span>
+                    <button class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="event.stopPropagation(); entrarGuilda('${g.id}')">Entrar</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function selectGuildaCor(cor) {
+    guildaCorSelecionada = cor;
+    document.querySelectorAll('.cor-guilda-btn').forEach(btn => {
+        btn.classList.remove('selected');
+        btn.style.borderColor = 'transparent';
+    });
+    event.target.classList.add('selected');
+    event.target.style.borderColor = 'white';
+}
+
+function selectGuildaTipo(tipo) {
+    guildaTipoSelecionado = tipo;
+    document.querySelectorAll('#modalCriarGuilda .option-card').forEach(c => c.classList.remove('selected'));
+    event.target.closest('.option-card').classList.add('selected');
+}
+
+function criarGuilda() {
+    const nome = document.getElementById('guildaNome').value;
+    const sigla = document.getElementById('guildaSigla').value.toUpperCase();
+    const descricao = document.getElementById('guildaDescricao').value;
+    
+    if (!nome || !sigla || !descricao) {
+        alert('Preencha todos os campos!');
+        return;
+    }
+    
+    if (sigla.length < 2 || sigla.length > 4) {
+        alert('Sigla deve ter 2-4 caracteres!');
+        return;
+    }
+    
+    if ((userData?.pontos || 0) < 1000) {
+        alert('Você precisa de 1000 pontos para criar uma guilda!');
+        return;
+    }
+    
+    // Criar guilda
+    const novaGuilda = {
+        id: 'guilda_' + Date.now(),
+        nome: nome,
+        sigla: sigla,
+        descricao: descricao,
+        cor: guildaCorSelecionada,
+        tipo: guildaTipoSelecionado,
+        pontos: 0,
+        membros: [{
+            uid: userData.uid,
+            nome: userData.nome,
+            avatar: userData.avatar,
+            cargo: 'lider',
+            pontos: userData.pontos,
+            online: true
+        }],
+        rank: guildas.length + 1,
+        batalhasVencidas: 0,
+        aulasCompletadas: 0,
+        desafios: [
+            { id: 1, titulo: 'Completar 50 aulas como guilda', atual: 0, total: 50, recompensa: 2000 }
+        ],
+        chat: [{ user: 'Sistema', text: `Bem-vindos à ${nome}!`, time: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}), isSystem: true }]
+    };
+    
+    guildas.push(novaGuilda);
+    userData.guildaId = novaGuilda.id;
+    userData.pontos -= 1000;
+    minhaGuilda = novaGuilda;
+    
+    salvarUserData();
+    closeModal('criarGuilda');
+    
+    alert(`🏰 Guilda ${nome} criada com sucesso!`);
+    showPage('guilda-detalhe');
+    carregarGuildaDetalhe();
+}
+
+function verGuilda(guildaId) {
+    guildaSelecionada = guildas.find(g => g.id === guildaId);
+    if (!guildaSelecionada) return;
+    
+    const modalContent = document.getElementById('guildaModalContent');
+    document.getElementById('guildaModalTitulo').textContent = `🏰 ${guildaSelecionada.nome}`;
+    
+    modalContent.innerHTML = `
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="width: 100px; height: 100px; margin: 0 auto 1rem; border-radius: 20px; background: linear-gradient(135deg, ${guildaSelecionada.cor}, ${guildaSelecionada.cor}88); display: flex; align-items: center; justify-content: center; font-size: 3rem;">🏰</div>
+            <span style="background: ${guildaSelecionada.cor}; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; color: white;">${guildaSelecionada.sigla}</span>
+            <p style="color: var(--gray); margin-top: 0.5rem;">${guildaSelecionada.descricao}</p>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem;">
+            <div style="text-align: center; padding: 1rem; background: var(--glass); border-radius: 12px;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">${guildaSelecionada.membros.length}</div>
+                <div style="font-size: 0.8rem; color: var(--gray);">Membros</div>
+            </div>
+            <div style="text-align: center; padding: 1rem; background: var(--glass); border-radius: 12px;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning);">${guildaSelecionada.pontos.toLocaleString()}</div>
+                <div style="font-size: 0.8rem; color: var(--gray);">Pontos</div>
+            </div>
+            <div style="text-align: center; padding: 1rem; background: var(--glass); border-radius: 12px;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">#${guildaSelecionada.rank}</div>
+                <div style="font-size: 0.8rem; color: var(--gray);">Rank</div>
+            </div>
+        </div>
+        
+        <h4 style="margin-bottom: 1rem;">Membros (${guildaSelecionada.membros.length})</h4>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem;">
+            ${guildaSelecionada.membros.slice(0, 5).map(m => `
+                <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: var(--glass); border-radius: 12px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">${m.avatar}</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600;">${m.nome} ${m.cargo === 'lider' ? '👑' : ''}</div>
+                        <div style="font-size: 0.8rem; color: var(--gray);">⚡ ${m.pontos.toLocaleString()}</div>
+                    </div>
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: ${m.online ? 'var(--success)' : 'var(--gray)'};"></span>
+                </div>
+            `).join('')}
+            ${guildaSelecionada.membros.length > 5 ? `<p style="text-align: center; color: var(--gray); font-size: 0.9rem;">+${guildaSelecionada.membros.length - 5} membros</p>` : ''}
+        </div>
+        
+        <button class="btn btn-primary" onclick="entrarGuilda('${guildaSelecionada.id}'); closeModal('guilda');" style="width: 100%;">Solicitar Entrada</button>
+    `;
+    
+    openModal('guilda');
+}
+
+function entrarGuilda(guildaId) {
+    if (!userData) {
+        openModal('auth');
+        return;
+    }
+    
+    if (minhaGuilda) {
+        alert('Você já está em uma guilda! Saia primeiro.');
+        return;
+    }
+    
+    const guilda = guildas.find(g => g.id === guildaId);
+    if (!guilda) return;
+    
+    // Adicionar membro
+    guilda.membros.push({
+        uid: userData.uid,
+        nome: userData.nome,
+        avatar: userData.avatar,
+        cargo: 'membro',
+        pontos: userData.pontos,
+        online: true
+    });
+    
+    userData.guildaId = guildaId;
+    minhaGuilda = guilda;
+    salvarUserData();
+    
+    alert(`🎉 Bem-vindo à ${guilda.nome}!`);
+    showPage('guilda-detalhe');
+    carregarGuildaDetalhe();
+}
+
+function carregarGuildaDetalhe() {
+    if (!minhaGuilda) return;
+    
+    // Atualizar informações
+    document.getElementById('guildaBanner').style.background = `linear-gradient(135deg, ${minhaGuilda.cor}, ${minhaGuilda.cor}88)`;
+    document.getElementById('guildaIconGrande').style.background = `linear-gradient(135deg, ${minhaGuilda.cor}, ${minhaGuilda.cor}88)`;
+    document.getElementById('guildaNomeDisplay').textContent = minhaGuilda.nome;
+    document.getElementById('guildaSiglaDisplay').textContent = minhaGuilda.sigla;
+    document.getElementById('guildaSiglaDisplay').style.background = minhaGuilda.cor;
+    document.getElementById('guildaTipoDisplay').textContent = minhaGuilda.tipo;
+    document.getElementById('guildaDescDisplay').textContent = minhaGuilda.descricao;
+    document.getElementById('guildaPontos').textContent = `⚡ ${minhaGuilda.pontos.toLocaleString()}`;
+    document.getElementById('guildaRank').textContent = `Rank #${minhaGuilda.rank}`;
+    document.getElementById('guildaTotalMembros').textContent = minhaGuilda.membros.length;
+    
+    // Estatísticas
+    document.getElementById('guildaStatAulas').textContent = minhaGuilda.aulasCompletadas.toLocaleString();
+    document.getElementById('guildaStatBatalhas').textContent = minhaGuilda.batalhasVencidas;
+    document.getElementById('guildaStatStreak').textContent = Math.max(...minhaGuilda.membros.map(m => m.streak || 0), 0);
+    document.getElementById('guildaStatMembrosAtivos').textContent = minhaGuilda.membros.filter(m => m.online).length;
+    
+    // Lista de membros
+    const listaMembros = document.getElementById('guildaListaMembros');
+    listaMembros.innerHTML = minhaGuilda.membros.sort((a, b) => {
+        if (a.cargo === 'lider') return -1;
+        if (b.cargo === 'lider') return 1;
+        if (a.cargo === 'oficial') return -1;
+        if (b.cargo === 'oficial') return 1;
+        return b.pontos - a.pontos;
+    }).map(m => `
+        <div class="guilda-membro">
+            <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">${m.avatar}</div>
+            <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-weight: 600;">${m.nome}</span>
+                    <span class="guilda-cargo cargo-${m.cargo}">${m.cargo}</span>
+                    ${m.online ? '<span style="width: 8px; height: 8px; background: var(--success); border-radius: 50%;"></span>' : ''}
+                </div>
+                <div style="font-size: 0.85rem; color: var(--gray);">⚡ ${m.pontos.toLocaleString()} pts • Nível ${Math.floor(m.pontos / 1000) + 1}</div>
+            </div>
+            ${m.uid !== userData?.uid ? `<button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="desafiarUsuario('${m.uid}', '${m.nome}')">⚔️ Desafiar</button>` : ''}
+        </div>
+    `).join('');
+    
+    // Desafios
+    const desafiosLista = document.getElementById('guildaDesafiosLista');
+    desafiosLista.innerHTML = minhaGuilda.desafios.map(d => `
+        <div class="desafio-card">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                <div>
+                    <h4 style="margin-bottom: 0.25rem;">${d.titulo}</h4>
+                    <p style="font-size: 0.85rem; color: var(--gray);">Recompensa: ⚡ ${d.recompensa} pts para a guilda</p>
+                </div>
+                <span style="font-weight: 700; color: var(--primary);">${Math.floor((d.atual / d.total) * 100)}%</span>
+            </div>
+            <div class="desafio-progresso">
+                <div class="desafio-progresso-fill" style="width: ${(d.atual / d.total) * 100}%;"></div>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--gray); margin-top: 0.5rem; text-align: right;">${d.atual} / ${d.total}</p>
+        </div>
+    `).join('');
+    
+    // Chat
+    renderGuildaChat();
+}
+
+function showGuildaTab(tab) {
+    document.querySelectorAll('[id^="guildaTab"]').forEach(el => el.classList.add('hidden'));
+    document.getElementById(`guildaTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.remove('hidden');
+    
+    document.querySelectorAll('#page-guilda-detalhe .tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+function renderGuildaChat() {
+    const container = document.getElementById('guildaChatMensagens');
+    if (!container || !minhaGuilda) return;
+    
+    container.innerHTML = minhaGuilda.chat.map(msg => `
+        <div style="display: flex; gap: 0.75rem; ${msg.isSystem ? 'justify-content: center;' : ''}">
+            ${!msg.isSystem ? `
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">${msg.avatar || '👤'}</div>
+            ` : ''}
+            <div style="${msg.isSystem ? 'background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 12px; font-size: 0.8rem; color: var(--gray);' : 'flex: 1;'}">
+                ${!msg.isSystem ? `<div style="font-size: 0.8rem; color: var(--gray); margin-bottom: 0.25rem;">${msg.user} ${msg.isLider ? '👑' : ''} <span style="font-size: 0.7rem;">${msg.time}</span></div>` : ''}
+                <div style="background: ${msg.isSystem ? 'transparent' : 'var(--glass)'}; padding: ${msg.isSystem ? '0' : '0.75rem 1rem'}; border-radius: 12px; ${msg.isMe ? 'background: var(--primary);' : ''}">${msg.text}</div>
+            </div>
+        </div>
+    `).join('');
+    
+    container.scrollTop = container.scrollHeight;
+}
+
+function handleGuildaChatInput(e) {
+    if (e.key === 'Enter') enviarMensagemGuilda();
+}
+
+function enviarMensagemGuilda() {
+    const input = document.getElementById('guildaChatInput');
+    const text = input.value.trim();
+    if (!text || !minhaGuilda) return;
+    
+    const membro = minhaGuilda.membros.find(m => m.uid === userData.uid);
+    
+    minhaGuilda.chat.push({
+        user: userData.nome,
+        avatar: userData.avatar,
+        text: text,
+        time: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
+        isMe: true,
+        isLider: membro?.cargo === 'lider'
+    });
+    
+    input.value = '';
+    renderGuildaChat();
+    
+    // Simular resposta
+    setTimeout(() => {
+        minhaGuilda.chat.push({
+            user: 'Carlos',
+            avatar: '🥷',
+            text: 'Boa! Vamos manter o foco! 💪',
+            time: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})
+        });
+        renderGuildaChat();
+    }, 3000);
+}
+
+function sairDaGuilda() {
+    if (!confirm('Tem certeza que deseja sair da guilda?')) return;
+    
+    minhaGuilda.membros = minhaGuilda.membros.filter(m => m.uid !== userData.uid);
+    userData.guildaId = null;
+    minhaGuilda = null;
+    
+    salvarUserData();
+    showPage('guildas');
+    renderGuildas();
+}
+
+function convidarMembro() {
+    const codigo = Math.random().toString(36).substring(2, 8).toUpperCase();
+    alert(`🔗 Código de convite: ${codigo}\n\nCompartilhe com amigos!`);
+}
+
+// ==================== SISTEMA DE BATALHAS 1V1 ====================
+
+let batalhaAtual = null;
+let batalhaTimer = null;
+let oponenteBatalha = null;
+
+function desafiarUsuario(uid, nome) {
+    if (!userData) {
+        openModal('auth');
+        return;
+    }
+    
+    oponenteBatalha = { uid, nome };
+    
+    document.getElementById('batalhaOponenteNome').textContent = nome;
+    
+    // Mostrar tela de espera
+    document.getElementById('batalhaTelaEspera').classList.remove('hidden');
+    document.getElementById('batalhaTelaContagem').classList.add('hidden');
+    document.getElementById('batalhaTelaQuiz').classList.add('hidden');
+    document.getElementById('batalhaTelaResultado').classList.add('hidden');
+    
+    openModal('batalhaCompleto');
+    
+    // Simular aceitação após 3 segundos
+    setTimeout(() => {
+        iniciarContagem();
+    }, 3000);
+}
+
+function cancelarConvite() {
+    closeModal('batalhaCompleto');
+    oponenteBatalha = null;
+}
+
+function iniciarContagem() {
+    document.getElementById('batalhaTelaEspera').classList.add('hidden');
+    document.getElementById('batalhaTelaContagem').classList.remove('hidden');
+    
+    let count = 3;
+    const numero = document.getElementById('contagemNumero');
+    numero.textContent = count;
+    
+    const interval = setInterval(() => {
+        count--;
+        if (count > 0) {
+            numero.textContent = count;
+        } else {
+            clearInterval(interval);
+            iniciarBatalhaQuiz();
+        }
+    }, 1000);
+}
+
+function iniciarBatalhaQuiz() {
+    document.getElementById('batalhaTelaContagem').classList.add('hidden');
+    document.getElementById('batalhaTelaQuiz').classList.remove('hidden');
+    
+    // Gerar perguntas aleatórias
+    const perguntas = gerarPerguntasBatalha();
+    
+    batalhaAtual = {
+        perguntas: perguntas,
+        perguntaAtual: 0,
+        meusPontos: 0,
+        pontosOponente: 0,
+        respostas: []
+    };
+    
+    mostrarPerguntaBatalha();
+}
+
+function gerarPerguntasBatalha() {
+    // Perguntas de exemplo (em produção, virão do banco de dados)
+    return [
+        {
+            pergunta: 'Qual a tradução de "Hello"?',
+            opcoes: ['Olá', 'Adeus', 'Por favor', 'Obrigado'],
+            correta: 0
+        },
+        {
+            pergunta: 'Em Python, como declaramos uma função?',
+            opcoes: ['function', 'def', 'func', 'define'],
+            correta: 1
+        },
+        {
+            pergunta: 'Qual princípio do desenho realista?',
+            opcoes: ['Exagerar proporções', 'Proporções exatas', 'Cores vibrantes', 'Linhas grossas'],
+            correta: 1
+        },
+        {
+            pergunta: 'O que é um empreendedor?',
+            opcoes: ['Funcionário público', 'Quem identifica oportunidades', 'Aposentado', 'Estudante'],
+            correta: 1
+        },
+        {
+            pergunta: 'Qual tag HTML cria um link?',
+            opcoes: ['<link>', '<a>', '<href>', '<url>'],
+            correta: 1
+        }
+    ];
+}
+
+function mostrarPerguntaBatalha() {
+    if (batalhaAtual.perguntaAtual >= batalhaAtual.perguntas.length) {
+        finalizarBatalha();
+        return;
+    }
+    
+    const p = batalhaAtual.perguntas[batalhaAtual.perguntaAtual];
+    
+    document.getElementById('batalhaPerguntaContainer').innerHTML = `
+        <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">${p.pergunta}</h3>
+        <div style="font-size: 0.9rem; color: var(--gray);">Pergunta ${batalhaAtual.perguntaAtual + 1} de ${batalhaAtual.perguntas.length}</div>
+    `;
+    
+    document.getElementById('batalhaOpcoes').innerHTML = p.opcoes.map((op, i) => `
+        <button class="btn btn-secondary" onclick="responderBatalha(${i})" style="text-align: left; padding: 1rem; justify-content: flex-start;">
+            <span style="display: inline-block; width: 28px; height: 28px; background: var(--glass); border-radius: 50%; text-align: center; line-height: 28px; margin-right: 0.75rem; font-weight: 700;">${String.fromCharCode(65 + i)}</span>
+            ${op}
+        </button>
+    `).join('');
+    
+    // Iniciar timer
+    iniciarTimerBatalha();
+}
+
+function iniciarTimerBatalha() {
+    let tempo = 10;
+    const timerEl = document.getElementById('batalhaTimer');
+    const barra = document.getElementById('batalhaTempoRestante');
+    
+    timerEl.textContent = tempo;
+    barra.style.width = '100%';
+    
+    batalhaTimer = setInterval(() => {
+        tempo--;
+        timerEl.textContent = tempo;
+        barra.style.width = `${(tempo / 10) * 100}%`;
+        
+        if (tempo <= 3) {
+            timerEl.style.color = 'var(--danger)';
+        }
+        
+        if (tempo <= 0) {
+            clearInterval(batalhaTimer);
+            responderBatalha(-1); // Tempo esgotado
+        }
+    }, 1000);
+}
+
+function responderBatalha(resposta) {
+    clearInterval(batalhaTimer);
+    document.getElementById('batalhaTimer').style.color = 'var(--warning)';
+    
+    const p = batalhaAtual.perguntas[batalhaAtual.perguntaAtual];
+    const correta = resposta === p.correta;
+    
+    if (correta) {
+        batalhaAtual.meusPontos++;
+        // Feedback visual de acerto
+        event.target.style.background = 'var(--success)';
+        event.target.style.borderColor = 'var(--success)';
+    } else {
+        // Feedback visual de erro
+        if (event.target) {
+            event.target.style.background = 'var(--danger)';
+            event.target.style.borderColor = 'var(--danger)';
+        }
+        // Destacar correta
+        document.querySelectorAll('#batalhaOpcoes button')[p.correta].style.background = 'var(--success)';
+    }
+    
+    // Simular resposta do oponente (aleatório para demo)
+    setTimeout(() => {
+        const acertoOponente = Math.random() > 0.4; // 60% de acerto
+        if (acertoOponente) batalhaAtual.pontosOponente++;
+        
+        // Atualizar placar
+        document.getElementById('batalhaMeuPlacar').textContent = `Você: ${batalhaAtual.meusPontos}`;
+        document.getElementById('batalhaOponentePlacar').textContent = `${oponenteBatalha.nome}: ${batalhaAtual.pontosOponente}`;
+        
+        batalhaAtual.perguntaAtual++;
+        
+        setTimeout(() => {
+            mostrarPerguntaBatalha();
+        }, 1500);
+    }, 1000);
+}
+
+function finalizarBatalha() {
+    document.getElementById('batalhaTelaQuiz').classList.add('hidden');
+    document.getElementById('batalhaTelaResultado').classList.remove('hidden');
+    
+    const vitoria = batalhaAtual.meusPontos > batalhaAtual.pontosOponente;
+    const empate = batalhaAtual.meusPontos === batalhaAtual.pontosOponente;
+    
+    const icon = document.getElementById('batalhaResultadoIcon');
+    const titulo = document.getElementById('batalhaResultadoTitulo');
+    const desc = document.getElementById('batalhaResultadoDescricao');
+    const xpEl = document.getElementById('batalhaXPGanho');
+    const ptsEl = document.getElementById('batalhaPontosGanhos');
+    
+    if (vitoria) {
+        icon.textContent = '🏆';
+        titulo.textContent = 'Vitória!';
+        titulo.style.color = 'var(--success)';
+        desc.textContent = `Você venceu ${oponenteBatalha.nome} por ${batalhaAtual.meusPontos} a ${batalhaAtual.pontosOponente}!`;
+        xpEl.textContent = '+100 XP';
+        ptsEl.textContent = '+50 pts';
+        
+        // Aplicar recompensas
+        if (userData) {
+            showXP(100);
+            addPontos(50);
+            userData.batalhasVencidas = (userData.batalhasVencidas || 0) + 1;
+            salvarUserData();
+        }
+    } else if (empate) {
+        icon.textContent = '🤝';
+        titulo.textContent = 'Empate!';
+        titulo.style.color = 'var(--warning)';
+        desc.textContent = `${batalhaAtual.meusPontos} a ${batalhaAtual.pontosOponente} - Bom jogo!`;
+        xpEl.textContent = '+30 XP';
+        ptsEl.textContent = '+10 pts';
+        
+        if (userData) {
+            showXP(30);
+            addPontos(10);
+        }
+    } else {
+        icon.textContent = '😅';
+        titulo.textContent = 'Derrota';
+        titulo.style.color = 'var(--danger)';
+        desc.textContent = `${oponenteBatalha.nome} venceu por ${batalhaAtual.pontosOponente} a ${batalhaAtual.meusPontos}. Continue estudando!`;
+        xpEl.textContent = '+10 XP';
+        ptsEl.textContent = '+0 pts';
+        
+        if (userData) {
+            showXP(10);
+        }
+    }
+}
+
+function fecharBatalha() {
+    closeModal('batalhaCompleto');
+    batalhaAtual = null;
+    oponenteBatalha = null;
+}
+
+function desistirBatalha() {
+    if (confirm('Deseja realmente desistir? Você perderá a batalha.')) {
+        clearInterval(batalhaTimer);
+        closeModal('batalhaCompleto');
+        batalhaAtual = null;
+    }
+}
+
+// ==================== RANKING DE GUILDAS ====================
+
+function showRanking(tipo) {
+    if (tipo === 'guildas') {
+        showPage('ranking-guildas');
+        renderRankingGuildas();
+        return;
+    }
+    
+    // Atualizar tabs
+    document.querySelectorAll('#page-ranking .tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    if (tipo === 'global') {
+        renderRanking();
+    }
+}
+
+function renderRankingGuildas() {
+    const lista = document.getElementById('rankingGuildasLista');
+    if (!lista) return;
+    
+    const guildasOrdenadas = [...guildas].sort((a, b) => b.pontos - a.pontos);
+    
+    lista.innerHTML = guildasOrdenadas.map((g, i) => `
+        <div style="display: grid; grid-template-columns: 80px 1fr 150px 150px 100px; padding: 1rem 1.5rem; border-bottom: 1px solid var(--glass-border); align-items: center; ${i < 3 ? 'background: rgba(255,255,255,0.03);' : ''}">
+            <div style="font-size: 1.5rem; font-weight: 700; ${i === 0 ? 'color: #ffd700;' : i === 1 ? 'color: #c0c0c0;' : i === 2 ? 'color: #cd7f32;' : 'color: var(--gray);'}">#${i + 1}</div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 50px; height: 50px; border-radius: 12px; background: linear-gradient(135deg, ${g.cor}, ${g.cor}88); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🏰</div>
+                <div>
+                    <div style="font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        ${g.nome}
+                        <span style="background: ${g.cor}; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.7rem; color: white;">${g.sigla}</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--gray);">${g.tipo} • ${g.membros.length} membros</div>
+                </div>
+            </div>
+            <div style="text-align: center;">${g.membros.length}</div>
+            <div style="text-align: center; font-weight: 700; color: var(--warning);">⚡ ${g.pontos.toLocaleString()}</div>
+            <div style="text-align: center;">
+                ${userData?.guildaId === g.id ? 
+                    '<span style="color: var(--success); font-size: 0.85rem;">✓ Sua guilda</span>' : 
+                    `<button class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="entrarGuilda('${g.id}')">Entrar</button>`
+                }
+            </div>
+        </div>
+    `).join('');
+}
+
+// ==================== INICIALIZAÇÃO ====================
+
+// Sobrescrever init original para incluir guildas
+const initOriginal = init;
+init = function() {
+    initOriginal();
+    initGuildas();
+};

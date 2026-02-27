@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEURO 3.0 - Aprenda de Verdade</title>
+    
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
         
@@ -29,6 +33,7 @@
             --gray-light: #e2e8f0;
             --white: #ffffff;
             --adm: #ffd700;
+            --vip: #fbbf24;
             --glass: rgba(255,255,255,0.05);
             --glass-border: rgba(255,255,255,0.1);
         }
@@ -63,17 +68,39 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Navegação Minimalista */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes xp-pop {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -100%) scale(0.8); }
+        }
+
+        @keyframes flame {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        @keyframes achievement-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.6); }
+        }
+
+        /* Navegação */
         nav {
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.9);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
             padding: 1rem 2rem;
             z-index: 1000;
-            transition: all 0.3s;
         }
 
         .nav-container {
@@ -95,7 +122,6 @@
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .nav-links {
@@ -154,10 +180,10 @@
         }
 
         .stat-item.points { color: var(--warning); }
-        .stat-item.streak { color: var(--danger); }
+        .stat-item.streak { color: var(--danger); animation: flame 1s ease-in-out infinite alternate; }
         .stat-item.level { color: var(--success); }
 
-        /* Botões Minimalistas */
+        /* Botões */
         .btn {
             padding: 0.75rem 1.5rem;
             border-radius: 12px;
@@ -213,6 +239,12 @@
             animation: pulse-glow 2s infinite;
         }
 
+        .btn-adm {
+            background: linear-gradient(135deg, var(--adm), #ffed4e);
+            color: var(--dark);
+            font-weight: 800;
+        }
+
         /* Páginas */
         .page {
             display: none;
@@ -225,7 +257,7 @@
             display: block;
         }
 
-        /* Hero Dinâmico */
+        /* Hero */
         .hero {
             background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
             padding: 6rem 2rem;
@@ -270,7 +302,7 @@
             margin-bottom: 2rem;
         }
 
-        /* Cards Minimalistas */
+        /* Cards */
         .section {
             padding: 4rem 2rem;
             max-width: 1400px;
@@ -355,6 +387,8 @@
         .badge-popular { background: var(--secondary); color: white; }
         .badge-hard { background: var(--danger); color: white; }
         .badge-adm { background: var(--adm); color: var(--dark); }
+        .badge-vip { background: var(--vip); color: var(--dark); }
+        .badge-verified { background: var(--success); color: white; }
 
         .card-content {
             padding: 1.5rem;
@@ -363,6 +397,9 @@
         .card-content h3 {
             margin-bottom: 0.5rem;
             font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .card-content p {
@@ -388,7 +425,7 @@
         .cat-negocios .card-image { background: linear-gradient(135deg, rgba(5,150,105,0.3), rgba(16,185,129,0.3)); }
         .cat-saude .card-image { background: linear-gradient(135deg, rgba(220,38,38,0.3), rgba(248,113,113,0.3)); }
 
-        /* Sistema de Gamificação - HUD */
+        /* HUD de Gamificação */
         .gamification-hud {
             position: fixed;
             top: 80px;
@@ -417,19 +454,55 @@
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             padding: 3px;
+            position: relative;
         }
 
-        .avatar-frame img {
+        .avatar-frame img, .avatar-frame .avatar-fallback {
             width: 100%;
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
             background: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .vip-crown {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            font-size: 1.2rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+
+        .adm-icon {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 1rem;
+            background: var(--adm);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--dark);
+        }
+
+        .verified-badge {
+            color: var(--success);
+            font-size: 0.9rem;
         }
 
         .hud-info h4 {
             font-size: 1.1rem;
             margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
         }
 
         .hud-info span {
@@ -478,589 +551,30 @@
             text-transform: uppercase;
         }
 
-        /* Conquistas */
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .achievement {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 1.25rem;
-            text-align: center;
-            transition: all 0.3s;
-            opacity: 0.4;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .achievement.unlocked {
-            opacity: 1;
-            border-color: var(--warning);
-            animation: achievement-glow 2s infinite;
-        }
-
-        @keyframes achievement-glow {
-            0%, 100% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.6); }
-        }
-
-        .achievement-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .achievement h4 {
-            font-size: 0.85rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .achievement p {
-            font-size: 0.75rem;
-            color: var(--gray);
-        }
-
-        .achievement-points {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--warning);
-            color: var(--dark);
-            padding: 0.2rem 0.5rem;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            font-weight: 700;
-        }
-
-        /* NEURO-Zap (Grupos Estilo WhatsApp) */
-        .neuro-zap-container {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            z-index: 999;
-        }
-
-        .zap-window {
-            width: 380px;
-            height: 600px;
-            background: var(--dark);
-            border-radius: 20px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-            border: 1px solid var(--glass-border);
-            margin-bottom: 1rem;
-        }
-
-        .zap-window.active {
-            display: flex;
-        }
-
-        .zap-header {
-            padding: 1rem;
-            background: linear-gradient(135deg, #075e54, #128c7e);
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .zap-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .zap-info h4 {
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .zap-info span {
-            font-size: 0.8rem;
-            opacity: 0.9;
-        }
-
-        .zap-tabs {
-            display: flex;
-            background: #075e54;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .zap-tab {
-            flex: 1;
-            padding: 0.75rem;
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.7);
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-        }
-
-        .zap-tab.active {
-            color: white;
-            border-bottom: 3px solid var(--secondary);
-        }
-
-        .zap-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0.5rem;
-        }
-
-        .zap-chat-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.75rem;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .zap-chat-item:hover {
-            background: rgba(255,255,255,0.05);
-        }
-
-        .zap-chat-item.unread .zap-preview {
-            font-weight: 600;
-            color: var(--light);
-        }
-
-        .zap-chat-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-
-        .zap-chat-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .zap-chat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.25rem;
-        }
-
-        .zap-chat-name {
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .zap-time {
-            font-size: 0.75rem;
-            color: var(--gray);
-        }
-
-        .zap-preview {
-            font-size: 0.85rem;
-            color: var(--gray);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .zap-badge {
-            background: var(--success);
-            color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
-        .zap-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem;
-            background: #0b141a;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .zap-message {
-            max-width: 80%;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            position: relative;
-            animation: message-pop 0.3s;
-        }
-
-        @keyframes message-pop {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .zap-message.received {
-            background: #202c33;
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-
-        .zap-message.sent {
-            background: #005c4b;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-
-        .zap-message-time {
-            font-size: 0.7rem;
-            color: rgba(255,255,255,0.6);
-            margin-top: 0.25rem;
-            text-align: right;
-        }
-
-        .zap-input-area {
-            padding: 1rem;
-            background: #202c33;
+        /* Tabs */
+        .tabs {
             display: flex;
             gap: 0.5rem;
-            align-items: center;
-        }
-
-        .zap-input {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            border: none;
-            border-radius: 20px;
-            background: #2a3942;
-            color: white;
-            outline: none;
-        }
-
-        .zap-send-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--success);
-            border: none;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .zap-send-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .zap-toggle {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #25d366, #128c7e);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.75rem;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
-            margin-left: auto;
-            position: relative;
-        }
-
-        .zap-toggle::after {
-            content: attr(data-unread);
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--danger);
-            color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            display: none;
-        }
-
-        .zap-toggle.has-unread::after {
-            display: block;
-        }
-
-        /* Estilos de Desenho */
-        .art-styles {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .art-style {
-            background: var(--glass);
-            border: 2px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 1.5rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .art-style:hover, .art-style.active {
-            border-color: var(--secondary);
-            background: rgba(236, 72, 153, 0.1);
-            transform: translateY(-3px);
-        }
-
-        .art-style-icon {
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .art-style h4 {
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .art-style p {
-            font-size: 0.75rem;
-            color: var(--gray);
-        }
-
-        /* Aula - Estilo NEURO */
-        .lesson-container {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        .lesson-header {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            padding: 2rem;
-            border-radius: 20px;
             margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
 
-        .lesson-content {
+        .tab {
+            padding: 0.75rem 1.5rem;
             background: var(--glass);
             border: 1px solid var(--glass-border);
-            padding: 2.5rem;
-            border-radius: 20px;
-            line-height: 1.8;
-        }
-
-        .neuro-box {
-            background: rgba(99, 102, 241, 0.1);
-            border-left: 4px solid var(--primary);
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-radius: 0 12px 12px 0;
-        }
-
-        .neuro-box h3 {
-            color: var(--primary);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .real-talk {
-            background: rgba(245, 158, 11, 0.1);
-            border-left: 4px solid var(--warning);
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-radius: 0 12px 12px 0;
-        }
-
-        .real-talk h4 {
-            color: var(--warning);
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .example-box {
-            background: rgba(255,255,255,0.05);
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin: 1rem 0;
-            border: 1px solid var(--glass-border);
-        }
-
-        .example-box strong {
-            color: var(--success);
-        }
-
-        /* Quiz Interativo */
-        .quiz-container {
-            margin: 2rem 0;
-        }
-
-        .quiz-option {
-            background: var(--glass);
-            border: 2px solid var(--glass-border);
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 0.75rem;
+            border-radius: 50px;
+            color: var(--gray);
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+            font-size: 0.9rem;
         }
 
-        .quiz-option:hover {
+        .tab:hover, .tab.active {
+            background: var(--primary);
+            color: white;
             border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.1);
-        }
-
-        .quiz-option.correct {
-            border-color: var(--success);
-            background: rgba(16, 185, 129, 0.2);
-        }
-
-        .quiz-option.wrong {
-            border-color: var(--danger);
-            background: rgba(239, 68, 68, 0.2);
-        }
-
-        .quiz-option-letter {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--glass);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-
-        /* Loja de Recompensas */
-        .shop-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .shop-item {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.3s;
-        }
-
-        .shop-item:hover {
-            transform: translateY(-5px);
-            border-color: var(--warning);
-        }
-
-        .shop-item-image {
-            height: 150px;
-            background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(239,68,68,0.2));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-        }
-
-        .shop-item-content {
-            padding: 1.5rem;
-        }
-
-        .shop-item-price {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--warning);
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin: 0.5rem 0;
-        }
-
-        /* Ranking */
-        .leaderboard {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--glass-border);
-            transition: all 0.3s;
-        }
-
-        .leaderboard-item:hover {
-            background: rgba(255,255,255,0.03);
-        }
-
-        .leaderboard-rank {
-            width: 40px;
-            font-size: 1.5rem;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        .rank-1 { color: #ffd700; }
-        .rank-2 { color: #c0c0c0; }
-        .rank-3 { color: #cd7f32; }
-
-        .leaderboard-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            margin: 0 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-
-        .leaderboard-info {
-            flex: 1;
-        }
-
-        .leaderboard-info h4 {
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .leaderboard-info span {
-            font-size: 0.85rem;
-            color: var(--gray);
-        }
-
-        .leaderboard-points {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--warning);
         }
 
         /* Modal */
@@ -1198,55 +712,26 @@
             color: var(--gray);
         }
 
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .tab {
-            padding: 0.75rem 1.5rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 50px;
-            color: var(--gray);
-            font-weight: 600;
+        /* File Upload */
+        .file-upload {
+            border: 2px dashed var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 0.9rem;
         }
 
-        .tab:hover, .tab.active {
-            background: var(--primary);
-            color: white;
+        .file-upload:hover {
             border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
         }
 
-        /* Utilitários */
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        .mb-1 { margin-bottom: 1rem; }
-        .mb-2 { margin-bottom: 2rem; }
-        .mt-2 { margin-top: 2rem; }
-        .flex { display: flex; }
-        .gap-2 { gap: 2rem; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-
-        /* Responsivo */
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .hero h1 { font-size: 2.5rem; }
-            .card-grid { grid-template-columns: 1fr; }
-            .gamification-hud { display: none; }
-            .zap-window { width: 100vw; height: 100vh; right: 0; bottom: 0; border-radius: 0; }
-            .option-grid { grid-template-columns: 1fr; }
-            .section { padding: 2rem 1rem; }
+        .file-upload input {
+            display: none;
         }
 
-        /* Animação de XP */
+        /* XP Popup */
         .xp-popup {
             position: fixed;
             top: 50%;
@@ -1263,27 +748,31 @@
             pointer-events: none;
         }
 
-        @keyframes xp-pop {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -100%) scale(0.8); }
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2.5rem; }
+            .card-grid { grid-template-columns: 1fr; }
+            .gamification-hud { display: none; }
+            .option-grid { grid-template-columns: 1fr; }
+            .section { padding: 2rem 1rem; }
         }
 
-        /* Streak Counter */
-        .streak-flame {
-            animation: flame 1s ease-in-out infinite alternate;
-        }
-
-        @keyframes flame {
-            from { transform: scale(1); }
-            to { transform: scale(1.1); }
-        }
+        /* Utilitários */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mb-1 { margin-bottom: 1rem; }
+        .mb-2 { margin-bottom: 2rem; }
+        .mt-2 { margin-top: 2rem; }
+        .flex { display: flex; }
+        .gap-2 { gap: 2rem; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
     </style>
 </head>
 <body>
 
-    <!-- Navegação -->
+    <!-- ==================== NAVEGAÇÃO ==================== -->
     <nav>
         <div class="nav-container">
             <div class="logo" onclick="showPage('home')">
@@ -1291,23 +780,26 @@
             </div>
             
             <ul class="nav-links">
-                <li><a onclick="showPage('home')" class="active">Início</a></li>
-                <li><a onclick="showPage('cursos')">Cursos</a></li>
-                <li><a onclick="showPage('conquistas')">Conquistas</a></li>
-                <li><a onclick="showPage('loja')">Loja</a></li>
-                <li><a onclick="showPage('ranking')">Ranking</a></li>
+                <li><a onclick="showPage('home')" class="active" id="nav-home">Início</a></li>
+                <li><a onclick="showPage('cursos')" id="nav-cursos">Cursos</a></li>
+                <li><a onclick="showPage('guildas')" id="nav-guildas">Guildas</a></li>
+                <li><a onclick="showPage('conquistas')" id="nav-conquistas">Conquistas</a></li>
+                <li><a onclick="showPage('loja')" id="nav-loja">Loja</a></li>
+                <li><a onclick="showPage('ranking')" id="nav-ranking">Ranking</a></li>
+                <li><a onclick="showPage('professores')" id="nav-professores" class="hidden">Professores</a></li>
+                <li><a onclick="showPage('adm')" id="nav-adm" class="hidden">ADM</a></li>
             </ul>
             
-            <div class="user-stats">
+            <div class="user-stats" id="userStats">
                 <div class="stat-item points">
                     <span>⚡</span>
                     <span id="navPoints">0</span>
                 </div>
-                <div class="stat-item streak streak-flame">
+                <div class="stat-item streak">
                     <span>🔥</span>
                     <span id="navStreak">0</span>
                 </div>
-                <button class="btn btn-primary" id="btnLogin" onclick="openModal('onboarding')">Começar</button>
+                <button class="btn btn-primary" id="btnLogin" onclick="openModal('auth')">Entrar</button>
                 <div class="hidden" id="userDisplay">
                     <button class="btn btn-secondary" onclick="logout()">Sair</button>
                 </div>
@@ -1315,14 +807,16 @@
         </div>
     </nav>
 
-    <!-- HUD de Gamificação -->
+    <!-- ==================== HUD DE GAMIFICAÇÃO ==================== -->
     <div class="gamification-hud" id="gamificationHud">
         <div class="hud-header">
-            <div class="avatar-frame">
-                <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;" id="hudAvatar">🧑‍🎓</div>
+            <div class="avatar-frame" onclick="openModal('perfil')">
+                <div class="avatar-fallback" id="hudAvatar">🧑‍🎓</div>
+                <span class="vip-crown hidden" id="hudVip">👑</span>
+                <span class="adm-icon hidden" id="hudAdm">⭐</span>
             </div>
             <div class="hud-info">
-                <h4 id="hudName">Estudante</h4>
+                <h4 id="hudName">Visitante <span class="verified-badge hidden" id="hudVerified">✓</span></h4>
                 <span>Nível <span id="hudLevel">1</span></span>
             </div>
         </div>
@@ -1353,13 +847,13 @@
         </div>
     </div>
 
-    <!-- PÁGINA: HOME -->
+    <!-- ==================== PÁGINA: HOME ==================== -->
     <div id="page-home" class="page active">
         <div class="hero">
             <div class="hero-content">
                 <h1>Aprenda de Verdade</h1>
                 <p>Sem decorar. Sem frescura. Seu cérebro é capaz de mais do que você imagina. Gamificado, minimalista, poderoso.</p>
-                <button class="btn btn-primary" onclick="openModal('onboarding')" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
+                <button class="btn btn-primary" onclick="openModal('auth')" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
                     Começar Jornada 🚀
                 </button>
             </div>
@@ -1385,17 +879,38 @@
                     </div>
                 </div>
                 <div class="card">
+                    <div class="card-image">⚔️</div>
+                    <div class="card-content">
+                        <h3>Batalhas 1v1</h3>
+                        <p>Desafie amigos para quizzes em tempo real. Quem sabe mais, ganha mais!</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image">🏰</div>
+                    <div class="card-content">
+                        <h3>Guildas</h3>
+                        <p>Forme clãs de estudo, compita no ranking de guildas e domine juntos.</p>
+                    </div>
+                </div>
+                <div class="card">
                     <div class="card-image">💬</div>
                     <div class="card-content">
                         <h3>NEURO-Zap</h3>
                         <p>Grupos de estudo estilo WhatsApp. Conecte-se, tire dúvidas, encontre seu parceiro de estudos.</p>
                     </div>
                 </div>
+                <div class="card">
+                    <div class="card-image">👨‍🏫</div>
+                    <div class="card-content">
+                        <h3>Professores Verificados</h3>
+                        <p>Aulas com selo de qualidade. Professores reais, conteúdo validado.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- PÁGINA: CURSOS -->
+    <!-- ==================== PÁGINA: CURSOS ==================== -->
     <div id="page-cursos" class="page">
         <div class="section">
             <h1 class="section-title">O que você quer dominar?</h1>
@@ -1404,10 +919,10 @@
                 <button class="tab active" onclick="filterCursos('todos')">Todos</button>
                 <button class="tab" onclick="filterCursos('idiomas')">🌍 Idiomas</button>
                 <button class="tab" onclick="filterCursos('escola')">📚 Escola</button>
-                <button class="tab" onclick="filterCursos('exatas')">🔬 Exatas</button>
                 <button class="tab" onclick="filterCursos('tech')">💻 Tech</button>
                 <button class="tab" onclick="filterCursos('arte')">🎨 Arte</button>
                 <button class="tab" onclick="filterCursos('negocios')">💼 Negócios</button>
+                <button class="tab" onclick="filterCursos('extras')">⭐ Extras</button>
             </div>
 
             <div class="card-grid" id="cursosGrid">
@@ -1416,1010 +931,840 @@
         </div>
     </div>
 
-    <!-- PÁGINA: AULA -->
+    <!-- ==================== PÁGINA: AULA ==================== -->
     <div id="page-aula" class="page">
-        <div class="lesson-container">
-            <div class="lesson-header">
-                <button class="btn btn-secondary" onclick="voltarAulas()">← Voltar</button>
-                <h1 id="aulaTitulo" style="margin-top: 1rem;">Título da Aula</h1>
-                <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
-                    <span class="card-badge badge-new" id="aulaNivel">A1</span>
-                    <span style="color: var(--gray);" id="aulaProgresso">Aula 1 de 20</span>
+        <div class="section">
+            <div style="max-width: 900px; margin: 0 auto;">
+                <button class="btn btn-secondary mb-2" onclick="voltarCurso()">← Voltar ao Curso</button>
+                
+                <div style="background: var(--glass); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 20px; margin-bottom: 2rem;">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <span class="card-badge badge-new" id="aulaNivel">A1</span>
+                        <span style="color: var(--gray);" id="aulaProgresso">Aula 1 de 20</span>
+                    </div>
+                    <h1 id="aulaTitulo" style="font-family: 'Space Grotesk'; font-size: 2rem;">Título da Aula</h1>
+                    <p id="aulaDescricao" style="color: var(--gray); margin-top: 0.5rem;">Descrição breve</p>
                 </div>
-            </div>
 
-            <div class="lesson-content" id="aulaConteudo">
-                <!-- Conteúdo dinâmico -->
-            </div>
+                <div id="aulaConteudo" style="background: var(--glass); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: 20px; line-height: 1.8;">
+                    <!-- Conteúdo dinâmico -->
+                </div>
 
-            <div class="mt-2" style="display: flex; gap: 1rem; justify-content: center;">
-                <button class="btn btn-secondary" onclick="aulaAnterior()">← Anterior</button>
-                <button class="btn btn-primary" onclick="completarAula()">Completar Aula +50 XP ✓</button>
+                <!-- Quiz Section (inicialmente escondido) -->
+                <div id="quizSection" class="hidden" style="background: var(--glass); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 20px; margin-top: 2rem;">
+                    <h2 style="font-family: 'Space Grotesk'; margin-bottom: 1.5rem;">🧠 Quiz Final - Prove que aprendeu!</h2>
+                    <p style="color: var(--gray); margin-bottom: 1.5rem;">Acerte pelo menos 60% para ganhar XP e pontos</p>
+                    
+                    <div id="quizContainer">
+                        <!-- Quiz gerado via JS -->
+                    </div>
+
+                    <div id="quizResult" class="hidden" style="margin-top: 1.5rem; padding: 1.5rem; border-radius: 12px; text-align: center;">
+                        <!-- Resultado do quiz -->
+                    </div>
+
+                    <button class="btn btn-primary hidden" id="btnProximaAula" onclick="proximaAula()" style="width: 100%; margin-top: 1rem;">
+                        Próxima Aula →
+                    </button>
+                </div>
+
+                <div class="mt-2" style="display: flex; gap: 1rem; justify-content: center;" id="aulaActions">
+                    <button class="btn btn-primary" onclick="iniciarQuiz()">
+                        Finalizar Aula & Fazer Quiz ✓
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- PÁGINA: CONQUISTAS -->
+    <!-- ==================== PÁGINA: GUILDAS ==================== -->
+    <div id="page-guildas" class="page">
+        <div class="section">
+            <h1 class="section-title">🏰 Guildas de Estudo</h1>
+            <p class="section-subtitle">Junte-se a um clã ou crie o seu próprio</p>
+
+            <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                <button class="btn btn-primary" onclick="openModal('criarGuilda')">+ Criar Guilda</button>
+                <button class="btn btn-secondary" onclick="showPage('ranking-guildas')">Ver Ranking</button>
+            </div>
+
+            <div class="card-grid" id="guildasGrid">
+                <!-- Guildas geradas via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== PÁGINA: CONQUISTAS ==================== -->
     <div id="page-conquistas" class="page">
         <div class="section">
             <h1 class="section-title">🏆 Suas Conquistas</h1>
             <p class="section-subtitle">Desbloqueie badges e ganhe pontos bônus</p>
 
-            <div class="achievements-grid" id="achievementsList">
-                <!-- Gerado via JS -->
+            <div id="achievementsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
+                <!-- Conquistas geradas via JS -->
             </div>
         </div>
     </div>
 
-    <!-- PÁGINA: LOJA -->
+    <!-- ==================== PÁGINA: LOJA ==================== -->
     <div id="page-loja" class="page">
         <div class="section">
             <h1 class="section-title">🛍️ Loja de Recompensas</h1>
             <p class="section-subtitle">Gaste seus pontos em itens exclusivos</p>
 
-            <div class="shop-grid" id="shopGrid">
-                <!-- Gerado via JS -->
+            <div class="tabs">
+                <button class="tab active" onclick="filterLoja('todos')">Todos</button>
+                <button class="tab" onclick="filterLoja('temas')">🎨 Temas</button>
+                <button class="tab" onclick="filterLoja('vip')">👑 VIP</button>
+                <button class="tab" onclick="filterLoja('consumiveis')">⚡ Consumíveis</button>
+                <button class="tab" onclick="filterLoja('avatares')">🎭 Avatares</button>
+            </div>
+
+            <div class="card-grid" id="shopGrid">
+                <!-- Itens gerados via JS -->
             </div>
         </div>
     </div>
 
-    <!-- PÁGINA: RANKING -->
+    <!-- ==================== PÁGINA: RANKING ==================== -->
     <div id="page-ranking" class="page">
         <div class="section">
             <h1 class="section-title">🏅 Ranking Global</h1>
             <p class="section-subtitle">Compita com estudantes do mundo todo</p>
 
-            <div class="leaderboard" id="leaderboardList">
-                <!-- Gerado via JS -->
+            <div class="tabs">
+                <button class="tab active" onclick="showRanking('global')">🌍 Global</button>
+                <button class="tab" onclick="showRanking('guildas')">🏰 Guildas</button>
+                <button class="tab" onclick="showRanking('amigos')">👥 Amigos</button>
+            </div>
+
+            <div id="rankingGlobal" style="background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden;">
+                <!-- Ranking gerado via JS -->
             </div>
         </div>
     </div>
 
-    <!-- NEURO-Zap -->
-    <div class="neuro-zap-container">
-        <div class="zap-window" id="zapWindow">
-            <div class="zap-header">
-                <div class="zap-avatar" id="zapHeaderAvatar">👥</div>
-                <div class="zap-info">
-                    <h4 id="zapHeaderName">Meus Grupos</h4>
-                    <span id="zapHeaderStatus">toque para entrar</span>
+    <!-- ==================== PÁGINA: PROFESSORES ==================== -->
+    <div id="page-professores" class="page">
+        <div class="section">
+            <h1 class="section-title">👨‍🏫 Área dos Professores</h1>
+            <p class="section-subtitle">Verificação, grupos de aula e estatísticas</p>
+
+            <div id="professorNaoVerificado">
+                <div style="background: var(--glass); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 20px; text-align: center;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🏆</div>
+                    <h2>Seja um Professor Verificado</h2>
+                    <p style="color: var(--gray); margin: 1rem 0;">Professores verificados têm selo especial, podem criar grupos oficiais e acessar estatísticas dos alunos.</p>
+                    <button class="btn btn-primary" onclick="openModal('verificarProfessor')">Solicitar Verificação</button>
                 </div>
-                <span onclick="toggleZap()" style="cursor: pointer;">✕</span>
-            </div>
-            
-            <div class="zap-tabs">
-                <button class="zap-tab active" onclick="showZapTab('grupos')">Grupos</button>
-                <button class="zap-tab" onclick="showZapTab('chat')">Chat</button>
             </div>
 
-            <div class="zap-list" id="zapGruposList">
-                <!-- Lista de grupos -->
-            </div>
-
-            <div class="zap-messages hidden" id="zapMessagesArea">
-                <!-- Mensagens -->
-            </div>
-
-            <div class="zap-input-area" id="zapInputArea" style="display: none;">
-                <input type="text" class="zap-input" id="zapInput" placeholder="Mensagem..." onkeypress="handleZapInput(event)">
-                <button class="zap-send-btn" onclick="sendZapMessage()">➤</button>
+            <div id="professorVerificado" class="hidden">
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                    <button class="btn btn-primary" onclick="openModal('criarGrupoAula')">+ Criar Grupo de Aula</button>
+                    <button class="btn btn-secondary" onclick="openModal('criarQuizPersonalizado')">+ Criar Quiz</button>
+                    <button class="btn btn-secondary" onclick="showPage('estatisticas-alunos')">📊 Estatísticas</button>
+                </div>
+                
+                <h3 style="margin-bottom: 1rem;">Seus Grupos de Aula</h3>
+                <div id="gruposProfessor" class="card-grid">
+                    <!-- Grupos gerados via JS -->
+                </div>
             </div>
         </div>
-        <div class="zap-toggle" id="zapToggle" onclick="toggleZap()" data-unread="3">💬</div>
     </div>
 
-    <!-- MODAIS -->
-    <div class="modal" id="modalOnboarding">
+    <!-- ==================== PÁGINA: ADM ==================== -->
+    <div id="page-adm" class="page">
+        <div class="section">
+            <h1 class="section-title">⚡ Painel Administrativo</h1>
+            <p class="section-subtitle">Controle total do NEURO 3.0</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                <div style="background: var(--glass); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                    <h3>👥 Usuários</h3>
+                    <p style="font-size: 2rem; font-weight: 700; color: var(--primary);" id="admTotalUsers">0</p>
+                </div>
+                <div style="background: var(--glass); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                    <h3>📚 Aulas Completadas</h3>
+                    <p style="font-size: 2rem; font-weight: 700; color: var(--success);" id="admTotalAulas">0</p>
+                </div>
+                <div style="background: var(--glass); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                    <h3>🏰 Guildas</h3>
+                    <p style="font-size: 2rem; font-weight: 700; color: var(--warning);" id="admTotalGuildas">0</p>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showAdmTab('professores')">👨‍🏫 Professores Pendentes</button>
+                <button class="tab" onclick="showAdmTab('usuarios')">👥 Gerenciar Usuários</button>
+                <button class="tab" onclick="showAdmTab('cursos')">📚 Gerenciar Cursos</button>
+                <button class="tab" onclick="showAdmTab('mensagem')">📢 Mensagem Global</button>
+            </div>
+
+            <div id="admContent">
+                <!-- Conteúdo dinâmico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: AUTENTICAÇÃO ==================== -->
+    <div class="modal" id="modalAuth">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Bem-vindo ao NEURO 3.0 🧠</h2>
-                <button class="close-btn" onclick="closeModal('onboarding')">×</button>
+                <h2 id="authTitle">Entrar no NEURO 3.0</h2>
+                <button class="close-btn" onclick="closeModal('auth')">×</button>
             </div>
 
-            <div id="onb-step-1">
-                <p class="mb-2">Configure sua experiência em 4 passos.</p>
+            <div id="authLogin">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="loginSenha" placeholder="••••••">
+                </div>
+                <button class="btn btn-primary" onclick="login()" style="width: 100%; margin-bottom: 1rem;">Entrar</button>
+                <p class="text-center" style="color: var(--gray);">
+                    Não tem conta? <a href="#" onclick="showAuth('register')" style="color: var(--primary);">Cadastre-se</a>
+                </p>
+            </div>
+
+            <div id="authRegister" class="hidden">
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" id="regNome" placeholder="Seu nome">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Senha (mínimo 6 caracteres)</label>
+                    <input type="password" id="regSenha" placeholder="••••••">
+                </div>
                 
                 <div class="form-group">
-                    <label>Como você quer ser chamado?</label>
-                    <input type="text" id="onbNome" placeholder="Seu nome">
-                </div>
-
-                <div class="form-group">
-                    <label>Faixa etária</label>
-                    <div class="option-grid">
-                        <div class="option-card" onclick="selectOption('idade', 'crianca', this)">
-                            <span class="emoji">🧒</span>
-                            <h4>7-12 anos</h4>
-                        </div>
-                        <div class="option-card" onclick="selectOption('idade', 'adolescente', this)">
-                            <span class="emoji">🧑</span>
-                            <h4>13-17 anos</h4>
-                        </div>
-                        <div class="option-card" onclick="selectOption('idade', 'adulto', this)">
-                            <span class="emoji">🎓</span>
-                            <h4>18-59 anos</h4>
-                        </div>
-                        <div class="option-card" onclick="selectOption('idade', 'senior', this)">
-                            <span class="emoji">👴</span>
-                            <h4>60+ anos</h4>
-                        </div>
+                    <label>Foto de Perfil</label>
+                    <div class="file-upload" onclick="document.getElementById('regFoto').click()">
+                        <span style="font-size: 2rem;">📷</span>
+                        <p>Clique para upload ou escolha um avatar abaixo</p>
+                        <input type="file" id="regFoto" accept="image/*" onchange="previewFoto(this)">
+                    </div>
+                    <div id="avatarPreview" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <!-- Avatares pré-prontos -->
                     </div>
                 </div>
 
-                <button class="btn btn-primary" onclick="nextOnb(2)" style="width: 100%;">Continuar →</button>
+                <div class="form-group">
+                    <label>Código Especial (opcional)</label>
+                    <input type="text" id="regCodigo" placeholder="ADM, VIP, ou Professor">
+                    <p style="font-size: 0.8rem; color: var(--gray); margin-top: 0.5rem;">
+                        Código ADM: 15080815@ (acesso total)
+                    </p>
+                </div>
+
+                <button class="btn btn-primary" onclick="registrar()" style="width: 100%; margin-bottom: 1rem;">Criar Conta</button>
+                <p class="text-center" style="color: var(--gray);">
+                    Já tem conta? <a href="#" onclick="showAuth('login')" style="color: var(--primary);">Entrar</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: ONBOARDING (após registro) ==================== -->
+    <div class="modal" id="modalOnboarding">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Configure seu NEURO 🧠</h2>
+                <span id="onbStepIndicator" style="color: var(--gray);">Passo 1 de 3</span>
             </div>
 
-            <div id="onb-step-2" class="hidden">
+            <div id="onb-step-1">
                 <p class="mb-2">Escolha seu mentor IA:</p>
-                
                 <div class="option-grid">
-                    <div class="option-card" onclick="selectOption('ia', 'luna', this)">
+                    <div class="option-card" onclick="selectIA('luna')">
                         <span class="emoji">🌙</span>
                         <h4>Luna</h4>
                         <p>Gentil e poética</p>
                     </div>
-                    <div class="option-card" onclick="selectOption('ia', 'marco', this)">
+                    <div class="option-card" onclick="selectIA('marco')">
                         <span class="emoji">⚡</span>
                         <h4>Marco</h4>
                         <p>Direto e eficiente</p>
                     </div>
-                    <div class="option-card" onclick="selectOption('ia', 'zoe', this)">
+                    <div class="option-card" onclick="selectIA('zoe')">
                         <span class="emoji">🎨</span>
                         <h4>Zoe</h4>
                         <p>Criativa e divertida</p>
                     </div>
-                    <div class="option-card" onclick="selectOption('ia', 'viktor', this)">
+                    <div class="option-card" onclick="selectIA('viktor')">
                         <span class="emoji">📚</span>
                         <h4>Viktor</h4>
                         <p>Erudito e profundo</p>
                     </div>
-                    <div class="option-card" onclick="selectOption('ia', 'yuki', this)">
+                    <div class="option-card" onclick="selectIA('yuki')">
                         <span class="emoji">❄️</span>
                         <h4>Yuki</h4>
                         <p>Calma e metódica</p>
                     </div>
-                    <div class="option-card" onclick="selectOption('ia', 'rafa', this)">
+                    <div class="option-card" onclick="selectIA('rafa')">
                         <span class="emoji">🎭</span>
                         <h4>Rafa</h4>
                         <p>Teatral e narrativo</p>
                     </div>
                 </div>
-
-                <button class="btn btn-primary" onclick="nextOnb(3)" style="width: 100%;">Continuar →</button>
             </div>
 
-            <div id="onb-step-3" class="hidden">
+            <div id="onb-step-2" class="hidden">
                 <p class="mb-2">Como você quer aprender?</p>
-                
                 <div class="option-grid">
-                    <div class="option-card" onclick="selectOption('metodo', 'gamificado', this)">
+                    <div class="option-card" onclick="selectMetodo('gamificado')">
                         <span class="emoji">🎮</span>
                         <h4>Gamificado</h4>
                         <p>XP, badges, ranking</p>
                     </div>
-                    <div class="option-card" onclick="selectOption('metodo', 'tradicional', this)">
+                    <div class="option-card" onclick="selectMetodo('tradicional')">
                         <span class="emoji">📖</span>
                         <h4>Tradicional</h4>
                         <p>Aulas sequenciais</p>
                     </div>
-                    <div class="option-card" onclick="selectOption('metodo', 'imersivo', this)">
+                    <div class="option-card" onclick="selectMetodo('imersivo')">
                         <span class="emoji">🌍</span>
                         <h4>Imersivo</h4>
                         <p>Conteúdo real</p>
                     </div>
-                    <div class="option-card" onclick="selectOption('metodo', 'projeto', this)">
+                    <div class="option-card" onclick="selectMetodo('projeto')">
                         <span class="emoji">🛠️</span>
                         <h4>Projetos</h4>
                         <p>Aprenda fazendo</p>
                     </div>
                 </div>
-
-                <button class="btn btn-primary" onclick="nextOnb(4)" style="width: 100%;">Continuar →</button>
             </div>
 
-            <div id="onb-step-4" class="hidden">
-                <p class="mb-2">Crie sua conta:</p>
-                
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="onbEmail" placeholder="seu@email.com">
+            <div id="onb-step-3" class="hidden">
+                <p class="mb-2">Quase lá! Escolha seu primeiro curso:</p>
+                <div class="option-grid" id="onbCursos">
+                    <!-- Cursos populares -->
                 </div>
-                <div class="form-group">
-                    <label>Senha</label>
-                    <input type="password" id="onbSenha" placeholder="••••••">
-                </div>
-                <div class="form-group">
-                    <label>Código ADM (opcional)</label>
-                    <input type="text" id="onbAdm" placeholder="Só se for ADM">
-                </div>
+            </div>
 
-                <button class="btn btn-primary" onclick="finalizarOnboarding()" style="width: 100%;">🚀 Começar Jornada</button>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button class="btn btn-secondary hidden" id="btnOnbVoltar" onclick="voltarOnb()" style="flex: 1;">← Voltar</button>
+                <button class="btn btn-primary" id="btnOnbProximo" onclick="proximoOnb()" style="flex: 1;">Continuar →</button>
             </div>
         </div>
     </div>
 
-    <script>
-        // CONFIGURAÇÃO
-        const ADM_CODE = "15080815@";
+    <!-- ==================== MODAL: PERFIL ==================== -->
+    <div class="modal" id="modalPerfil">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Meu Perfil</h2>
+                <button class="close-btn" onclick="closeModal('perfil')">×</button>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="width: 100px; height: 100px; margin: 0 auto; position: relative;">
+                    <div class="avatar-frame" style="width: 100%; height: 100%;">
+                        <div class="avatar-fallback" id="perfilAvatar" style="font-size: 3rem;">🧑‍🎓</div>
+                        <span class="vip-crown hidden" id="perfilVip">👑</span>
+                        <span class="adm-icon hidden" id="perfilAdm">⭐</span>
+                    </div>
+                </div>
+                <h3 id="perfilNome" style="margin-top: 1rem;">Usuário</h3>
+                <p id="perfilEmail" style="color: var(--gray);">email@exemplo.com</p>
+                <div id="perfilBadges" style="margin-top: 0.5rem;">
+                    <!-- Badges -->
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                <div style="text-align: center; padding: 1rem; background: var(--glass); border-radius: 12px;">
+                    <span style="font-size: 1.5rem; font-weight: 700; color: var(--primary);" id="perfilNivel">1</span>
+                    <p style="font-size: 0.8rem; color: var(--gray);">Nível</p>
+                </div>
+                <div style="text-align: center; padding: 1rem; background: var(--glass); border-radius: 12px;">
+                    <span style="font-size: 1.5rem; font-weight: 700; color: var(--warning);" id="perfilPontos">0</span>
+                    <p style="font-size: 0.8rem; color: var(--gray);">Pontos</p>
+                </div>
+                <div style="text-align: center; padding: 1rem; background: var(--glass); border-radius: 12px;">
+                    <span style="font-size: 1.5rem; font-weight: 700; color: var(--success);" id="perfilAulas">0</span>
+                    <p style="font-size: 0.8rem; color: var(--gray);">Aulas</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Alterar Foto</label>
+                <div class="file-upload" onclick="document.getElementById('perfilFotoInput').click()">
+                    <span>📷 Escolher nova foto</span>
+                    <input type="file" id="perfilFotoInput" accept="image/*" onchange="atualizarFotoPerfil(this)">
+                </div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="logout()" style="width: 100%;">Sair da Conta</button>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: BATALHA 1V1 ==================== -->
+    <div class="modal" id="modalBatalha">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>⚔️ Batalha 1v1</h2>
+                <button class="close-btn" onclick="closeModal('batalha')">×</button>
+            </div>
+            
+            <div id="batalhaEspera">
+                <div style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">⚔️</div>
+                    <h3>Aguardando oponente...</h3>
+                    <p style="color: var(--gray); margin: 1rem 0;">Convite enviado! Aguardando resposta...</p>
+                    <div class="progress-bar" style="margin-top: 1rem;">
+                        <div class="progress-fill" style="width: 50%; animation: pulse-glow 1s infinite;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="batalhaQuiz" class="hidden">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                    <span id="batalhaTimer">⏱️ 10s</span>
+                    <span id="batalhaPlacar">Você 0 x 0 Oponente</span>
+                </div>
+                <div id="batalhaPergunta">
+                    <!-- Pergunta dinâmica -->
+                </div>
+            </div>
+
+            <div id="batalhaResultado" class="hidden">
+                <div style="text-align: center; padding: 2rem;">
+                    <div id="batalhaIcon" style="font-size: 4rem; margin-bottom: 1rem;">🏆</div>
+                    <h3 id="batalhaTituloResultado">Vitória!</h3>
+                    <p id="batalhaDescricaoResultado" style="color: var(--gray); margin: 1rem 0;"></p>
+                    <button class="btn btn-primary" onclick="closeModal('batalha')">Continuar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== NEURO-ZAP (CHAT ESTILO WHATSAPP) ==================== -->
+    <div style="position: fixed; bottom: 2rem; right: 2rem; z-index: 999;">
+        <div id="zapWindow" style="width: 380px; height: 600px; background: var(--dark); border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--glass-border); margin-bottom: 1rem;">
+            <div style="padding: 1rem; background: linear-gradient(135deg, #075e54, #128c7e); color: white; display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;" id="zapHeaderAvatar">👥</div>
+                <div style="flex: 1;">
+                    <h4 style="font-size: 1rem; margin-bottom: 0.25rem;" id="zapHeaderName">Meus Grupos</h4>
+                    <span style="font-size: 0.8rem; opacity: 0.9;" id="zapHeaderStatus">toque para entrar</span>
+                </div>
+                <span onclick="toggleZap()" style="cursor: pointer;">✕</span>
+            </div>
+            
+            <div style="display: flex; background: #075e54; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <button class="zap-tab active" onclick="showZapTab('grupos')" style="flex: 1; padding: 0.75rem; background: none; border: none; color: white; cursor: pointer; border-bottom: 3px solid var(--secondary);">Grupos</button>
+                <button class="zap-tab" onclick="showZapTab('chat')" style="flex: 1; padding: 0.75rem; background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer;">Chat</button>
+            </div>
+
+            <div id="zapGruposList" style="flex: 1; overflow-y: auto; padding: 0.5rem;">
+                <!-- Lista de grupos -->
+            </div>
+
+            <div id="zapMessagesArea" class="hidden" style="flex: 1; overflow-y: auto; padding: 1rem; background: #0b141a; display: flex; flex-direction: column; gap: 0.5rem;">
+                <!-- Mensagens -->
+            </div>
+
+            <div id="zapInputArea" style="display: none; padding: 1rem; background: #202c33;">
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="zapInput" placeholder="Mensagem..." style="flex: 1; padding: 0.75rem 1rem; border: none; border-radius: 20px; background: #2a3942; color: white; outline: none;" onkeypress="handleZapInput(event)">
+                    <button onclick="sendZapMessage()" style="width: 40px; height: 40px; border-radius: 50%; background: var(--success); border: none; color: white; cursor: pointer;">➤</button>
+                </div>
+            </div>
+        </div>
         
-        // ESTADO DO USUÁRIO
-        let userState = {
-            nome: '',
-            idade: 'adulto',
-            ia: 'luna',
-            metodo: 'gamificado',
-            nivel: 1,
-            xp: 0,
-            maxXP: 100,
-            pontos: 0,
-            streak: 0,
-            conquistas: [],
-            aulaAtual: 0,
-            cursoAtual: null,
-            isAdm: false,
-            grupos: [],
-            inventario: []
+        <div onclick="toggleZap()" id="zapToggle" style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #25d366, #128c7e); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; cursor: pointer; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4); margin-left: auto; position: relative;">
+            💬
+            <span id="zapUnread" style="position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700; display: none;">3</span>
+        </div>
+    </div>
+
+    <style>
+        .zap-tab { transition: all 0.3s; }
+        .zap-tab:hover { color: white !important; }
+    </style>
+
+    <!-- ==================== JAVASCRIPT: CONFIGURAÇÃO FIREBASE ==================== -->
+    <script>
+        // ==================== CONFIGURAÇÃO FIREBASE ====================
+        // SUBSTITUA ESTES VALORES PELAS SUAS CREDENCIAIS DO FIREBASE
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY_AQUI",
+            authDomain: "seu-projeto.firebaseapp.com",
+            projectId: "seu-projeto",
+            storageBucket: "seu-projeto.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456"
         };
 
-        // PERFIS DE IA
+        // Inicializar Firebase (descomente quando tiver as credenciais)
+        // firebase.initializeApp(firebaseConfig);
+        // const auth = firebase.auth();
+        // const db = firebase.firestore();
+        // const storage = firebase.storage();
+
+        // ==================== CONFIGURAÇÃO NEURO 3.0 ====================
+        const ADM_CODE = "15080815@";
+        const VIP_CODE = "NEUROVIP2024";
+        
+        // Variáveis globais
+        let currentUser = null;
+        let userData = null;
+        let currentAula = null;
+        let currentCurso = null;
+        let quizRespostas = [];
+        let quizCorretas = 0;
+        
+        // ==================== DADOS DO SISTEMA ====================
+        
+        // 6 IAs Personalizadas
         const iaProfiles = {
-            luna: { name: 'Luna', avatar: '🌙', tom: 'gentil' },
-            marco: { name: 'Marco', avatar: '⚡', tom: 'direto' },
-            zoe: { name: 'Zoe', avatar: '🎨', tom: 'criativa' },
-            viktor: { name: 'Viktor', avatar: '📚', tom: 'erudito' },
-            yuki: { name: 'Yuki', avatar: '❄️', tom: 'calma' },
-            rafa: { name: 'Rafa', avatar: '🎭', tom: 'teatral' }
+            luna: { name: 'Luna', avatar: '🌙', tom: 'gentil', desc: 'Gentil e poética, explica com metáforas' },
+            marco: { name: 'Marco', avatar: '⚡', tom: 'direto', desc: 'Direto e eficiente, sem enrolação' },
+            zoe: { name: 'Zoe', avatar: '🎨', tom: 'criativa', desc: 'Criativa e divertida, usa analogias' },
+            viktor: { name: 'Viktor', avatar: '📚', tom: 'erudito', desc: 'Erudito e profundo, detalhista' },
+            yuki: { name: 'Yuki', avatar: '❄️', tom: 'calma', desc: 'Calma e metódica, passo a passo' },
+            rafa: { name: 'Rafa', avatar: '🎭', tom: 'teatral', desc: 'Teatral e narrativo, histórias' }
         };
 
-        // ESTILOS DE DESENHO
+        // 8 Estilos de Desenho
         const artStyles = [
-            { id: 'anime', name: 'Anime/Mangá', icon: '🇯🇵', desc: 'Olhos grandes, expressões exageradas' },
-            { id: 'realismo', name: 'Realismo', icon: '🎭', desc: 'Como a vida real' },
-            { id: 'cartoon', name: 'Cartoon', icon: '😄', desc: 'Formas simples, divertido' },
-            { id: 'sketch', name: 'Sketch', icon: '✏️', desc: 'Rápido, rabiscado' },
-            { id: 'aquarela', name: 'Aquarela', icon: '🎨', desc: 'Cores fluidas, suaves' },
-            { id: 'digital', name: 'Arte Digital', icon: '💻', desc: 'Tablets e softwares' },
-            { id: 'pixel', name: 'Pixel Art', icon: '👾', desc: 'Retrô, 8-bits' },
-            { id: 'vector', name: 'Vetor', icon: '📐', desc: 'Linhas limpas, escaláveis' }
+            { id: 'anime', name: 'Anime/Mangá', icon: '🇯🇵', desc: 'Olhos grandes, expressões exageradas, linhas limpas' },
+            { id: 'realismo', name: 'Realismo', icon: '🎭', desc: 'Como a vida real, proporções exatas, sombreamento suave' },
+            { id: 'cartoon', name: 'Cartoon', icon: '😄', desc: 'Formas simples, cores vibrantes, divertido' },
+            { id: 'sketch', name: 'Sketch', icon: '✏️', desc: 'Rápido, rabiscado, linhas soltas' },
+            { id: 'aquarela', name: 'Aquarela', icon: '🎨', desc: 'Cores fluidas, suaves, transparentes' },
+            { id: 'digital', name: 'Arte Digital', icon: '💻', desc: 'Tablets, softwares, camadas infinitas' },
+            { id: 'pixel', name: 'Pixel Art', icon: '👾', desc: 'Retrô, 8-bits, limitação criativa' },
+            { id: 'vetor', name: 'Arte Vetorial', icon: '📐', desc: 'Linhas limpas, escaláveis, geométrico' }
         ];
 
-        // CURSOS COMPLETOS (20+ aulas cada)
-        const cursos = {
+        // ==================== ESTRUTURA COMPLETA DOS CURSOS ====================
+        
+        // 12 IDIOMAS - 120 AULAS CADA (20 por nível A1-C2)
+        const cursosIdiomas = {
             ingles: {
                 nome: 'Inglês Completo',
                 categoria: 'idiomas',
                 icon: '🇺🇸',
+                desc: 'Do zero à fluência. 720 aulas completas.',
                 niveis: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
-                aulas: {
-                    A1: [
-                        { titulo: 'To be: O básico que todo mundo erra', conteudo: 'neuro' },
-                        { titulo: 'Pronomes pessoais sem confusão', conteudo: 'neuro' },
-                        { titulo: 'Artigos a/an/the finalmente explicados', conteudo: 'neuro' },
-                        { titulo: 'Números e datas na prática', conteudo: 'neuro' },
-                        { titulo: 'Cores e descrições simples', conteudo: 'neuro' },
-                        { titulo: 'Família e relacionamentos', conteudo: 'neuro' },
-                        { titulo: 'Comidas e restaurante', conteudo: 'neuro' },
-                        { titulo: 'Rotina diária: Present Simple', conteudo: 'neuro' },
-                        { titulo: 'Hobbies e lazer', conteudo: 'neuro' },
-                        { titulo: 'Direções e lugares na cidade', conteudo: 'neuro' },
-                        { titulo: 'Clima e estações', conteudo: 'neuro' },
-                        { titulo: 'Roupas e compras', conteudo: 'neuro' },
-                        { titulo: 'Corpo e saúde básica', conteudo: 'neuro' },
-                        { titulo: 'Casa e mobília', conteudo: 'neuro' },
-                        { titulo: 'Profissões e trabalho', conteudo: 'neuro' },
-                        { titulo: 'Transporte e viagens', conteudo: 'neuro' },
-                        { titulo: 'Telefone e mensagens', conteudo: 'neuro' },
-                        { titulo: 'Expressões de tempo', conteudo: 'neuro' },
-                        { titulo: 'Revisão A1: Checkpoint', conteudo: 'quiz' },
-                        { titulo: 'Projeto: Apresentação pessoal', conteudo: 'projeto' }
-                    ],
-                    A2: [
-                        { titulo: 'Passado simples: Regular verbs', conteudo: 'neuro' },
-                        { titulo: 'Passado simples: Irregular verbs', conteudo: 'neuro' },
-                        { titulo: 'Futuro com going to', conteudo: 'neuro' },
-                        { titulo: 'Futuro com will', conteudo: 'neuro' },
-                        { titulo: 'Present Continuous agora vs futuro', conteudo: 'neuro' },
-                        { titulo: 'Comparativos e superlativos', conteudo: 'neuro' },
-                        { titulo: 'Advérbios de frequência', conteudo: 'neuro' },
-                        { titulo: 'Quantificadores some/any/much/many', conteudo: 'neuro' },
-                        { titulo: 'Modais can/could/may/might', conteudo: 'neuro' },
-                        { titulo: 'Modais should/must/have to', conteudo: 'neuro' },
-                        { titulo: 'Preposições de lugar e movimento', conteudo: 'neuro' },
-                        { titulo: 'Preposições de tempo', conteudo: 'neuro' },
-                        { titulo: 'Pronomes reflexivos', conteudo: 'neuro' },
-                        { titulo: 'There is/There are', conteudo: 'neuro' },
-                        { titulo: 'Imperativo e instruções', conteudo: 'neuro' },
-                        { titulo: 'Conectores básicos: and/but/because', conteudo: 'neuro' },
-                        { titulo: 'Viagens e turismo', conteudo: 'neuro' },
-                        { titulo: 'Saúde e medicina', conteudo: 'neuro' },
-                        { titulo: 'Revisão A2: Checkpoint', conteudo: 'quiz' },
-                        { titulo: 'Projeto: Contar uma viagem', conteudo: 'projeto' }
-                    ],
-                    B1: [
-                        { titulo: 'Present Perfect: experiências de vida', conteudo: 'neuro' },
-                        { titulo: 'Present Perfect vs Past Simple', conteudo: 'neuro' },
-                        { titulo: 'Present Perfect Continuous', conteudo: 'neuro' },
-                        { titulo: 'Past Continuous: narrativas', conteudo: 'neuro' },
-                        { titulo: 'Past Perfect: flashbacks', conteudo: 'neuro' },
-                        { titulo: 'Futuro: will vs going to vs Present Continuous', conteudo: 'neuro' },
-                        { titulo: 'Futuro contínuo e perfeito', conteudo: 'neuro' },
-                        { titulo: 'First Conditional: possibilidades reais', conteudo: 'neuro' },
-                        { titulo: 'Second Conditional: hipóteses', conteudo: 'neuro' },
-                        { titulo: 'Third Conditional: arrependimentos', conteudo: 'neuro' },
-                        { titulo: 'Voz passiva: quando e como usar', conteudo: 'neuro' },
-                        { titulo: 'Reported Speech: contando o que ouviu', conteudo: 'neuro' },
-                        { titulo: 'Phrasal verbs essenciais', conteudo: 'neuro' },
-                        { titulo: 'Expressões idiomáticas comuns', conteudo: 'neuro' },
-                        { titulo: 'Linking words avançados', conteudo: 'neuro' },
-                        { titulo: 'Relative clauses: who/which/that', conteudo: 'neuro' },
-                        { titulo: 'Gerúndio vs Infinitivo', conteudo: 'neuro' },
-                        { titulo: 'Debate e argumentação', conteudo: 'neuro' },
-                        { titulo: 'Revisão B1: Checkpoint', conteudo: 'quiz' },
-                        { titulo: 'Projeto: Documentário em inglês', conteudo: 'projeto' }
-                    ],
-                    B2: [
-                        { titulo: 'Mixed Conditionals: misturando tempos', conteudo: 'neuro' },
-                        { titulo: 'Wish e If only: desejos e arrependimentos', conteudo: 'neuro' },
-                        { titulo: 'Modais avançados: deduction', conteudo: 'neuro' },
-                        { titulo: 'Inversion: Never have I ever...', conteudo: 'neuro' },
-                        { titulo: 'Emphasis: cleft sentences', conteudo: 'neuro' },
-                        { titulo: 'Participle clauses: economizando palavras', conteudo: 'neuro' },
-                        { titulo: 'Subjunctive: o modo subjuntivo', conteudo: 'neuro' },
-                        { titulo: 'Nominalisation: verbos viram substantivos', conteudo: 'neuro' },
-                        { titulo: 'Discourse markers: organizando ideias', conteudo: 'neuro' },
-                        { titulo: 'Hedging language: sendo diplomático', conteudo: 'neuro' },
-                        { titulo: 'Collocations: palavras que andam juntas', conteudo: 'neuro' },
-                        { titulo: 'Registro formal vs informal', conteudo: 'neuro' },
-                        { titulo: 'Ironia e humor em inglês', conteudo: 'neuro' },
-                        { titulo: 'Variedades: UK vs US vs Austrália', conteudo: 'neuro' },
-                        { titulo: 'Pronúncia avançada: weak forms', conteudo: 'neuro' },
-                        { titulo: 'Intonation: entonação que muda sentido', conteudo: 'neuro' },
-                        { titulo: 'Apresentações profissionais', conteudo: 'neuro' },
-                        { titulo: 'Negociações em inglês', conteudo: 'neuro' },
-                        { titulo: 'Revisão B2: Checkpoint', conteudo: 'quiz' },
-                        { titulo: 'Projeto: TED Talk pessoal', conteudo: 'projeto' }
-                    ],
-                    C1: [
-                        { titulo: 'Nuances de modais: must vs have to vs need to', conteudo: 'neuro' },
-                        { titulo: 'Future in the past: would/going to', conteudo: 'neuro' },
-                        { titulo: 'Complex ellipsis: omitindo com elegância', conteudo: 'neuro' },
-                        { titulo: 'Fronting: invertendo para ênfase', conteudo: 'neuro' },
-                        { titulo: 'Whatever, whenever, whoever: cláusulas', conteudo: 'neuro' },
-                        { titulo: 'Metaphorical language: inglês figurado', conteudo: 'neuro' },
-                        { titulo: 'Connotation vs denotation: camadas de significado', conteudo: 'neuro' },
-                        { titulo: 'Academic writing: artigos e papers', conteudo: 'neuro' },
-                        { titulo: 'Business English avançado', conteudo: 'neuro' },
-                        { titulo: 'Legal English: termos jurídicos', conteudo: 'neuro' },
-                        { titulo: 'Medical English: para profissionais de saúde', conteudo: 'neuro' },
-                        { titulo: 'Technical English: manuais e especificações', conteudo: 'neuro' },
-                        { titulo: 'Literary analysis: analisando textos literários', conteudo: 'neuro' },
-                        { titulo: 'Critical thinking: argumentação lógica', conteudo: 'neuro' },
-                        { titulo: 'Cultural references: entendendo contexto', conteudo: 'neuro' },
-                        { titulo: 'Slang e gírias atualizadas', conteudo: 'neuro' },
-                        { titulo: 'Humor sofisticado: sarcasmo e sátira', conteudo: 'neuro' },
-                        { titulo: 'Storytelling avançado: narrativas envolventes', conteudo: 'neuro' },
-                        { titulo: 'Revisão C1: Checkpoint', conteudo: 'quiz' },
-                        { titulo: 'Projeto: Monografia em inglês', conteudo: 'projeto' }
-                    ],
-                    C2: [
-                        { titulo: 'Proficiency mastery: refinando detalhes', conteudo: 'neuro' },
-                        { titulo: 'Idiolect: desenvolvendo seu estilo pessoal', conteudo: 'neuro' },
-                        { titulo: 'Code-switching: alternando registros', conteudo: 'neuro' },
-                        { titulo: 'Pragmatics: intenção além das palavras', conteudo: 'neuro' },
-                        { titulo: 'Discourse analysis: análise de discurso', conteudo: 'neuro' },
-                        { titulo: 'Etymology: história das palavras', conteudo: 'neuro' },
-                        { titulo: 'Linguistic prescription vs description', conteudo: 'neuro' },
-                        { titulo: 'World Englishes: inglês global', conteudo: 'neuro' },
-                        { titulo: 'Translation theory: teoria da tradução', conteudo: 'neuro' },
-                        { titulo: 'Interpreting: interpretação simultânea', conteudo: 'neuro' },
-                        { titulo: 'Public speaking: oratória avançada', conteudo: 'neuro' },
-                        { titulo: 'Diplomatic language: linguagem diplomática', conteudo: 'neuro' },
-                        { titulo: 'Creative writing: ficção e poesia', conteudo: 'neuro' },
-                        { titulo: 'Journalism: jornalismo em inglês', conteudo: 'neuro' },
-                        { titulo: 'Screenwriting: roteiro cinematográfico', conteudo: 'neuro' },
-                        { titulo: 'Copywriting: texto persuasivo', conteudo: 'neuro' },
-                        { titulo: 'Editing and proofreading: revisão profissional', conteudo: 'neuro' },
-                        { titulo: 'Language acquisition research: pesquisa em aquisição', conteudo: 'neuro' },
-                        { titulo: 'Revisão C2: Mastery Test', conteudo: 'quiz' },
-                        { titulo: 'Projeto Final: Publicação/Apresentação', conteudo: 'projeto' }
-                    ]
-                }
+                totalAulas: 120,
+                aulas: gerarAulasIngles()
             },
-            desenho: {
-                nome: 'Desenho Artístico',
-                categoria: 'arte',
-                icon: '✏️',
-                estilos: artStyles,
-                aulas: [
-                    { titulo: 'Linha: seu primeiro aliado', conteudo: 'neuro', estilo: 'todos' },
-                    { titulo: 'Sombreamento básico: luz e sombra', conteudo: 'neuro', estilo: 'todos' },
-                    { titulo: 'Perspectiva 1 ponto: profundidade', conteudo: 'neuro', estilo: 'todos' },
-                    { titulo: 'Perspectiva 2 pontos: objetos', conteudo: 'neuro', estilo: 'todos' },
-                    { titulo: 'Anatomia básica: proporções do corpo', conteudo: 'neuro', estilo: 'realismo' },
-                    { titulo: 'Rostos: estrutura óssea', conteudo: 'neuro', estilo: 'todos' },
-                    { titulo: 'Expressões faciais: emoções', conteudo: 'neuro', estilo: 'todos' },
-                    { titulo: 'Mãos: o desafio real', conteudo: 'neuro', estilo: 'todos' },
-                    { titulo: 'Pés: base do corpo', conteudo: 'neuro', estilo: 'todos' },
-                    { titulo: 'Tecidos e dobras: roupas realistas', conteudo: 'neuro', estilo: 'realismo' },
-                    { titulo: 'Texturas: madeira, metal, tecido', conteudo: 'neuro', estilo: 'todos' },
-                    { titulo: 'Composição: regra dos terços', conteudo: 'neuro', estilo: 'todos' },
-                    { titulo: 'Cores: teoria e harmonia', conteudo: 'neuro', estilo: 'todos' },
-                    { titulo: 'Estilo Anime: olhos e proporções', conteudo: 'neuro', estilo: 'anime' },
-                    { titulo: 'Estilo Cartoon: exagero e simplicidade', conteudo: 'neuro', estilo: 'cartoon' },
-                    { titulo: 'Sketch rápido: gesto e movimento', conteudo: 'neuro', estilo: 'sketch' },
-                    { titulo: 'Aquarela: técnicas de lavado', conteudo: 'neuro', estilo: 'aquarela' },
-                    { titulo: 'Digital: camadas e brushes', conteudo: 'neuro', estilo: 'digital' },
-                    { titulo: 'Pixel Art: limitação criativa', conteudo: 'neuro', estilo: 'pixel' },
-                    { titulo: 'Projeto Final: Portfólio pessoal', conteudo: 'projeto', estilo: 'todos' }
-                ]
+            espanhol: {
+                nome: 'Espanhol',
+                categoria: 'idiomas',
+                icon: '🇪🇸',
+                desc: 'Español desde cero. 120 aulas.',
+                niveis: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                totalAulas: 120,
+                aulas: gerarAulasEspanhol()
             },
-            python: {
-                nome: 'Python do Zero',
-                categoria: 'tech',
-                icon: '🐍',
-                aulas: [
-                    { titulo: 'Python: seu superpoder', conteudo: 'neuro' },
-                    { titulo: 'Variáveis: caixas etiquetadas', conteudo: 'neuro' },
-                    { titulo: 'Tipos de dados: números e textos', conteudo: 'neuro' },
-                    { titulo: 'Operadores: matemática no código', conteudo: 'neuro' },
-                    { titulo: 'Input: conversando com usuário', conteudo: 'neuro' },
-                    { titulo: 'If/Else: tomando decisões', conteudo: 'neuro' },
-                    { titulo: 'Elif: múltiplas escolhas', conteudo: 'neuro' },
-                    { titulo: 'Loops For: repetição controlada', conteudo: 'neuro' },
-                    { titulo: 'Loops While: repetição condicional', conteudo: 'neuro' },
-                    { titulo: 'Listas: coleções ordenadas', conteudo: 'neuro' },
-                    { titulo: 'Dicionários: pares chave-valor', conteudo: 'neuro' },
-                    { titulo: 'Tuplas e Sets: coleções especiais', conteudo: 'neuro' },
-                    { titulo: 'Funções: código reutilizável', conteudo: 'neuro' },
-                    { titulo: 'Parâmetros e retorno', conteudo: 'neuro' },
-                    { titulo: 'Escopo de variáveis', conteudo: 'neuro' },
-                    { titulo: 'Módulos: bibliotecas Python', conteudo: 'neuro' },
-                    { titulo: 'Tratamento de erros: try/except', conteudo: 'neuro' },
-                    { titulo: 'Arquivos: ler e escrever', conteudo: 'neuro' },
-                    { titulo: 'Projeto: Calculadora avançada', conteudo: 'projeto' },
-                    { titulo: 'Projeto Final: Jogo completo', conteudo: 'projeto' }
-                ]
+            frances: {
+                nome: 'Francês',
+                categoria: 'idiomas',
+                icon: '🇫🇷',
+                desc: 'Français pour tous. 120 aulas.',
+                niveis: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                totalAulas: 120,
+                aulas: {} // Estrutura similar
+            },
+            alemao: {
+                nome: 'Alemão',
+                categoria: 'idiomas',
+                icon: '🇩🇪',
+                desc: 'Deutsch lernen. 120 aulas.',
+                niveis: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                totalAulas: 120,
+                aulas: {}
+            },
+            italiano: {
+                nome: 'Italiano',
+                categoria: 'idiomas',
+                icon: '🇮🇹',
+                desc: 'Italiano per tutti. 120 aulas.',
+                niveis: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                totalAulas: 120,
+                aulas: {}
+            },
+            japones: {
+                nome: 'Japonês',
+                categoria: 'idiomas',
+                icon: '🇯🇵',
+                desc: '日本語を学ぶ. 120 aulas com hiragana, katakana e kanji.',
+                niveis: ['N5', 'N4', 'N3', 'N2', 'N1'],
+                totalAulas: 100,
+                aulas: {}
+            },
+            mandarim: {
+                nome: 'Mandarim',
+                categoria: 'idiomas',
+                icon: '🇨🇳',
+                desc: '学习中文. 120 aulas com caracteres e pinyin.',
+                niveis: ['HSK1', 'HSK2', 'HSK3', 'HSK4', 'HSK5', 'HSK6'],
+                totalAulas: 120,
+                aulas: {}
+            },
+            coreano: {
+                nome: 'Coreano',
+                categoria: 'idiomas',
+                icon: '🇰🇷',
+                desc: '한국어 배우기. 120 aulas com hangul.',
+                niveis: ['TOPIK1', 'TOPIK2', 'TOPIK3', 'TOPIK4', 'TOPIK5', 'TOPIK6'],
+                totalAulas: 120,
+                aulas: {}
+            },
+            russo: {
+                nome: 'Russo',
+                categoria: 'idiomas',
+                icon: '🇷🇺',
+                desc: 'Учить русский. 120 aulas com alfabeto cirílico.',
+                niveis: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                totalAulas: 120,
+                aulas: {}
+            },
+            arabe: {
+                nome: 'Árabe',
+                categoria: 'idiomas',
+                icon: '🇸🇦',
+                desc: 'تعلم العربية. 120 aulas com alfabeto árabe.',
+                niveis: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                totalAulas: 120,
+                aulas: {}
+            },
+            portugues: {
+                nome: 'Português para Estrangeiros',
+                categoria: 'idiomas',
+                icon: '🇵🇹',
+                desc: 'Portuguese for foreigners. 120 aulas.',
+                niveis: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                totalAulas: 120,
+                aulas: {}
+            },
+            latim: {
+                nome: 'Latim',
+                categoria: 'idiomas',
+                icon: '🏛️',
+                desc: 'Lingua Latina. 100 aulas clássicas.',
+                niveis: ['Básico', 'Intermediário', 'Avançado', 'Clássico'],
+                totalAulas: 80,
+                aulas: {}
             }
-            // Adicionar mais cursos...
         };
 
-        // CONQUISTAS
-        const conquistas = [
-            { id: 'first', icon: '🎉', nome: 'Primeiros Passos', desc: 'Completou a primeira aula', pontos: 100, xp: 50 },
-            { id: 'streak3', icon: '🔥', nome: 'Sequência de 3 dias', desc: '3 dias seguidos estudando', pontos: 200, xp: 100 },
-            { id: 'streak7', icon: '⚡', nome: 'Semana de Fogo', desc: '7 dias seguidos estudando', pontos: 500, xp: 250 },
-            { id: 'streak30', icon: '🏆', nome: 'Mestre da Consistência', desc: '30 dias seguidos!', pontos: 2000, xp: 1000 },
-            { id: 'level5', icon: '⭐', nome: 'Subindo de Nível', desc: 'Alcançou nível 5', pontos: 300, xp: 150 },
-            { id: 'level10', icon: '🌟', nome: 'Veterano', desc: 'Alcançou nível 10', pontos: 1000, xp: 500 },
-            { id: 'points1000', icon: '💰', nome: 'Milionário', desc: 'Acumulou 1000 pontos', pontos: 0, xp: 200 },
-            { id: 'points5000', icon: '💎', nome: 'Rico', desc: 'Acumulou 5000 pontos', pontos: 0, xp: 500 },
-            { id: 'polyglot', icon: '🌍', nome: 'Poliglota', desc: 'Estudou 3 idiomas', pontos: 1000, xp: 500 },
-            { id: 'artist', icon: '🎨', nome: 'Artista', desc: 'Completou curso de desenho', pontos: 800, xp: 400 },
-            { id: 'coder', icon: '💻', nome: 'Programador', desc: 'Completou curso de programação', pontos: 800, xp: 400 },
-            { id: 'helper', icon: '🤝', nome: 'Ajudante', desc: 'Ajudou 10 pessoas no Zap', pontos: 500, xp: 250 },
-            { id: 'social', icon: '👥', nome: 'Social', desc: 'Entrou em 5 grupos', pontos: 300, xp: 150 },
-            { id: 'shopaholic', icon: '🛍️', nome: 'Comprador', desc: 'Comprou 5 itens na loja', pontos: 200, xp: 100 },
-            { id: 'top10', icon: '🏅', nome: 'Top 10', desc: 'Entrou no top 10 do ranking', pontos: 1000, xp: 500 }
-        ];
-
-        // LOJA
-        const lojaItens = [
-            { id: 'theme_dark', nome: 'Tema Noturno', icon: '🌙', preco: 500, tipo: 'tema', desc: 'Interface escura premium' },
-            { id: 'theme_neon', nome: 'Tema Neon', icon: '⚡', preco: 1000, tipo: 'tema', desc: 'Cores vibrantes estilo cyberpunk' },
-            { id: 'badge_vip', nome: 'Badge VIP', icon: '👑', preco: 2000, tipo: 'badge', desc: 'Exclusivo para membros especiais' },
-            { id: 'avatar_pack', nome: 'Pack de Avatares', icon: '🎭', preco: 800, tipo: 'avatar', desc: '10 avatares exclusivos' },
-            { id: 'ia_premium', nome: 'IA Premium', icon: '🤖', preco: 1500, tipo: 'ia', desc: 'Acesso a 3 IAs adicionais' },
-            { id: 'streak_freeze', nome: 'Congelar Streak', icon: '❄️', preco: 300, tipo: 'consumivel', desc: 'Não perca sua sequência' },
-            { id: 'xp_boost', nome: 'Boost 2x XP', icon: '🚀', preco: 500, tipo: 'consumivel', desc: 'Dobro de XP por 24h' },
-            { id: 'curso_acesso', nome: 'Curso Premium', icon: '🔓', preco: 2000, tipo: 'curso', desc: 'Acesso antecipado a novos cursos' }
-        ];
-
-        // GRUPOS NEURO-Zap
-        let gruposZap = [
-            { id: 1, nome: 'Inglês Todo Dia', icon: '🇺🇸', membros: 234, lastMsg: 'Alguém quer praticar speaking?', time: '10:30', unread: 3 },
-            { id: 2, nome: 'Desenho Sem Limites', icon: '✏️', membros: 156, lastMsg: 'Compartilhei meu sketch', time: '09:15', unread: 0 },
-            { id: 3, nome: 'Python Brasil', icon: '🐍', membros: 892, lastMsg: 'Dúvida sobre loops', time: '11:45', unread: 12 },
-            { id: 4, nome: 'Study Buddies', icon: '📚', membros: 67, lastMsg: 'Bora marcar call?', time: 'Ontem', unread: 0 }
-        ];
-
-        let currentZapGroup = null;
-        let zapMessages = {};
-
-        // INICIALIZAÇÃO
-        function init() {
-            renderCursos();
-            renderConquistas();
-            renderLoja();
-            renderRanking();
-            renderZapGrupos();
-            updateHUD();
-        }
-
-        // RENDERIZAR CURSOS
-        function renderCursos() {
-            const grid = document.getElementById('cursosGrid');
-            grid.innerHTML = '';
+        // 20+ MATÉRIAS - 20 AULAS CADA
+        const cursosExtras = {
+            // ARTE - DESENHO (20 aulas por estilo = 160 aulas)
+            desenho_anime: gerarCursoDesenho('anime'),
+            desenho_realismo: gerarCursoDesenho('realismo'),
+            desenho_cartoon: gerarCursoDesenho('cartoon'),
+            desenho_sketch: gerarCursoDesenho('sketch'),
+            desenho_aquarela: gerarCursoDesenho('aquarela'),
+            desenho_digital: gerarCursoDesenho('digital'),
+            desenho_pixel: gerarCursoDesenho('pixel'),
+            desenho_vetor: gerarCursoDesenho('vetor'),
             
-            Object.keys(cursos).forEach(key => {
-                const curso = cursos[key];
-                const card = document.createElement('div');
-                card.className = `card cat-${curso.categoria}`;
-                card.setAttribute('data-cat', curso.categoria);
-                card.onclick = () => startCurso(key);
-                
-                card.innerHTML = `
-                    <div class="card-image">${curso.icon}</div>
-                    <div class="card-content">
-                        <h3>${curso.nome}</h3>
-                        <p>${curso.aulas ? curso.aulas.length : '20+'} aulas completas</p>
-                        <div class="card-meta">
-                            <span>⚡ ${curso.categoria}</span>
-                            <span>🎯 Iniciante ao avançado</span>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
+            // TECH
+            python: {
+                nome: 'Python do Zero ao Pro',
+                categoria: 'tech',
+                icon: '🐍',
+                desc: 'Programação em Python. 40 aulas.',
+                totalAulas: 40,
+                aulas: gerarAulasPython()
+            },
+            javascript: {
+                nome: 'JavaScript Moderno',
+                categoria: 'tech',
+                icon: '⚡',
+                desc: 'JS ES6+, async, DOM, APIs. 40 aulas.',
+                totalAulas: 40,
+                aulas: {}
+            },
+            web_dev: {
+                nome: 'Criação de Sites',
+                categoria: 'tech',
+                icon: '🌐',
+                desc: 'HTML, CSS, responsivo, deploy. 30 aulas.',
+                totalAulas: 30,
+                aulas: {}
+            },
+            jogos: {
+                nome: 'Criação de Jogos',
+                categoria: 'tech',
+                icon: '🎮',
+                desc: 'Unity, Godot, mecânicas, design. 40 aulas.',
+                totalAulas: 40,
+                aulas: {}
+            },
+            data_science: {
+                nome: 'Ciência de Dados',
+                categoria: 'tech',
+                icon: '📊',
+                desc: 'Pandas, visualização, ML básico. 30 aulas.',
+                totalAulas: 30,
+                aulas: {}
+            },
+            
+            // NEGÓCIOS
+            empreendedorismo: {
+                nome: 'Empreendedorismo',
+                categoria: 'negocios',
+                icon: '🚀',
+                desc: 'Startup, MVP, pitch, investimentos. 25 aulas.',
+                totalAulas: 25,
+                aulas: {}
+            },
+            marketing: {
+                nome: 'Marketing Digital',
+                categoria: 'negocios',
+                icon: '📱',
+                desc: 'Redes sociais, SEO, anúncios. 25 aulas.',
+                totalAulas: 25,
+                aulas: {}
+            },
+            
+            // ESCOLA
+            matematica: {
+                nome: 'Matemática Completa',
+                categoria: 'escola',
+                icon: '🔢',
+                desc: 'Do 6º ano ao 3º ano. 60 aulas.',
+                totalAulas: 60,
+                aulas: {}
+            },
+            
+            // SAÚDE
+            nutricao: {
+                nome: 'Nutrição e Bem-estar',
+                categoria: 'saude',
+                icon: '🥗',
+                desc: 'Alimentação saudável, dietas. 20 aulas.',
+                totalAulas: 20,
+                aulas: {}
+            }
+        };
+
+        // Combinar todos os cursos
+        const todosCursos = { ...cursosIdiomas, ...cursosExtras };
+
+        // ==================== FUNÇÕES DE GERAÇÃO DE AULAS ====================
+
+        function gerarAulasIngles() {
+            const aulas = {};
+            const niveis = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+            const temasPorNivel = {
+                'A1': [
+                    'To be: O verbo mais importante', 'Pronomes pessoais', 'Artigos a/an/the', 
+                    'Números 1-100', 'Cores e adjetivos', 'Família', 'Comidas básicas',
+                    'Rotina diária', 'Hobbies', 'Direções', 'Clima', 'Roupas',
+                    'Corpo humano', 'Casa e móveis', 'Profissões', 'Transporte',
+                    'Telefone', 'Horas e tempo', 'Compras', 'Revisão A1'
+                ],
+                'A2': [
+                    'Passado simples: regular', 'Passado: verbos irregulares', 'Futuro: going to',
+                    'Futuro: will', 'Present Continuous', 'Comparativos', 'Superlativos',
+                    'Advérbios de frequência', 'Quantificadores', 'Modais: can/could',
+                    'Modais: should/must', 'Preposições de lugar', 'Preposições de tempo',
+                    'Pronomes reflexivos', 'There is/are', 'Imperativo', 'Conectores',
+                    'Viagens', 'Saúde', 'Revisão A2'
+                ],
+                'B1': [
+                    'Present Perfect', 'Present Perfect vs Past', 'Present Perfect Continuous',
+                    'Past Continuous', 'Past Perfect', 'Futuro: todas as formas', 'First Conditional',
+                    'Second Conditional', 'Third Conditional', 'Voz passiva', 'Reported Speech',
+                    'Phrasal verbs', 'Idioms comuns', 'Linking words', 'Relative clauses',
+                    'Gerúndio vs Infinitivo', 'Debate', 'Apresentações', 'Negociações', 'Revisão B1'
+                ],
+                'B2': [
+                    'Mixed Conditionals', 'Wish/If only', 'Modals of deduction', 'Inversion',
+                    'Emphasis: cleft sentences', 'Participle clauses', 'Subjunctive', 'Nominalisation',
+                    'Discourse markers', 'Hedging', 'Collocations', 'Registro formal/informal',
+                    'Ironia', 'Variedades: UK vs US', 'Pronúncia avançada', 'Intonation',
+                    'Apresentações profissionais', 'Negociações avançadas', 'Storytelling', 'Revisão B2'
+                ],
+                'C1': [
+                    'Nuances de modais', 'Future in the past', 'Complex ellipsis', 'Fronting',
+                    'Whatever/whenever clauses', 'Metaphorical language', 'Connotation', 'Academic writing',
+                    'Business English', 'Legal English', 'Medical English', 'Technical English',
+                    'Literary analysis', 'Critical thinking', 'Cultural references', 'Slang atualizado',
+                    'Humor sofisticado', 'Storytelling avançado', 'Public speaking', 'Revisão C1'
+                ],
+                'C2': [
+                    'Proficiency mastery', 'Idiolect', 'Code-switching', 'Pragmatics',
+                    'Discourse analysis', 'Etymology', 'Linguistic prescription', 'World Englishes',
+                    'Translation theory', 'Interpreting', 'Public speaking mastery', 'Diplomatic language',
+                    'Creative writing', 'Journalism', 'Screenwriting', 'Copywriting',
+                    'Editing', 'Language research', 'Mastery test', 'Projeto final'
+                ]
+            };
+
+            niveis.forEach(nivel => {
+                aulas[nivel] = temasPorNivel[nivel].map((tema, index) => ({
+                    id: `ingles_${nivel}_${index}`,
+                    titulo: tema,
+                    nivel: nivel,
+                    conteudo: gerarConteudoAula('ingles', nivel, tema),
+                    quiz: gerarQuiz('ingles', nivel, tema)
+                }));
             });
+
+            return aulas;
         }
 
-        // FILTRAR CURSOS
-        function filterCursos(cat) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            document.querySelectorAll('.card').forEach(card => {
-                if (cat === 'todos' || card.getAttribute('data-cat') === cat) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
+        function gerarAulasEspanhol() {
+            // Estrutura similar ao inglês, adaptada para espanhol
+            const aulas = {};
+            const niveis = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+            const temasPorNivel = {
+                'A1': [
+                    'Ser y Estar: a diferença crucial', 'Pronombres', 'Artículos', 'Números',
+                    'Colores', 'Familia', 'Comida', 'Rutina diaria', 'Aficiones', 'Direcciones',
+                    'Clima', 'Ropa', 'Cuerpo', 'Casa', 'Profesiones', 'Transporte', 'Teléfono',
+                    'Horas', 'Compras', 'Revisión A1'
+                ],
+                // ... demais níveis
+            };
+
+            niveis.forEach(nivel => {
+                if (temasPorNivel[nivel]) {
+                    aulas[nivel] = temasPorNivel[nivel].map((tema, index) => ({
+                        id: `espanhol_${nivel}_${index}`,
+                        titulo: tema,
+                        nivel: nivel,
+                        conteudo: gerarConteudoAula('espanhol', nivel, tema),
+                        quiz: gerarQuiz('espanhol', nivel, tema)
+                    }));
                 }
             });
+
+            return aulas;
         }
 
-        // START CURSO
-        function startCurso(cursoKey) {
-            userState.cursoAtual = cursoKey;
-            userState.aulaAtual = 0;
+        function gerarCursoDesenho(estiloId) {
+            const estilo = artStyles.find(s => s.id === estiloId);
+            const aulas = [];
             
-            const curso = cursos[cursoKey];
-            
-            if (curso.niveis) {
-                // Idiomas - mostrar níveis
-                showPage('nivel');
-            } else {
-                // Outros cursos - ir direto para aula
-                showPage('aula');
-                loadAula();
-            }
-        }
+            const temasDesenho = [
+                'Materiais e ferramentas', 'Linha: confiança na mão', 'Formas básicas 3D',
+                'Perspectiva 1 ponto', 'Perspectiva 2 pontos', 'Sombreamento: luz e sombra',
+                'Texturas básicas', 'Proporções do corpo', 'Anatomia: cabeça', 'Anatomia: mãos',
+                'Anatomia: pés', 'Movimento e gesto', 'Expressões faciais', 'Roupas e dobras',
+                'Cenários simples', 'Composição', 'Cores: teoria', 'Cores: aplicação',
+                'Estilo específico: técnicas', 'Projeto final: obra completa'
+            ];
 
-        // LOAD AULA
-        function loadAula() {
-            const curso = cursos[userState.cursoAtual];
-            const aula = curso.aulas[userState.aulaAtual];
-            
-            document.getElementById('aulaTitulo').textContent = aula.titulo;
-            document.getElementById('aulaProgresso').textContent = `Aula ${userState.aulaAtual + 1} de ${curso.aulas.length}`;
-            
-            // Gerar conteúdo NEURO
-            const conteudo = gerarConteudoNEURO(aula);
-            document.getElementById('aulaConteudo').innerHTML = conteudo;
-        }
-
-        // GERAR CONTEÚDO NEURO
-        function gerarConteudoNEURO(aula) {
-            const ia = iaProfiles[userState.ia];
-            
-            return `
-                <div class="neuro-box">
-                    <h3>${ia.avatar} ${ia.name} diz:</h3>
-                    <p>Olá! Vamos aprender sobre <strong>${aula.titulo}</strong> de um jeito que faz sentido.</p>
-                </div>
-                
-                <div class="real-talk">
-                    <h4>💡 Real Talk:</h4>
-                    <p>Aqui vai a explicação honesta, sem enrolação. O que realmente importa e como seu cérebro vai absorver isso naturalmente.</p>
-                </div>
-
-                <div class="example-box">
-                    <strong>🎯 Exemplos práticos:</strong>
-                    <p>• Exemplo 1: Situação do dia a dia</p>
-                    <p>• Exemplo 2: Aplicação real</p>
-                    <p>• Exemplo 3: Erro comum e como evitar</p>
-                </div>
-
-                <div class="quiz-container">
-                    <h3 style="margin-bottom: 1rem;">🧠 Teste rápido:</h3>
-                    <div class="quiz-option" onclick="checkAnswer(this, true)">
-                        <span class="quiz-option-letter">A</span>
-                        <span>Alternativa correta</span>
-                    </div>
-                    <div class="quiz-option" onclick="checkAnswer(this, false)">
-                        <span class="quiz-option-letter">B</span>
-                        <span>Alternativa incorreta</span>
-                    </div>
-                    <div class="quiz-option" onclick="checkAnswer(this, false)">
-                        <span class="quiz-option-letter">C</span>
-                        <span>Alternativa incorreta</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        // CHECK ANSWER
-        function checkAnswer(el, correct) {
-            if (correct) {
-                el.classList.add('correct');
-                showXP(25);
-            } else {
-                el.classList.add('wrong');
-                el.style.animation = 'shake 0.5s';
-            }
-        }
-
-        // COMPLETAR AULA
-        function completarAula() {
-            showXP(50);
-            addPontos(20);
-            
-            const curso = cursos[userState.cursoAtual];
-            userState.aulaAtual++;
-            
-            if (userState.aulaAtual >= curso.aulas.length) {
-                alert('🎉 Curso completado! +500 XP Bônus!');
-                showXP(500);
-                desbloquearConquista('course_complete');
-            } else {
-                loadAula();
-            }
-            
-            updateHUD();
-        }
-
-        // MOSTRAR XP
-        function showXP(amount) {
-            const popup = document.createElement('div');
-            popup.className = 'xp-popup';
-            popup.textContent = `+${amount} XP!`;
-            document.body.appendChild(popup);
-            
-            setTimeout(() => popup.remove(), 2000);
-            
-            userState.xp += amount;
-            if (userState.xp >= userState.maxXP) {
-                levelUp();
-            }
-            updateHUD();
-        }
-
-        // LEVEL UP
-        function levelUp() {
-            userState.nivel++;
-            userState.xp = userState.xp - userState.maxXP;
-            userState.maxXP = Math.floor(userState.maxXP * 1.2);
-            
-            const popup = document.createElement('div');
-            popup.className = 'xp-popup';
-            popup.style.background = 'linear-gradient(135deg, #f59e0b, #ec4899)';
-            popup.textContent = `🎉 LEVEL UP! Nível ${userState.nivel}`;
-            document.body.appendChild(popup);
-            setTimeout(() => popup.remove(), 3000);
-            
-            if (userState.nivel === 5) desbloquearConquista('level5');
-            if (userState.nivel === 10) desbloquearConquista('level10');
-        }
-
-        // ADD PONTOS
-        function addPontos(amount) {
-            userState.pontos += amount;
-            document.getElementById('navPoints').textContent = userState.pontos;
-            
-            if (userState.pontos >= 1000) desbloquearConquista('points1000');
-            if (userState.pontos >= 5000) desbloquearConquista('points5000');
-            updateHUD();
-        }
-
-        // DESBLOQUEAR CONQUISTA
-        function desbloquearConquista(id) {
-            if (userState.conquistas.includes(id)) return;
-            
-            userState.conquistas.push(id);
-            const conquista = conquistas.find(c => c.id === id);
-            
-            if (conquista) {
-                addPontos(conquista.pontos);
-                showXP(conquista.xp);
-                
-                // Notificação
-                const notif = document.createElement('div');
-                notif.style.cssText = 'position: fixed; top: 100px; right: 20px; background: linear-gradient(135deg, #f59e0b, #ec4899); color: white; padding: 1rem; border-radius: 12px; z-index: 3000; animation: slide-up 0.5s;';
-                notif.innerHTML = `🏆 Nova Conquista!<br><strong>${conquista.nome}</strong><br>+${conquista.pontos} pts`;
-                document.body.appendChild(notif);
-                setTimeout(() => notif.remove(), 4000);
-            }
-            
-            renderConquistas();
-            updateHUD();
-        }
-
-        // RENDER CONQUISTAS
-        function renderConquistas() {
-            const grid = document.getElementById('achievementsList');
-            grid.innerHTML = '';
-            
-            conquistas.forEach(c => {
-                const unlocked = userState.conquistas.includes(c.id);
-                const div = document.createElement('div');
-                div.className = `achievement ${unlocked ? 'unlocked' : ''}`;
-                div.innerHTML = `
-                    <span class="achievement-points">+${c.pontos}</span>
-                    <span class="achievement-icon">${c.icon}</span>
-                    <h4>${c.nome}</h4>
-                    <p>${c.desc}</p>
-                `;
-                grid.appendChild(div);
-            });
-        }
-
-        // RENDER LOJA
-        function renderLoja() {
-            const grid = document.getElementById('shopGrid');
-            grid.innerHTML = '';
-            
-            lojaItens.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'shop-item';
-                div.innerHTML = `
-                    <div class="shop-item-image">${item.icon}</div>
-                    <div class="shop-item-content">
-                        <h3>${item.nome}</h3>
-                        <div class="shop-item-price">⚡ ${item.preco}</div>
-                        <p style="color: var(--gray); font-size: 0.9rem; margin: 0.5rem 0;">${item.desc}</p>
-                        <button class="btn btn-primary" style="width: 100%;" onclick="comprarItem('${item.id}')">
-                            Comprar
-                        </button>
-                    </div>
-                `;
-                grid.appendChild(div);
-            });
-        }
-
-        // COMPRAR ITEM
-        function comprarItem(id) {
-            const item = lojaItens.find(i => i.id === id);
-            if (userState.pontos >= item.preco) {
-                userState.pontos -= item.preco;
-                userState.inventario.push(item);
-                addPontos(0); // Atualiza display
-                alert(`✅ ${item.nome} comprado!`);
-                desbloquearConquista('shopaholic');
-            } else {
-                alert('❌ Pontos insuficientes!');
-            }
-        }
-
-        // RENDER RANKING
-        function renderRanking() {
-            const leaderboard = document.getElementById('leaderboardList');
-            const players = [
-                { name: 'Ana Silva', points: 12500, avatar: '👩‍🎓' },
-                { name: 'Pedro Costa', points: 11200, avatar: '👨‍💻' },
-                { name: 'Maria Santos', points: 10800, avatar: '👩‍🎨' },
-                { name: 'João Lima', points: 9500, avatar: '🧑‍🔬' },
-                { name: 'Você', points: userState.pontos, avatar: '🧑‍🎓', isYou: true }
-            ].sort((a, b) => b.points - a.points);
-            
-            leaderboard.innerHTML = '';
-            players.forEach((p, i) => {
-                const div = document.createElement('div');
-                div.className = 'leaderboard-item';
-                if (p.isYou) div.style.background = 'rgba(99, 102, 241, 0.1)';
-                
-                div.innerHTML = `
-                    <div class="leaderboard-rank rank-${i + 1}">${i + 1}</div>
-                    <div class="leaderboard-avatar">${p.avatar}</div>
-                    <div class="leaderboard-info">
-                        <h4>${p.name} ${p.isYou ? '(Você)' : ''}</h4>
-                        <span>Nível ${Math.floor(p.points / 1000) + 1}</span>
-                    </div>
-                    <div class="leaderboard-points">⚡ ${p.points}</div>
-                `;
-                leaderboard.appendChild(div);
-            });
-        }
-
-        // NEURO-ZAP FUNÇÕES
-        function toggleZap() {
-            const window = document.getElementById('zapWindow');
-            window.classList.toggle('active');
-        }
-
-        function showZapTab(tab) {
-            document.querySelectorAll('.zap-tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            if (tab === 'grupos') {
-                document.getElementById('zapGruposList').classList.remove('hidden');
-                document.getElementById('zapMessagesArea').classList.add('hidden');
-                document.getElementById('zapInputArea').style.display = 'none';
-                renderZapGrupos();
-            } else {
-                if (currentZapGroup) {
-                    document.getElementById('zapGruposList').classList.add('hidden');
-                    document.getElementById('zapMessagesArea').classList.remove('hidden');
-                    document.getElementById('zapInputArea').style.display = 'flex';
-                    renderZapMessages();
-                }
-            }
-        }
-
-        function renderZapGrupos() {
-            const list = document.getElementById('zapGruposList');
-            list.innerHTML = '';
-            
-            gruposZap.forEach(g => {
-                const div = document.createElement('div');
-                div.className = `zap-chat-item ${g.unread > 0 ? 'unread' : ''}`;
-                div.onclick = () => enterZapGroup(g);
-                
-                div.innerHTML = `
-                    <div class="zap-chat-avatar">${g.icon}</div>
-                    <div class="zap-chat-info">
-                        <div class="zap-chat-header">
-                            <span class="zap-chat-name">${g.nome}</span>
-                            <span class="zap-time">${g.time}</span>
-                        </div>
-                        <div class="zap-preview">${g.lastMsg}</div>
-                    </div>
-                    ${g.unread > 0 ? `<span class="zap-badge">${g.unread}</span>` : ''}
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        function enterZapGroup(group) {
-            currentZapGroup = group;
-            document.querySelector('.zap-tab:last-child').click();
-            
-            document.getElementById('zapHeaderName').textContent = group.nome;
-            document.getElementById('zapHeaderStatus').textContent = `${group.membros} membros`;
-            document.getElementById('zapHeaderAvatar').textContent = group.icon;
-            
-            // Inicializar mensagens se não existirem
-            if (!zapMessages[group.id]) {
-                zapMessages[group.id] = [
-                    { user: 'Sistema', text: `Bem-vindo ao ${group.nome}!`, time: '10:00', isSystem: true }
-                ];
-            }
-            
-            renderZapMessages();
-        }
-
-        function renderZapMessages() {
-            const area = document.getElementById('zapMessagesArea');
-            area.innerHTML = '';
-            
-            const msgs = zapMessages[currentZapGroup.id] || [];
-            msgs.forEach(m => {
-                const div = document.createElement('div');
-                div.className = `zap-message ${m.isMe ? 'sent' : 'received'}`;
-                div.innerHTML = `
-                    <div>${m.text}</div>
-                    <div class="zap-message-time">${m.time}</div>
-                `;
-                area.appendChild(div);
-            });
-            
-            area.scrollTop = area.scrollHeight;
-        }
-
-        function handleZapInput(e) {
-            if (e.key === 'Enter') sendZapMessage();
-        }
-
-        function sendZapMessage() {
-            const input = document.getElementById('zapInput');
-            const text = input.value.trim();
-            if (!text || !currentZapGroup) return;
-            
-            const msgs = zapMessages[currentZapGroup.id];
-            msgs.push({
-                user: 'Você',
-                text: text,
-                time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-                isMe: true
-            });
-            
-            input.value = '';
-            renderZapMessages();
-            
-            // Simular resposta
-            setTimeout(() => {
-                msgs.push({
-                    user: 'Colega',
-                    text: 'Boa! Também estou estudando isso. 💪',
-                    time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-                    isMe: false
-                });
-                renderZapMessages();
-            }, 2000);
-        }
-
-        // NAVEGAÇÃO
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(`page-${pageId}`).classList.add('active');
-            
-            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        // MODAIS
-        function openModal(id) {
-            document.getElementById(`modal${id.charAt(0).toUpperCase() + id.slice(1)}`).classList.add('active');
-        }
-
-        function closeModal(id) {
-            document.getElementById(`modal${id.charAt(0).toUpperCase() + id.slice(1)}`).classList.remove('active');
-        }
-
-        // ONBOARDING
-        let onbData = {};
-
-        function selectOption(field, value, el) {
-            onbData[field] = value;
-            el.parentElement.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-        }
-
-        function nextOnb(step) {
-            document.querySelectorAll('[id^="onb-step-"]').forEach(s => s.classList.add('hidden'));
-            document.getElementById(`onb-step-${step}`).classList.remove('hidden');
-        }
-
-        function finalizarOnboarding() {
-            userState.nome = document.getElementById('onbNome').value;
-            userState.idade = onbData.idade || 'adulto';
-            userState.ia = onbData.ia || 'luna';
-            userState.metodo = onbData.metodo || 'gamificado';
-            
-            const admCode = document.getElementById('onbAdm').value;
-            if (admCode === ADM_CODE) {
-                userState.isAdm = true;
-                alert('🔑 Código ADM aceito! Bem-vindo, administrador.');
-            }
-            
-            closeModal('onboarding');
-            document.getElementById('btnLogin').classList.add('hidden');
-            document.getElementById('userDisplay').classList.remove('hidden');
-            
-            updateHUD();
-            desbloquearConquista('first');
-        }
-
-        // UPDATE HUD
-        function updateHUD() {
-            document.getElementById('hudName').textContent = userState.nome || 'Estudante';
-            document.getElementById('hudLevel').textContent = userState.nivel;
-            document.getElementById('hudXP').textContent = userState.xp;
-            document.getElementById('hudMaxXP').textContent = userState.maxXP;
-            document.getElementById('hudXPBar').style.width = `${(userState.xp / userState.maxXP) * 100}%`;
-            document.getElementById('hudPoints').textContent = userState.pontos;
-            document.getElementById('hudStreak').textContent = userState.streak;
-            document.getElementById('hudBadges').textContent = userState.conquistas.length;
-            
-            document.getElementById('navPoints').textContent = userState.pontos;
-            document.getElementById('navStreak').textContent = userState.streak;
-            
-            // Avatar da IA
-            const ia = iaProfiles[userState.ia];
-            if (ia) {
-                document.getElementById('hudAvatar').textContent = ia.avatar;
-            }
-        }
-
-        // INIT
-        window.onload = init;
-    </script>
-</body>
-</html>
+            for (let i = 0; i < 20; i++) {
+                aulas.push({
+                    id: `desenho_${estiloId}_${i}`,
+                    titulo: `${estilo.name}: ${temasDesenho[i]}`,
+                    estilo: estiloId,
+                    conteudo: gerarConteudoDesenho

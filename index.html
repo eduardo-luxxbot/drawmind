@@ -1767,4 +1767,482 @@
                     id: `desenho_${estiloId}_${i}`,
                     titulo: `${estilo.name}: ${temasDesenho[i]}`,
                     estilo: estiloId,
-                    conteudo: gerarConteudoDesenho
+                    conteudo: gerarConteudoDesenho(estiloId, temasDesenho[i]),
+                    quiz: gerarQuizDesenho(estiloId, temasDesenho[i])
+                });
+            }
+
+            return {
+                nome: `Desenho: ${estilo.name}`,
+                categoria: 'arte',
+                icon: estilo.icon,
+                desc: `${estilo.desc}. 20 aulas práticas.`,
+                totalAulas: 20,
+                estilo: estiloId,
+                aulas: { 'Basico': aulas }
+            };
+        }
+
+        function gerarAulasPython() {
+            const aulas = [];
+            const temas = [
+                'Introdução: por que Python?', 'Variáveis e tipos', 'Operadores', 'Input/output',
+                'Condicionais: if/else', 'Elif', 'Loops: for', 'Loops: while', 'Listas',
+                'Dicionários', 'Tuplas e sets', 'Funções básicas', 'Parâmetros', 'Retorno',
+                'Escopo', 'Módulos', 'Tratamento de erros', 'Arquivos', 'Projeto: calculadora',
+                'Projeto: jogo da forca', 'Projeto: agenda', 'Projeto: web scraper',
+                'Classes e objetos', 'Herança', 'Polimorfismo', 'Encapsulamento',
+                'Decorators', 'Generators', 'List comprehension', 'Lambda', 'Map/filter/reduce',
+                'Bibliotecas: numpy', 'Pandas básico', 'Matplotlib', 'APIs', 'Web: Flask',
+                'Web: Django básico', 'Banco de dados: SQLite', 'Projeto: blog', 'Projeto final: sistema completo'
+            ];
+
+            for (let i = 0; i < 40; i++) {
+                aulas.push({
+                    id: `python_${i}`,
+                    titulo: temas[i] || `Tema avançado ${i}`,
+                    conteudo: gerarConteudoPython(temas[i]),
+                    quiz: gerarQuizPython(temas[i])
+                });
+            }
+
+            return { 'Completo': aulas };
+        }
+
+        // ==================== GERAÇÃO DE CONTEÚDO NEURO ====================
+
+        function gerarConteudoAula(idioma, nivel, tema) {
+            const ia = iaProfiles[userData?.ia || 'marco'];
+            
+            return {
+                realTalk: `Vamos falar sobre "${tema}" de forma direta. Este é um dos tópicos mais importantes do ${nivel}.`,
+                explicacao: `Aqui vai a explicação completa sobre ${tema} no contexto do ${idioma}.`,
+                exemplos: [
+                    `Exemplo 1: Uso básico de ${tema}`,
+                    `Exemplo 2: Situação cotidiana`,
+                    `Exemplo 3: Erro comum e como evitar`
+                ],
+                dica: `💡 Dica ${ia.name}: ${gerarDica(tema)}`,
+                errosComuns: [
+                    'Erro 1: Confundir com tema similar',
+                    'Erro 2: Uso incorreto no contexto'
+                ],
+                pratica: 'Exercício prático: Complete as lacunas abaixo...'
+            };
+        }
+
+        function gerarConteudoDesenho(estilo, tema) {
+            const tecnicas = {
+                'anime': 'Linhas limpas, olhos grandes, expressões exageradas',
+                'realismo': 'Proporções exatas, sombreamento suave, atenção aos detalhes',
+                'cartoon': 'Formas simplificadas, cores vibrantes, exagero nas features',
+                'sketch': 'Linhas soltas, rápidas, gesto e movimento',
+                'aquarela': 'Camadas transparentes, controle de água, mistura de cores',
+                'digital': 'Camadas, brushes, undo infinito, experimentação',
+                'pixel': 'Limitação de cores, grids, técnicas de dithering',
+                'vetor': 'Paths, anchors, curvas de Bézier, escalabilidade'
+            };
+
+            return {
+                realTalk: `${tema} no estilo ${estilo}: ${tecnicas[estilo]}`,
+                materiais: 'Lista de materiais necessários para esta aula',
+                passoAPasso: [
+                    'Passo 1: Esboço inicial',
+                    'Passo 2: Refinamento',
+                    'Passo 3: Detalhes finais'
+                ],
+                dica: `💡 Segredo do ${estilo}: ${gerarDicaDesenho(estilo)}`,
+                exercicio: `Pratique: ${tema} 5 vezes com referências diferentes`
+            };
+        }
+
+        function gerarConteudoPython(tema) {
+            return {
+                conceito: `O que é ${tema} e por que usar`,
+                sintaxe: `Código: exemplo de sintaxe`,
+                exemplos: [
+                    'Exemplo básico',
+                    'Exemplo intermediário',
+                    'Exemplo real-world'
+                ],
+                desafio: 'Desafio: Modifique o código para...',
+                dica: `💡 Pythonic way: ${gerarDicaPython(tema)}`
+            };
+        }
+
+        function gerarDica(tema) {
+            const dicas = [
+                'Crie flashcards para memorizar',
+                'Pratique 10 minutos por dia',
+                'Use em frases sobre sua vida',
+                'Associe com imagens mentais',
+                'Ensine alguém o que aprendeu'
+            ];
+            return dicas[Math.floor(Math.random() * dicas.length)];
+        }
+
+        function gerarDicaDesenho(estilo) {
+            const dicas = {
+                'anime': 'Comece sempre pelo círculo da cabeça',
+                'realismo': 'Meça com o lápis na mão',
+                'cartoon': 'Exagere 30% a mais do que parece natural',
+                'sketch': 'Não apague, faça outro',
+                'aquarela': 'Secagem entre camadas é crucial',
+                'digital': 'Use Ctrl+Z sem culpa, é ferramenta',
+                'pixel': 'Zoom out frequentemente para ver o todo',
+                'vetor': 'Menos âncoras = curvas mais suaves'
+            };
+            return dicas[estilo];
+        }
+
+        function gerarDicaPython(tema) {
+            return 'Readability counts - código é lido mais que escrito';
+        }
+
+        // ==================== GERAÇÃO DE QUIZ ====================
+
+        function gerarQuiz(idioma, nivel, tema) {
+            return [
+                {
+                    tipo: 'multipla',
+                    pergunta: `Qual a forma correta de usar "${tema}"?`,
+                    opcoes: ['Alternativa A correta', 'Alternativa B errada', 'Alternativa C errada', 'Alternativa D errada'],
+                    correta: 0,
+                    explicacao: 'A alternativa A está correta porque...'
+                },
+                {
+                    tipo: 'vouf',
+                    pergunta: `"${tema}" pode ser usado em contextos formais?`,
+                    correta: true,
+                    explicacao: 'Sim, pode ser usado em contextos formais quando...'
+                },
+                {
+                    tipo: 'preencher',
+                    pergunta: `Complete: _____ é usado para...`,
+                    resposta: 'Resposta correta',
+                    explicacao: 'A resposta completa é...'
+                },
+                {
+                    tipo: 'multipla',
+                    pergunta: 'Qual erro é mais comum?',
+                    opcoes: ['Erro A', 'Erro B', 'Erro C', 'Erro D'],
+                    correta: 1,
+                    explicacao: 'O erro B é o mais comum porque...'
+                },
+                {
+                    tipo: 'multipla',
+                    pergunta: 'Escolha a tradução correta:',
+                    opcoes: ['Tradução A', 'Tradução B', 'Tradução C', 'Tradução D'],
+                    correta: 2,
+                    explicacao: 'A tradução C é correta porque...'
+                }
+            ];
+        }
+
+        function gerarQuizDesenho(estilo, tema) {
+            return [
+                {
+                    tipo: 'multipla',
+                    pergunta: `Qual material é essencial para ${tema} no estilo ${estilo}?`,
+                    opcoes: ['Material A', 'Material B', 'Material C', 'Material D'],
+                    correta: 0,
+                    explicacao: 'O material A é essencial porque...'
+                },
+                {
+                    tipo: 'vouf',
+                    pergunta: 'Deve-se sempre começar pelo esboço?',
+                    correta: true,
+                    explicacao: 'Sim, o esboço é fundamental para...'
+                },
+                {
+                    tipo: 'multipla',
+                    pergunta: 'Qual técnica é mais indicada?',
+                    opcoes: ['Técnica A', 'Técnica B', 'Técnica C', 'Técnica D'],
+                    correta: 1,
+                    explicacao: 'A técnica B é mais indicada porque...'
+                },
+                {
+                    tipo: 'preencher',
+                    pergunta: 'A proporção ideal para cabeça/corpo é:',
+                    resposta: '1:7 ou 1:8',
+                    explicacao: 'A proporção clássica é 1 cabeça para 7-8 corpos...'
+                },
+                {
+                    tipo: 'multipla',
+                    pergunta: 'Qual erro deve ser evitado?',
+                    opcoes: ['Erro A', 'Erro B', 'Erro C', 'Erro D'],
+                    correta: 3,
+                    explicacao: 'O erro D é grave porque...'
+                }
+            ];
+        }
+
+        function gerarQuizPython(tema) {
+            return [
+                {
+                    tipo: 'multipla',
+                    pergunta: `Qual sintaxe é correta para ${tema}?`,
+                    opcoes: ['Sintaxe A', 'Sintaxe B', 'Sintaxe C', 'Sintaxe D'],
+                    correta: 0,
+                    explicacao: 'A sintaxe A segue PEP 8...'
+                },
+                {
+                    tipo: 'vouf',
+                    pergunta: `${tema} é mutável?`,
+                    correta: tema.includes('lista') || tema.includes('dicionário'),
+                    explicacao: 'Depende do tipo de dado...'
+                },
+                {
+                    tipo: 'preencher',
+                    pergunta: 'Complete o código: def funcao(_____):',
+                    resposta: 'parametro',
+                    explicacao: 'Parâmetros são definidos entre parênteses...'
+                },
+                {
+                    tipo: 'multipla',
+                    pergunta: 'Qual output do código?',
+                    opcoes: ['Output A', 'Output B', 'Output C', 'Erro'],
+                    correta: 1,
+                    explicacao: 'O código retorna B porque...'
+                },
+                {
+                    tipo: 'multipla',
+                    pergunta: 'Melhor prática para ' + tema + '?',
+                    opcoes: ['Prática A', 'Prática B', 'Prática C', 'Prática D'],
+                    correta: 2,
+                    explicacao: 'A prática C é considerada Pythonic...'
+                }
+            ];
+        }
+
+        // ==================== SISTEMA DE CONQUISTAS ====================
+        const conquistas = [
+            { id: 'first', icon: '🎉', nome: 'Primeiros Passos', desc: 'Completou a primeira aula', pontos: 100, xp: 50, condicao: (u) => u.aulasCompletadas >= 1 },
+            { id: 'streak3', icon: '🔥', nome: 'Sequência de 3 dias', desc: '3 dias seguidos estudando', pontos: 200, xp: 100, condicao: (u) => u.streak >= 3 },
+            { id: 'streak7', icon: '⚡', nome: 'Semana de Fogo', desc: '7 dias seguidos estudando', pontos: 500, xp: 250, condicao: (u) => u.streak >= 7 },
+            { id: 'streak30', icon: '🏆', nome: 'Mestre da Consistência', desc: '30 dias seguidos!', pontos: 2000, xp: 1000, condicao: (u) => u.streak >= 30 },
+            { id: 'level5', icon: '⭐', nome: 'Subindo de Nível', desc: 'Alcançou nível 5', pontos: 300, xp: 150, condicao: (u) => u.nivel >= 5 },
+            { id: 'level10', icon: '🌟', nome: 'Veterano', desc: 'Alcançou nível 10', pontos: 1000, xp: 500, condicao: (u) => u.nivel >= 10 },
+            { id: 'level50', icon: '💫', nome: 'Lenda', desc: 'Alcançou nível 50', pontos: 5000, xp: 2500, condicao: (u) => u.nivel >= 50 },
+            { id: 'level100', icon: '👑', nome: 'Semi-Deus', desc: 'Alcançou nível 100', pontos: 10000, xp: 5000, condicao: (u) => u.nivel >= 100 },
+            { id: 'points1000', icon: '💰', nome: 'Milionário', desc: 'Acumulou 1000 pontos', pontos: 0, xp: 200, condicao: (u) => u.pontos >= 1000 },
+            { id: 'points5000', icon: '💎', nome: 'Rico', desc: 'Acumulou 5000 pontos', pontos: 0, xp: 500, condicao: (u) => u.pontos >= 5000 },
+            { id: 'points10000', icon: '🏦', nome: 'Magnata', desc: 'Acumulou 10000 pontos', pontos: 0, xp: 1000, condicao: (u) => u.pontos >= 10000 },
+            { id: 'polyglot', icon: '🌍', nome: 'Poliglota', desc: 'Estudou 3 idiomas', pontos: 1000, xp: 500, condicao: (u) => (u.idiomasEstudados || []).length >= 3 },
+            { id: 'artist', icon: '🎨', nome: 'Artista', desc: 'Completou 3 estilos de desenho', pontos: 1500, xp: 750, condicao: (u) => (u.estilosCompletados || []).length >= 3 },
+            { id: 'coder', icon: '💻', nome: 'Programador', desc: 'Completou Python e JS', pontos: 1500, xp: 750, condicao: (u) => u.cursosCompletados?.includes('python') && u.cursosCompletados?.includes('javascript') },
+            { id: 'helper', icon: '🤝', nome: 'Mentor', desc: 'Ajudou 10 pessoas no Zap', pontos: 500, xp: 250, condicao: (u) => (u.ajudas || 0) >= 10 },
+            { id: 'social', icon: '👥', nome: 'Social', desc: 'Entrou em 5 grupos', pontos: 300, xp: 150, condicao: (u) => (u.grupos || []).length >= 5 },
+            { id: 'shopaholic', icon: '🛍️', nome: 'Comprador', desc: 'Comprou 10 itens na loja', pontos: 500, xp: 250, condicao: (u) => (u.compras || []).length >= 10 },
+            { id: 'top10', icon: '🏅', nome: 'Top 10', desc: 'Entrou no top 10 do ranking', pontos: 1000, xp: 500, condicao: (u) => u.rank <= 10 },
+            { id: 'top1', icon: '🥇', nome: 'Campeão', desc: 'Alcançou o #1 do ranking', pontos: 5000, xp: 2500, condicao: (u) => u.rank === 1 },
+            { id: 'guildMaster', icon: '🏰', nome: 'Líder de Guilda', desc: 'Criou uma guilda com 10+ membros', pontos: 1000, xp: 500, condicao: (u) => u.guildaMembros >= 10 },
+            { id: 'battleWinner', icon: '⚔️', nome: 'Guerreiro', desc: 'Venceu 10 batalhas 1v1', pontos: 800, xp: 400, condicao: (u) => (u.batalhasVencidas || 0) >= 10 },
+            { id: 'vipMember', icon: '👑', nome: 'VIP', desc: 'Assinante VIP', pontos: 0, xp: 0, condicao: (u) => u.vip === true },
+            { id: 'adm', icon: '⭐', nome: 'Administrador', desc: 'Poderes de ADM', pontos: 0, xp: 0, condicao: (u) => u.isAdm === true }
+        ];
+
+        // ==================== LOJA ====================
+        const lojaItens = [
+            { id: 'vip_30', nome: 'VIP 30 dias', icon: '👑', preco: 2000, tipo: 'vip', desc: 'Coroa no perfil, XP 2x, acesso antecipado', beneficio: 'vip' },
+            { id: 'vip_90', nome: 'VIP 90 dias', icon: '👑', preco: 5000, tipo: 'vip', desc: 'VIP por 3 meses + badge exclusivo', beneficio: 'vip' },
+            { id: 'vip_365', nome: 'VIP 1 ano', icon: '👑', preco: 15000, tipo: 'vip', desc: 'VIP anual + suporte prioritário', beneficio: 'vip' },
+            { id: 'theme_dark', nome: 'Tema Noturno Pro', icon: '🌙', preco: 800, tipo: 'tema', desc: 'Tema escuro premium com animações' },
+            { id: 'theme_neon', nome: 'Tema Neon', icon: '⚡', preco: 1500, tipo: 'tema', desc: 'Cores vibrantes estilo cyberpunk' },
+            { id: 'theme_gold', nome: 'Tema Ouro', icon: '✨', preco: 3000, tipo: 'tema', desc: 'Exclusivo para VIPs e ADMs', vip: true },
+            { id: 'avatar_pack1', nome: 'Pack Avatares Geek', icon: '🎭', preco: 600, tipo: 'avatar', desc: '10 avatares de games e animes' },
+            { id: 'avatar_pack2', nome: 'Pack Avatares Profissional', icon: '👔', preco: 600, tipo: 'avatar', desc: '10 avatares formais' },
+            { id: 'streak_freeze', nome: 'Congelar Streak', icon: '❄️', preco: 400, tipo: 'consumivel', desc: 'Não perca sua sequência (3 usos)' },
+            { id: 'xp_boost_2x', nome: 'Boost 2x XP (24h)', icon: '🚀', preco: 800, tipo: 'consumivel', desc: 'Dobro de XP por 24 horas' },
+            { id: 'xp_boost_3x', nome: 'Boost 3x XP (24h)', icon: '🚀', preco: 1500, tipo: 'consumivel', desc: 'Triplo de XP por 24 horas', vip: true },
+            { id: 'curso_antecipado', nome: 'Acesso Antecipado', icon: '🔓', preco: 2500, tipo: 'curso', desc: 'Acesso a cursos em beta' },
+            { id: 'badge_og', nome: 'Badge Fundador', icon: '🏆', preco: 5000, tipo: 'badge', desc: 'Exclusivo para primeiros usuários', limitado: true },
+            { id: 'guilda_slot', nome: 'Slot de Guilda Extra', icon: '🏰', preco: 1000, tipo: 'guilda', desc: 'Aumente limite de membros da guilda' }
+        ];
+
+        // ==================== FUNÇÕES DE INTERFACE ====================
+
+        function init() {
+            renderCursos();
+            renderConquistas();
+            renderLoja();
+            renderRanking();
+            renderAvatares();
+            checkAuth();
+        }
+
+        function renderCursos() {
+            const grid = document.getElementById('cursosGrid');
+            grid.innerHTML = '';
+            
+            Object.keys(todosCursos).forEach(key => {
+                const curso = todosCursos[key];
+                const card = document.createElement('div');
+                card.className = `card cat-${curso.categoria}`;
+                card.setAttribute('data-cat', curso.categoria);
+                card.onclick = () => iniciarCurso(key);
+                
+                card.innerHTML = `
+                    <div class="card-image">${curso.icon}</div>
+                    <div class="card-content">
+                        <h3>${curso.nome}</h3>
+                        <p>${curso.desc}</p>
+                        <div class="card-meta">
+                            <span>⚡ ${curso.totalAulas} aulas</span>
+                            <span>🎯 ${curso.categoria}</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterCursos(cat) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('#cursosGrid .card').forEach(card => {
+                if (cat === 'todos' || card.getAttribute('data-cat') === cat) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function renderConquistas() {
+            const grid = document.getElementById('achievementsList');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+            
+            conquistas.forEach(c => {
+                const unlocked = userData?.conquistas?.includes(c.id) || false;
+                const div = document.createElement('div');
+                div.style.cssText = `background: var(--glass); border: 1px solid ${unlocked ? 'var(--warning)' : 'var(--glass-border)'}; border-radius: 16px; padding: 1.25rem; text-align: center; transition: all 0.3s; opacity: ${unlocked ? '1' : '0.4'}; ${unlocked ? 'animation: achievement-glow 2s infinite;' : ''}`;
+                
+                div.innerHTML = `
+                    <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">${c.icon}</span>
+                    <h4 style="font-size: 0.85rem; margin-bottom: 0.25rem;">${c.nome}</h4>
+                    <p style="font-size: 0.75rem; color: var(--gray);">${c.desc}</p>
+                    ${unlocked ? `<span style="font-size: 0.7rem; color: var(--warning);">+${c.pontos} pts</span>` : ''}
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        function renderLoja() {
+            const grid = document.getElementById('shopGrid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+            
+            lojaItens.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.setAttribute('data-tipo', item.tipo);
+                div.style.position = 'relative';
+                
+                const podeComprar = (userData?.pontos || 0) >= item.preco;
+                const isVip = item.vip && !(userData?.vip || userData?.isAdm);
+                
+                div.innerHTML = `
+                    ${item.vip ? '<span class="card-badge badge-vip" style="position: absolute; top: 10px; right: 10px;">VIP</span>' : ''}
+                    ${item.limitado ? '<span class="card-badge badge-adm" style="position: absolute; top: 10px; left: 10px;">LIMITADO</span>' : ''}
+                    <div class="card-image" style="height: 150px; font-size: 3rem;">${item.icon}</div>
+                    <div class="card-content">
+                        <h3>${item.nome}</h3>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--warning); font-size: 1.25rem; font-weight: 700; margin: 0.5rem 0;">
+                            ⚡ ${item.preco}
+                        </div>
+                        <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 1rem;">${item.desc}</p>
+                        <button class="btn ${podeComprar && !isVip ? 'btn-primary' : 'btn-secondary'}" 
+                                onclick="comprarItem('${item.id}')" 
+                                style="width: 100%;"
+                                ${!podeComprar || isVip ? 'disabled' : ''}>
+                            ${isVip ? 'Requer VIP' : podeComprar ? 'Comprar' : 'Pontos insuficientes'}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        function filterLoja(tipo) {
+            document.querySelectorAll('#shopGrid .card').forEach(card => {
+                if (tipo === 'todos' || card.getAttribute('data-tipo') === tipo) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function renderRanking() {
+            const ranking = document.getElementById('rankingGlobal');
+            if (!ranking) return;
+            
+            // Simulação de ranking (em produção, virá do Firebase)
+            const players = [
+                { name: 'Carlos ADM', points: 1000000, avatar: '👑', isAdm: true, vip: true },
+                { name: 'Ana Silva', points: 12500, avatar: '👩‍🎓', vip: true },
+                { name: 'Pedro Costa', points: 11200, avatar: '👨‍💻' },
+                { name: 'Maria Santos', points: 10800, avatar: '👩‍🎨' },
+                { name: 'João Lima', points: 9500, avatar: '🧑‍🔬' },
+                { name: 'Você', points: userData?.pontos || 0, avatar: userData?.avatar || '🧑‍🎓', isYou: true, vip: userData?.vip, isAdm: userData?.isAdm }
+            ].sort((a, b) => b.points - a.points);
+            
+            ranking.innerHTML = '';
+            players.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.style.cssText = `display: flex; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--glass-border); ${p.isYou ? 'background: rgba(99, 102, 241, 0.1);' : ''}`;
+                
+                const rankColor = i === 0 ? '#ffd700' : i === 1 ? '#c0c0c0' : i === 2 ? '#cd7f32' : 'var(--gray)';
+                
+                div.innerHTML = `
+                    <div style="width: 40px; font-size: 1.5rem; font-weight: 700; text-align: center; color: ${rankColor};">${i + 1}</div>
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); margin: 0 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; position: relative;">
+                        ${p.avatar}
+                        ${p.isAdm ? '<span style="position: absolute; bottom: -5px; right: -5px; font-size: 0.8rem;">⭐</span>' : ''}
+                        ${p.vip && !p.isAdm ? '<span style="position: absolute; bottom: -5px; right: -5px; font-size: 0.8rem;">👑</span>' : ''}
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 1rem; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.3rem;">
+                            ${p.name} ${p.isYou ? '(Você)' : ''}
+                            ${p.isAdm ? '<span style="color: var(--adm); font-size: 0.8rem;">[ADM]</span>' : ''}
+                        </h4>
+                        <span style="font-size: 0.85rem; color: var(--gray);">Nível ${Math.floor(p.points / 1000) + 1}</span>
+                    </div>
+                    <div style="font-size: 1.25rem; font-weight: 700; color: var(--warning);">⚡ ${p.points.toLocaleString()}</div>
+                `;
+                ranking.appendChild(div);
+            });
+        }
+
+        function renderAvatares() {
+            const container = document.getElementById('avatarPreview');
+            if (!container) return;
+            
+            const avatares = ['🧑‍🎓', '👩‍🎓', '👨‍💻', '👩‍💻', '🧑‍🔬', '👩‍🔬', '🧑‍🎨', '👩‍🎨', '🧑‍🏫', '👨‍🚀', '👩‍🚀', '🦸', '🦹', '🧙', '🧝', '🤖', '👾', '🎭'];
+            
+            container.innerHTML = avatares.map(a => `
+                <span onclick="selectAvatar('${a}')" style="font-size: 2rem; cursor: pointer; padding: 0.5rem; border-radius: 8px; transition: all 0.3s; hover: background: var(--glass);">${a}</span>
+            `).join('');
+        }
+
+        // ==================== FUNÇÕES DE AULA E QUIZ ====================
+
+        function iniciarCurso(cursoId) {
+            if (!currentUser) {
+                openModal('auth');
+                return;
+            }
+            
+            currentCurso = cursoId;
+            const curso = todosCursos[cursoId];
+            
+            // Verificar se tem níveis (idiomas) ou é curso único
+            if (curso.niveis) {
+                // Mostrar seleção de nível
+                alert(`Curso: ${curso.nome}\nEscolha o nível: ${curso.niveis.join(', ')}`);
+                // Implementar

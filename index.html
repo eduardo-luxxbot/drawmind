@@ -2245,4 +2245,555 @@
             if (curso.niveis) {
                 // Mostrar seleção de nível
                 alert(`Curso: ${curso.nome}\nEscolha o nível: ${curso.niveis.join(', ')}`);
-                // Implementar
+                // Implementar seleção de nível
+                currentAula = curso.aulas[curso.niveis[0]][0];
+            } else {
+                const aulas = Object.values(curso.aulas)[0];
+                currentAula = aulas[0];
+            }
+            
+            showPage('aula');
+            loadAula();
+        }
+
+        function loadAula() {
+            if (!currentAula) return;
+            
+            document.getElementById('aulaTitulo').textContent = currentAula.titulo;
+            document.getElementById('aulaNivel').textContent = currentAula.nivel || 'Básico';
+            document.getElementById('aulaProgresso').textContent = `Aula ${currentAula.id.split('_').pop()} de 20`;
+            
+            const conteudoDiv = document.getElementById('aulaConteudo');
+            const conteudo = currentAula.conteudo;
+            
+            let html = '';
+            
+            if (conteudo.realTalk) {
+                html += `
+                    <div style="background: rgba(99, 102, 241, 0.1); border-left: 4px solid var(--primary); padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 0 12px 12px 0;">
+                        <h3 style="color: var(--primary); margin-bottom: 0.5rem;">🧠 Real Talk</h3>
+                        <p>${conteudo.realTalk}</p>
+                    </div>
+                `;
+            }
+            
+            if (conteudo.explicacao) {
+                html += `<p style="margin-bottom: 1rem;">${conteudo.explicacao}</p>`;
+            }
+            
+            if (conteudo.exemplos) {
+                html += `
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin: 1rem 0;">
+                        <strong style="color: var(--success);">🎯 Exemplos:</strong>
+                        <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                            ${conteudo.exemplos.map(e => `<li style="margin-bottom: 0.5rem;">${e}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            if (conteudo.dica) {
+                html += `
+                    <div style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid var(--warning); padding: 1.5rem; margin: 1.5rem 0; border-radius: 0 12px 12px 0;">
+                        <h4 style="color: var(--warning); margin-bottom: 0.5rem;">💡 Dica da IA</h4>
+                        <p>${conteudo.dica}</p>
+                    </div>
+                `;
+            }
+            
+            if (conteudo.passoAPasso) {
+                html += `
+                    <div style="margin: 1.5rem 0;">
+                        <h4 style="margin-bottom: 1rem;">📝 Passo a Passo:</h4>
+                        <ol style="padding-left: 1.5rem;">
+                            ${conteudo.passoAPasso.map(p => `<li style="margin-bottom: 0.5rem;">${p}</li>`).join('')}
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            conteudoDiv.innerHTML = html;
+            
+            // Resetar quiz
+            document.getElementById('quizSection').classList.add('hidden');
+            document.getElementById('aulaActions').classList.remove('hidden');
+            document.getElementById('btnProximaAula').classList.add('hidden');
+        }
+
+        function iniciarQuiz() {
+            document.getElementById('quizSection').classList.remove('hidden');
+            document.getElementById('aulaActions').classList.add('hidden');
+            
+            const quizContainer = document.getElementById('quizContainer');
+            quizContainer.innerHTML = '';
+            quizRespostas = [];
+            quizCorretas = 0;
+            
+            currentAula.quiz.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'margin-bottom: 1.5rem; padding: 1.5rem; background: rgba(255,255,255,0.03); border-radius: 12px;';
+                
+                let perguntaHTML = `<p style="font-weight: 600; margin-bottom: 1rem;">${index + 1}. ${q.pergunta}</p>`;
+                
+                if (q.tipo === 'multipla') {
+                    perguntaHTML += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+                    q.opcoes.forEach((op, i) => {
+                        perguntaHTML += `
+                            <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; background: var(--glass); border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                                <input type="radio" name="q${index}" value="${i}" onchange="responderQuiz(${index}, ${i})">
+                                <span>${op}</span>
+                            </label>
+                        `;
+                    });
+                    perguntaHTML += '</div>';
+                } else if (q.tipo === 'vouf') {
+                    perguntaHTML += `
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn btn-secondary" onclick="responderQuiz(${index}, true)" style="flex: 1;">Verdadeiro</button>
+                            <button class="btn btn-secondary" onclick="responderQuiz(${index}, false)" style="flex: 1;">Falso</button>
+                        </div>
+                    `;
+                } else if (q.tipo === 'preencher') {
+                    perguntaHTML += `
+                        <input type="text" id="q${index}" placeholder="Digite sua resposta..." 
+                               style="width: 100%; padding: 0.75rem; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 8px; color: white;"
+                               onblur="responderQuiz(${index}, this.value)">
+                    `;
+                }
+                
+                div.innerHTML = perguntaHTML;
+                quizContainer.appendChild(div);
+            });
+        }
+
+        function responderQuiz(perguntaIndex, resposta) {
+            quizRespostas[perguntaIndex] = resposta;
+            
+            const q = currentAula.quiz[perguntaIndex];
+            let correta = false;
+            
+            if (q.tipo === 'multipla') {
+                correta = resposta === q.correta;
+            } else if (q.tipo === 'vouf') {
+                correta = resposta === q.correta;
+            } else if (q.tipo === 'preencher') {
+                correta = resposta.toLowerCase().trim() === q.resposta.toLowerCase().trim();
+            }
+            
+            if (correta) quizCorretas++;
+        }
+
+        function finalizarQuiz() {
+            const total = currentAula.quiz.length;
+            const percentual = (quizCorretas / total) * 100;
+            const aprovado = percentual >= 60;
+            
+            const resultadoDiv = document.getElementById('quizResult');
+            resultadoDiv.classList.remove('hidden');
+            
+            if (aprovado) {
+                const xpGanho = 50 + (quizCorretas * 10);
+                const pontosGanhos = 20;
+                
+                resultadoDiv.style.cssText = 'margin-top: 1.5rem; padding: 1.5rem; background: rgba(16, 185, 129, 0.2); border: 2px solid var(--success); border-radius: 12px; text-align: center;';
+                resultadoDiv.innerHTML = `
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎉</div>
+                    <h3 style="color: var(--success); margin-bottom: 0.5rem;">Aprovado!</h3>
+                    <p>Acertou ${quizCorretas}/${total} (${percentual.toFixed(0)}%)</p>
+                    <p style="color: var(--warning); font-weight: 700; margin-top: 0.5rem;">+${xpGanho} XP | +${pontosGanhos} Pontos</p>
+                `;
+                
+                showXP(xpGanho);
+                addPontos(pontosGanhos);
+                
+                document.getElementById('btnProximaAula').classList.remove('hidden');
+                
+                // Salvar progresso
+                if (currentUser) {
+                    salvarProgressoAula();
+                }
+            } else {
+                resultadoDiv.style.cssText = 'margin-top: 1.5rem; padding: 1.5rem; background: rgba(239, 68, 68, 0.2); border: 2px solid var(--danger); border-radius: 12px; text-align: center;';
+                resultadoDiv.innerHTML = `
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">😅</div>
+                    <h3 style="color: var(--danger); margin-bottom: 0.5rem;">Estude mais um pouco!</h3>
+                    <p>Acertou ${quizCorretas}/${total} (${percentual.toFixed(0)}%)</p>
+                    <p style="margin-top: 0.5rem;">Precisa de 60% para passar. Revise a aula e tente novamente!</p>
+                `;
+            }
+        }
+
+        function proximaAula() {
+            // Lógica para ir para próxima aula
+            alert('Indo para próxima aula... (implementar navegação)');
+        }
+
+        function voltarCurso() {
+            showPage('cursos');
+        }
+
+        // ==================== SISTEMA DE XP E PONTOS ====================
+
+        function showXP(amount) {
+            const popup = document.createElement('div');
+            popup.className = 'xp-popup';
+            popup.textContent = `+${amount} XP!`;
+            document.body.appendChild(popup);
+            
+            setTimeout(() => popup.remove(), 2000);
+            
+            if (userData) {
+                userData.xp += amount;
+                if (userData.xp >= userData.maxXP) {
+                    levelUp();
+                }
+                updateHUD();
+            }
+        }
+
+        function levelUp() {
+            userData.nivel++;
+            userData.xp = userData.xp - userData.maxXP;
+            userData.maxXP = Math.floor(userData.maxXP * 1.2);
+            
+            const popup = document.createElement('div');
+            popup.className = 'xp-popup';
+            popup.style.background = 'linear-gradient(135deg, #f59e0b, #ec4899)';
+            popup.textContent = `🎉 LEVEL UP! Nível ${userData.nivel}`;
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 3000);
+            
+            checkConquistas();
+        }
+
+        function addPontos(amount) {
+            if (!userData) return;
+            userData.pontos += amount;
+            document.getElementById('navPoints').textContent = userData.pontos;
+            updateHUD();
+            checkConquistas();
+        }
+
+        function checkConquistas() {
+            conquistas.forEach(c => {
+                if (!userData.conquistas.includes(c.id) && c.condicao(userData)) {
+                    desbloquearConquista(c);
+                }
+            });
+        }
+
+        function desbloquearConquista(conquista) {
+            userData.conquistas.push(conquista.id);
+            addPontos(conquista.pontos);
+            
+            // Notificação
+            const notif = document.createElement('div');
+            notif.style.cssText = 'position: fixed; top: 100px; right: 20px; background: linear-gradient(135deg, #f59e0b, #ec4899); color: white; padding: 1rem; border-radius: 12px; z-index: 3000; animation: slide-up 0.5s;';
+            notif.innerHTML = `🏆 Nova Conquista!<br><strong>${conquista.nome}</strong><br>+${conquista.pontos} pts`;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 4000);
+            
+            renderConquistas();
+        }
+
+        // ==================== FUNÇÕES DE AUTENTICAÇÃO ====================
+
+        function checkAuth() {
+            // Simulação - em produção, use Firebase Auth
+            // auth.onAuthStateChanged(user => { ... });
+            
+            // Carregar dados do localStorage para demo
+            const saved = localStorage.getItem('neuro_user');
+            if (saved) {
+                userData = JSON.parse(saved);
+                currentUser = { uid: userData.uid, email: userData.email };
+                updateUIAuth();
+            }
+        }
+
+        function showAuth(type) {
+            document.getElementById('authLogin').classList.add('hidden');
+            document.getElementById('authRegister').classList.add('hidden');
+            
+            if (type === 'login') {
+                document.getElementById('authLogin').classList.remove('hidden');
+                document.getElementById('authTitle').textContent = 'Entrar no NEURO 3.0';
+            } else {
+                document.getElementById('authRegister').classList.remove('hidden');
+                document.getElementById('authTitle').textContent = 'Criar Conta';
+            }
+            
+            openModal('auth');
+        }
+
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const senha = document.getElementById('loginSenha').value;
+            
+            // Simulação - em produção: auth.signInWithEmailAndPassword(email, senha)
+            // Demo: criar usuário fake
+            userData = {
+                uid: 'user_' + Date.now(),
+                email: email,
+                nome: email.split('@')[0],
+                avatar: '🧑‍🎓',
+                nivel: 1,
+                xp: 0,
+                maxXP: 100,
+                pontos: 0,
+                streak: 0,
+                conquistas: [],
+                ia: 'marco',
+                metodo: 'gamificado',
+                vip: false,
+                isAdm: false
+            };
+            
+            salvarUserData();
+            updateUIAuth();
+            closeModal('auth');
+            openModal('onboarding');
+        }
+
+        function registrar() {
+            const nome = document.getElementById('regNome').value;
+            const email = document.getElementById('regEmail').value;
+            const senha = document.getElementById('regSenha').value;
+            const codigo = document.getElementById('regCodigo').value;
+            
+            // Verificar código ADM
+            const isAdm = codigo === ADM_CODE;
+            const isVip = codigo === VIP_CODE || isAdm;
+            
+            userData = {
+                uid: 'user_' + Date.now(),
+                email: email,
+                nome: nome,
+                avatar: selectedAvatar || '🧑‍🎓',
+                nivel: isAdm ? 100 : 1,
+                xp: 0,
+                maxXP: isAdm ? 100000 : 100,
+                pontos: isAdm ? 1000000 : 0,
+                streak: 0,
+                conquistas: isAdm ? conquistas.map(c => c.id) : [],
+                ia: 'marco',
+                metodo: 'gamificado',
+                vip: isVip,
+                isAdm: isAdm,
+                aulasCompletadas: 0,
+                idiomasEstudados: [],
+                estilosCompletados: [],
+                cursosCompletados: [],
+                grupos: [],
+                compras: isAdm ? lojaItens.map(i => i.id) : []
+            };
+            
+            if (isAdm) {
+                alert('🔑 Código ADM aceito! Bem-vindo, Administrador Supremo!\n\nVocê recebeu:\n- Nível 100\n- 1.000.000 pontos\n- Todas as conquistas\n- Todos os itens da loja\n- Topo do ranking');
+            }
+            
+            salvarUserData();
+            updateUIAuth();
+            closeModal('auth');
+            openModal('onboarding');
+        }
+
+        let selectedAvatar = '🧑‍🎓';
+        function selectAvatar(avatar) {
+            selectedAvatar = avatar;
+            document.querySelectorAll('#avatarPreview span').forEach(s => s.style.background = 'transparent');
+            event.target.style.background = 'var(--primary)';
+        }
+
+        function previewFoto(input) {
+            if (input.files && input.files[0]) {
+                // Em produção: upload para Firebase Storage
+                alert('Foto selecionada! (Em produção, faça upload para o Firebase Storage)');
+            }
+        }
+
+        function logout() {
+            // auth.signOut();
+            localStorage.removeItem('neuro_user');
+            currentUser = null;
+            userData = null;
+            location.reload();
+        }
+
+        function salvarUserData() {
+            localStorage.setItem('neuro_user', JSON.stringify(userData));
+            // Em produção: db.collection('users').doc(userData.uid).set(userData)
+        }
+
+        function updateUIAuth() {
+            if (!userData) return;
+            
+            document.getElementById('btnLogin').classList.add('hidden');
+            document.getElementById('userDisplay').classList.remove('hidden');
+            
+            // Mostrar links de ADM/Professor se aplicável
+            if (userData.isAdm) {
+                document.getElementById('nav-adm').classList.remove('hidden');
+            }
+            if (userData.isProfessor) {
+                document.getElementById('nav-professores').classList.remove('hidden');
+            }
+            
+            updateHUD();
+        }
+
+        function updateHUD() {
+            if (!userData) return;
+            
+            document.getElementById('hudName').textContent = userData.nome;
+            document.getElementById('hudLevel').textContent = userData.nivel;
+            document.getElementById('hudXP').textContent = userData.xp;
+            document.getElementById('hudMaxXP').textContent = userData.maxXP;
+            document.getElementById('hudXPBar').style.width = `${(userData.xp / userData.maxXP) * 100}%`;
+            document.getElementById('hudPoints').textContent = userData.pontos.toLocaleString();
+            document.getElementById('hudStreak').textContent = userData.streak;
+            document.getElementById('hudBadges').textContent = userData.conquistas.length;
+            document.getElementById('hudAvatar').textContent = userData.avatar;
+            
+            document.getElementById('navPoints').textContent = userData.pontos.toLocaleString();
+            document.getElementById('navStreak').textContent = userData.streak;
+            
+            // Badges VIP/ADM
+            document.getElementById('hudVip').classList.toggle('hidden', !userData.vip);
+            document.getElementById('hudAdm').classList.toggle('hidden', !userData.isAdm);
+            document.getElementById('hudVerified').classList.toggle('hidden', !userData.isProfessor);
+            
+            // Perfil
+            document.getElementById('perfilNome').textContent = userData.nome;
+            document.getElementById('perfilEmail').textContent = userData.email;
+            document.getElementById('perfilNivel').textContent = userData.nivel;
+            document.getElementById('perfilPontos').textContent = userData.pontos.toLocaleString();
+            document.getElementById('perfilAulas').textContent = userData.aulasCompletadas || 0;
+            document.getElementById('perfilAvatar').textContent = userData.avatar;
+            document.getElementById('perfilVip').classList.toggle('hidden', !userData.vip);
+            document.getElementById('perfilAdm').classList.toggle('hidden', !userData.isAdm);
+        }
+
+        // ==================== ONBOARDING ====================
+
+        let onbStep = 1;
+        let onbData = {};
+
+        function selectIA(ia) {
+            onbData.ia = ia;
+            document.querySelectorAll('#onb-step-1 .option-card').forEach(c => c.classList.remove('selected'));
+            event.target.closest('.option-card').classList.add('selected');
+        }
+
+        function selectMetodo(metodo) {
+            onbData.metodo = metodo;
+            document.querySelectorAll('#onb-step-2 .option-card').forEach(c => c.classList.remove('selected'));
+            event.target.closest('.option-card').classList.add('selected');
+        }
+
+        function proximoOnb() {
+            if (onbStep === 1 && !onbData.ia) {
+                alert('Escolha um mentor IA!');
+                return;
+            }
+            if (onbStep === 2 && !onbData.metodo) {
+                alert('Escolha um método de estudo!');
+                return;
+            }
+            
+            document.getElementById(`onb-step-${onbStep}`).classList.add('hidden');
+            onbStep++;
+            document.getElementById(`onb-step-${onbStep}`).classList.remove('hidden');
+            
+            document.getElementById('onbStepIndicator').textContent = `Passo ${onbStep} de 3`;
+            document.getElementById('btnOnbVoltar').classList.remove('hidden');
+            
+            if (onbStep === 3) {
+                document.getElementById('btnOnbProximo').textContent = 'Começar! 🚀';
+                renderOnbCursos();
+            }
+        }
+
+        function voltarOnb() {
+            document.getElementById(`onb-step-${onbStep}`).classList.add('hidden');
+            onbStep--;
+            document.getElementById(`onb-step-${onbStep}`).classList.remove('hidden');
+            
+            document.getElementById('onbStepIndicator').textContent = `Passo ${onbStep} de 3`;
+            
+            if (onbStep === 1) {
+                document.getElementById('btnOnbVoltar').classList.add('hidden');
+            }
+            document.getElementById('btnOnbProximo').textContent = 'Continuar →';
+        }
+
+        function renderOnbCursos() {
+            const container = document.getElementById('onbCursos');
+            const populares = ['ingles', 'python', 'desenho_anime', 'empreendedorismo'];
+            
+            container.innerHTML = populares.map(id => {
+                const curso = todosCursos[id];
+                return `
+                    <div class="option-card" onclick="finalizarOnboarding('${id}')">
+                        <span class="emoji">${curso.icon}</span>
+                        <h4>${curso.nome}</h4>
+                        <p>${curso.desc.substring(0, 50)}...</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function finalizarOnboarding(cursoInicial) {
+            userData.ia = onbData.ia || 'marco';
+            userData.metodo = onbData.metodo || 'gamificado';
+            
+            if (cursoInicial) {
+                userData.cursoInicial = cursoInicial;
+            }
+            
+            salvarUserData();
+            closeModal('onboarding');
+            updateHUD();
+            
+            if (cursoInicial) {
+                iniciarCurso(cursoInicial);
+            }
+        }
+
+        // ==================== NEURO-ZAP ====================
+
+        let currentZapGroup = null;
+        let zapMessages = {};
+
+        function toggleZap() {
+            const window = document.getElementById('zapWindow');
+            window.style.display = window.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function showZapTab(tab) {
+            document.querySelectorAll('.zap-tab').forEach(t => {
+                t.classList.remove('active');
+                t.style.color = 'rgba(255,255,255,0.7)';
+                t.style.borderBottom = 'none';
+            });
+            event.target.classList.add('active');
+            event.target.style.color = 'white';
+            event.target.style.borderBottom = '3px solid var(--secondary)';
+            
+            if (tab === 'grupos') {
+                document.getElementById('zapGruposList').classList.remove('hidden');
+                document.getElementById('zapMessagesArea').classList.add('hidden');
+                document.getElementById('zapInputArea').style.display = 'none';
+                renderZapGrupos();
+            } else {
+                if (currentZapGroup) {
+                    document.getElementById('zapGruposList').classList.add('hidden');
+                    document.getElementById('zapMessagesArea').classList.remove('hidden');
+                    document.getElementById('zapInputArea').style.display = 'flex';
+                    renderZapMessages();
+                }
+            }
+        }
+
+        function renderZapGrupos() {
+            const list = document.getElementById('

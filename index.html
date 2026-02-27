@@ -3085,4 +3085,1798 @@
                     { title: 'Arquivos e I/O', content: 'Aprenda a ler e escrever arquivos. Vamos estudar streams, buffers e as melhores práticas para manipulação de arquivos de texto e binários.', quiz: { question: 'Para ler um arquivo texto linha por linha, usamos:', options: ['Um array', 'Um loop com buffer', 'Uma variável inteira', 'Um booleano'], correct: 1 } },
                     { title: 'Estruturas de Dados - Pilhas e Filas', content: 'Pilhas (LIFO) e Filas (FIFO) são estruturas fundamentais. Você entenderá quando usar cada uma e implementará essas estruturas do zero.', quiz: { question: 'Pilha segue o princípio:', options: ['FIFO', 'LIFO', 'Random', 'Sorted'], correct: 1 } },
                     { title: 'Algoritmos de Ordenação', content: 'Ordenação é uma operação comum e importante. Vamos estudar Bubble Sort, Selection Sort e Quick Sort, entendendo a eficiência de cada algoritmo.', quiz: { question: 'Qual algoritmo é geralmente mais eficiente para grandes conjuntos?', options: ['Bubble Sort', 'Selection Sort', 'Quick Sort', 'Insertion Sort'], correct: 2 } },
-                    { title: 'Projeto Final - Sistema Completo', content: 'Chegou a hora de aplicar tudo que aprendeu! Você vai desenvolver um sistema completo usando todos os conceitos estudados: classes, herança, arquivos
+                    { title: 'Projeto Final - Sistema Completo', content: 'Chegou a hora de aplicar tudo que aprendeu! Você vai desenvolver um sistema completo usando todos os conceitos estudados: classes, herança, arquivos, exceções e estruturas de dados. Parabéns por chegar até aqui!', quiz: { question: 'O que é importante em um projeto final?', options: ['Usar apenas uma técnica', 'Aplicar múltiplos conceitos de forma integrada', 'Copiar código da internet', 'Ignorar erros'], correct: 1 } }
+                ]
+            },
+            'mathematics': {
+                id: 'mathematics',
+                name: 'Matemática',
+                icon: 'fa-calculator',
+                color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                description: 'Do básico ao cálculo avançado',
+                lessons: [
+                    { title: 'Números Naturais e Inteiros', content: 'Conjuntos numéricos fundamentais. Propriedades das operações, ordem dos números e representação na reta numérica.', quiz: { question: 'Qual o resultado de (-5) + 3?', options: ['-2', '2', '-8', '8'], correct: 0 } },
+                    { title: 'Frações e Operações', content: 'Conceito de fração, tipos de frações, simplificação e operações: adição, subtração, multiplicação e divisão.', quiz: { question: 'Qual o resultado de 1/2 + 1/4?', options: ['2/6', '3/4', '1/6', '2/4'], correct: 1 } },
+                    { title: 'Números Decimais', content: 'Sistema decimal, conversão fração-decimal, operações com decimais e arredondamento.', quiz: { question: '0,5 é equivalente a:', options: ['1/5', '1/2', '5/10', 'Ambos B e C'], correct: 3 } },
+                    { title: 'Porcentagem', content: 'Conceito de porcentagem, cálculo de aumentos e descontos, juros simples e aplicações práticas.', quiz: { question: '20% de 150 é:', options: ['20', '30', '40', '50'], correct: 1 } },
+                    { title: 'Potenciação', content: 'Definição, propriedades, potências de base 10 e notação científica.', quiz: { question: '2³ é igual a:', options: ['6', '8', '9', '16'], correct: 1 } },
+                    { title: 'Radiciação', content: 'Raízes quadradas, cúbicas e enésimas. Propriedades e simplificação de radicais.', quiz: { question: '√144 é:', options: ['10', '11', '12', '14'], correct: 2 } },
+                    { title: 'Expressões Algébricas', content: 'Variáveis, coeficientes, termos semelhantes e simplificação de expressões.', quiz: { question: 'Simplifique: 3x + 2x - x', options: ['4x', '5x', '6x', '3x'], correct: 0 } },
+                    { title: 'Equações do 1º Grau', content: 'Resolução de equações lineares, problemas do primeiro grau e verificação de soluções.', quiz: { question: 'Resolva: 2x + 4 = 10', options: ['2', '3', '4', '5'], correct: 1 } },
+                    { title: 'Inequações', content: 'Desigualdades, propriedades e resolução de inequações do primeiro grau.', quiz: { question: 'Se x > 5, então x pode ser:', options: ['3', '4', '5', '6'], correct: 3 } },
+                    { title: 'Sistemas de Equações', content: 'Métodos de substituição, adição e comparação para resolver sistemas lineares.', quiz: { question: 'Um sistema com duas equações e duas incógnitas geralmente tem:', options: ['0 soluções', '1 solução', '2 soluções', 'Infinitas'], correct: 1 } },
+                    { title: 'Funções Afim', content: 'Definição, gráfico, coeficiente angular e linear, crescimento e decrescimento.', quiz: { question: 'Em y = 2x + 3, o 2 representa:', options: ['O intercepto y', 'A inclinação', 'O valor de x', 'O valor de y'], correct: 1 } },
+                    { title: 'Função Quadrática', content: 'Parábola, vértice, raízes, concavidade e aplicações do segundo grau.', quiz: { question: 'A parábola tem concavidade para cima quando a é:', options: ['Negativo', 'Positivo', 'Zero', 'Qualquer valor'], correct: 1 } },
+                    { title: 'Trigonometria - Seno e Cosseno', content: 'Razões trigonométricas no triângulo retângulo, tabela de valores notáveis.', quiz: { question: 'sen(30°) é igual a:', options: ['1/2', '√3/2', '√2/2', '1'], correct: 0 } },
+                    { title: 'Geometria Plana - Triângulos', content: 'Classificação, propriedades, congruência e semelhança de triângulos.', quiz: { question: 'A soma dos ângulos internos de um triângulo é:', options: ['90°', '180°', '270°', '360°'], correct: 1 } },
+                    { title: 'Geometria Plana - Quadriláteros', content: 'Paralelogramos, trapézios, propriedades e áreas.', quiz: { question: 'A área do quadrado é calculada por:', options: ['lado × altura / 2', 'lado²', 'base × altura', '2πr'], correct: 1 } },
+                    { title: 'Círculo e Circunferência', content: 'Elementos, comprimento, área do círculo e setores circulares.', quiz: { question: 'A circunferência de um círculo é:', options: ['πr²', '2πr', 'πd', 'Ambos B e C'], correct: 3 } },
+                    { title: 'Geometria Espacial', content: 'Prismas, pirâmides, cilindros, cones e esferas. Áreas e volumes.', quiz: { question: 'O volume do cubo é:', options: ['área da base × altura', 'lado³', '6 × lado²', '4/3 πr³'], correct: 1 } },
+                    { title: 'Estatística Básica', content: 'Média, mediana, moda, amplitude e desvio padrão.', quiz: { question: 'A mediana é:', options: ['A soma dos valores', 'O valor do meio ordenado', 'O valor mais frequente', 'A diferença entre maior e menor'], correct: 1 } },
+                    { title: 'Probabilidade', content: 'Espaço amostral, eventos, probabilidade clássica e condicional.', quiz: { question: 'A probabilidade de um evento certo é:', options: ['0', '0,5', '1', '100%'], correct: 2 } },
+                    { title: 'Matemática Financeira', content: 'Juros compostos, taxas equivalentes, descontos e anuidades.', quiz: { question: 'Nos juros compostos, os juros incidem sobre:', options: ['Apenas o capital inicial', 'Capital + juros acumulados', 'Apenas os juros do período', 'Nenhuma das anteriores'], correct: 1 } }
+                ]
+            },
+            'english': {
+                id: 'english',
+                name: 'Inglês',
+                icon: 'fa-language',
+                color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                description: 'Do básico à fluência',
+                lessons: [
+                    { title: 'Alfabeto e Pronúncia', content: 'As 26 letras do alfabeto inglês, sons básicos e diferenças entre grafia e pronúncia.', quiz: { question: 'Como se pronuncia "TH" em "THINK"?', options: ['F', 'S', 'θ (língua entre os dentes)', 'T'], correct: 2 } },
+                    { title: 'Cumprimentos Básicos', content: 'Hello, Good morning, Good afternoon, Good evening, Good night. Quando usar cada um.', quiz: { question: 'Qual cumprimento usar às 15h?', options: ['Good morning', 'Good afternoon', 'Good evening', 'Good night'], correct: 1 } },
+                    { title: 'Pronomes Pessoais', content: 'I, you, he, she, it, we, they. Uso correto e concordância verbal básica.', quiz: { question: 'Qual pronome para "ela"?', options: ['He', 'She', 'It', 'They'], correct: 1 } },
+                    { title: 'Verbo To Be', content: 'Am, is, are. Conjugação completa e formação de frases afirmativas, negativas e interrogativas.', quiz: { question: 'Qual a forma correta: "He ___ a student"?', options: ['am', 'is', 'are', 'be'], correct: 1 } },
+                    { title: 'Artigos Definidos e Indefinidos', content: 'A, an, the. Quando usar cada um e exceções importantes.', quiz: { question: 'Use antes de palavra iniciada em vogal:', options: ['A', 'An', 'The', 'No article'], correct: 1 } },
+                    { title: 'Plural de Substantivos', content: 'Regras gerais (add S), palavras terminadas em S, X, CH, SH, O, Y, F/FE. Plurais irregulares.', quiz: { question: 'Qual o plural de "child"?', options: ['childs', 'children', 'childes', 'childies'], correct: 1 } },
+                    { title: 'Possessivos', content: 'Adjetivos possessivos (my, your, his, her, its, our, their) vs pronomes possessivos.', quiz: { question: 'Complete: "This is ___ book" (dele)', options: ['he', 'him', 'his', 'he is'], correct: 2 } },
+                    { title: 'Present Simple', content: 'Hábitos, rotinas, verdades universais. Regras do S na terceira pessoa.', quiz: { question: 'Qual forma correta: "She ___ to school every day"?', options: ['go', 'goes', 'going', 'gone'], correct: 1 } },
+                    { title: 'Present Continuous', content: 'Ações em andamento agora. Formação com verbo TO BE + -ING.', quiz: { question: 'Estrutura do Present Continuous:', options: ['Subject + verb', 'Subject + to be + verb-ing', 'Subject + have + verb', 'Subject + will + verb'], correct: 1 } },
+                    { title: 'Preposições de Tempo', content: 'In, on, at. Diferenças de uso: in 2024, on Monday, at 5 o\'clock.', quiz: { question: 'Use para meses:', options: ['In', 'On', 'At', 'By'], correct: 0 } },
+                    { title: 'Preposições de Lugar', content: 'In, on, at, under, behind, in front of, next to, between.', quiz: { question: 'O gato está ___ a mesa (em cima):', options: ['in', 'on', 'at', 'under'], correct: 1 } },
+                    { title: 'Passado Simples - To Be', content: 'Was/were. Conjugação completa e uso para descrever estados passados.', quiz: { question: 'Qual a forma de "I" no passado de TO BE?', options: ['was', 'were', 'am', 'been'], correct: 0 } },
+                    { title: 'Passado Simples - Verbos Regulares', content: 'Regra geral: add ED. Pronúncia /t/, /d/, /id/. Lista de verbos comuns.', quiz: { question: 'Qual a forma correta de WORK no passado?', options: ['workt', 'worked', 'working', 'work'], correct: 1 } },
+                    { title: 'Passado Simples - Verbos Irregulares', content: 'Lista dos verbos irregulares mais comuns: go-went, eat-ate, see-saw, etc.', quiz: { question: 'Qual o passado de GO?', options: ['goed', 'went', 'gone', 'going'], correct: 1 } },
+                    { title: 'Futuro com Will', content: 'Previsões, promessas, decisões espontâneas. Formação: will + verb.', quiz: { question: 'Complete: "I ___ help you tomorrow"', options: ['will', 'would', 'am going', 'go'], correct: 0 } },
+                    { title: 'Futuro com Going To', content: 'Planos, intenções, evidências no presente. Formação: to be + going to + verb.', quiz: { question: 'Use para planos já decididos:', options: ['Will', 'Going to', 'Present', 'Past'], correct: 1 } },
+                    { title: 'Modal Verbs - Can/Could', content: 'Habilidade, possibilidade, permissão, pedidos formais.', quiz: { question: '"Can" expressa:', options: ['Obrigação', 'Habilidade/Possibilidade', 'Proibição', 'Conselho'], correct: 1 } },
+                    { title: 'Modal Verbs - Must/Should', content: 'Obrigação, necessidade, conselho, probabilidade.', quiz: { question: '"Must" indica:', options: ['Sugestão', 'Obrigação forte', 'Possibilidade remota', 'Habilidade passada'], correct: 1 } },
+                    { title: 'Present Perfect', content: 'Experiências de vida, ações com resultado no presente. Have/has + past participle.', quiz: { question: 'Estrutura do Present Perfect:', options: ['Did + verb', 'Have + verb-ed', 'Was + verb-ing', 'Will + verb'], correct: 1 } },
+                    { title: 'Vocabulário Avançado e Revisão', content: 'Consolidação de todo o conteúdo, phrasal verbs comuns, expressões idiomáticas.', quiz: { question: '"Turn on" significa:', options: ['Desligar', 'Ligar', 'Virar para', 'Rejeitar'], correct: 1 } }
+                ]
+            },
+            'design': {
+                id: 'design',
+                name: 'Design',
+                icon: 'fa-palette',
+                color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                description: 'Design gráfico e digital',
+                lessons: [
+                    { title: 'Teoria das Cores', content: 'Círculo cromático, cores primárias, secundárias, terciárias. Harmonia, temperatura e psicologia das cores.', quiz: { question: 'Quais são as cores primárias?', options: ['Vermelho, verde, azul', 'Vermelho, amarelo, azul', 'Ciano, magenta, amarelo', 'Preto, branco, cinza'], correct: 1 } },
+                    { title: 'Tipografia Básica', content: 'Anatomia da letra, serifas, famílias tipográficas, legibilidade vs leiturabilidade.', quiz: { question: 'Fontes serifadas são melhores para:', options: ['Telas digitais', 'Impressos longos', 'Títulos curtos', 'Logotipos modernos'], correct: 1 } },
+                    { title: 'Grid e Layout', content: 'Sistemas de grid, colunas, margens, alinhamento e hierarquia visual.', quiz: { question: 'O grid ajuda a:', options: ['Deixar o design aleatório', 'Organizar elementos', 'Aumentar cores', 'Diminuir texto'], correct: 1 } },
+                    { title: 'Contraste e Hierarquia', content: 'Criar foco visual através de tamanho, cor, peso e posição.', quiz: { question: 'O elemento mais importante deve ter:', options: ['Menor contraste', 'Maior contraste', 'Mesmo tamanho', 'Cor cinza'], correct: 1 } },
+                    { title: 'Espaço Negativo', content: 'Importância do espaço vazio, respiro visual, equilíbrio entre elementos.', quiz: { question: 'Espaço negativo é:', options: ['Área preta', 'Espaço vazio ao redor dos elementos', 'Erro de design', 'Texto pequeno'], correct: 1 } },
+                    { title: 'Design de Logotipos', content: 'Tipos de logos, processo criativo, vetores, escalabilidade e aplicações.', quiz: { question: 'Logo deve ser criado em:', options: ['Photoshop', 'Illustrator/vetor', 'PowerPoint', 'Word'], correct: 1 } },
+                    { title: 'Identidade Visual', content: 'Manual da marca, consistência, aplicações em diferentes mídias.', quiz: { question: 'Identidade visual inclui:', options: ['Apenas o logo', 'Logo, cores, tipografia e aplicações', 'Apenas cartão de visita', 'Nome da empresa'], correct: 1 } },
+                    { title: 'Design para Web', content: 'Responsive design, mobile-first, usabilidade, acessibilidade.', quiz: { question: 'Mobile-first significa:', options: ['Design apenas para celular', 'Começar pelo mobile e adaptar para desktop', 'Ignorar desktop', 'Fazer designs separados'], correct: 1 } },
+                    { title: 'UI Design', content: 'Interface do usuário, botões, formulários, navegação, padrões de design.', quiz: { question: 'UI significa:', options: ['User Internet', 'User Interface', 'Universal Identity', 'Unique Image'], correct: 1 } },
+                    { title: 'UX Design', content: 'Experiência do usuário, pesquisa, jornada do usuário, testes de usabilidade.', quiz: { question: 'UX foca em:', options: ['Aparência visual', 'Experiência e satisfação do usuário', 'Código do site', 'Marketing digital'], correct: 1 } },
+                    { title: 'Ferramentas Digitais', content: 'Photoshop, Illustrator, Figma, Sketch. Quando usar cada uma.', quiz: { question: 'Figma é melhor para:', options: ['Edição de fotos', 'UI/UX design colaborativo', 'Vídeos', 'Animação 3D'], correct: 1 } },
+                    { title: 'Cores Digitais', content: 'RGB vs CMYK, hexadecimais, modos de cor, perfis de cor.', quiz: { question: 'Para impressão usa-se:', options: ['RGB', 'CMYK', 'Hexadecimal', 'Pantone apenas'], correct: 1 } },
+                    { title: 'Composição Visual', content: 'Regra dos terços, linha do horizonte, ponto focal, equilíbrio.', quiz: { question: 'Regra dos terços divide a imagem em:', options: ['2 partes', '3 partes iguais', '9 partes', '4 quadrantes'], correct: 2 } },
+                    { title: 'Design de Ícones', content: 'Pixel perfect, consistência, legibilidade em pequenos tamanhos, estilos.', quiz: { question: 'Ícones devem ser:', options: ['Detalhados e complexos', 'Simples e reconhecíveis', 'Coloridos demais', 'Diferentes entre si'], correct: 1 } },
+                    { title: 'Motion Design', content: 'Princípios de animação, timing, easing, storytelling através de movimento.', quiz: { question: 'Easing refere-se a:', options: ['Velocidade constante', 'Aceleração e desaceleração', 'Direção da animação', 'Cor do movimento'], correct: 1 } },
+                    { title: 'Branding', content: 'Construção de marca, posicionamento, valores, voz da marca.', quiz: { question: 'Branding é:', options: ['Apenas o logo', 'A percepção que as pessoas têm da marca', 'O nome da empresa', 'O produto'], correct: 1 } },
+                    { title: 'Design Thinking', content: 'Empatia, definição, ideação, prototipagem, teste. Processo criativo.', quiz: { question: 'Primeira etapa do Design Thinking:', options: ['Prototipar', 'Empatizar', 'Testar', 'Vender'], correct: 1 } },
+                    { title: 'Portfolio', content: 'Como montar um portfolio, seleção de trabalhos, apresentação, cases.', quiz: { question: 'Portfolio deve mostrar:', options: ['Todos os projetos já feitos', 'Apenas os melhores e mais relevantes', 'Apense trabalhos pagos', 'Projetos de outros designers'], correct: 1 } },
+                    { title: 'Briefing e Cliente', content: 'Como interpretar briefings, perguntas importantes, gerenciamento de expectativas.', quiz: { question: 'Briefing serve para:', options: ['Confundir o designer', 'Alinhar expectativas e objetivos', 'Aumentar o prazo', 'Diminuir o orçamento'], correct: 1 } },
+                    { title: 'Tendências e Futuro', content: 'Neumorphism, glassmorphism, 3D, AI no design. Como se manter atualizado.', quiz: { question: 'É importante seguir tendências:', options: ['Cegamente sempre', 'Analisando se fazem sentido para o projeto', 'Nunca', 'Apenas tendências antigas'], correct: 1 } }
+                ]
+            }
+        };
+
+        // Conquistas expandidas
+        const achievementsData = [
+            { id: 'first_steps', name: 'Primeiros Passos', description: 'Complete sua primeira aula', icon: 'fa-shoe-prints', color: 'bronze', reward: { xp: 50, points: 100 } },
+            { id: 'dedicated', name: 'Dedicado', description: 'Complete 10 aulas', icon: 'fa-book-reader', color: 'silver', reward: { xp: 200, points: 500 } },
+            { id: 'scholar', name: 'Erudito', description: 'Complete 50 aulas', icon: 'fa-graduation-cap', color: 'gold', reward: { xp: 1000, points: 2000 } },
+            { id: 'master', name: 'Mestre do Conhecimento', description: 'Complete 100 aulas', icon: 'fa-crown', color: 'special', reward: { xp: 5000, points: 10000 } },
+            { id: 'perfect_quiz', name: 'Perfeccionista', description: 'Acerte 100% em um quiz', icon: 'fa-bullseye', color: 'bronze', reward: { xp: 100, points: 200 } },
+            { id: 'quiz_master', name: 'Mestre dos Quizzes', description: 'Acerte 20 quizzes seguidos', icon: 'fa-brain', color: 'gold', reward: { xp: 500, points: 1000 } },
+            { id: 'first_battle', name: 'Estreante', description: 'Participe de sua primeira batalha', icon: 'fa-gamepad', color: 'bronze', reward: { xp: 100, points: 200 } },
+            { id: 'battle_winner', name: 'Vencedor', description: 'Vença 10 batalhas 1v1', icon: 'fa-trophy', color: 'silver', reward: { xp: 300, points: 600 } },
+            { id: 'battle_legend', name: 'Lenda das Batalhas', description: 'Vença 50 batalhas', icon: 'fa-medal', color: 'gold', reward: { xp: 1500, points: 3000 } },
+            { id: 'royale_winner', name: 'Sobrevivente', description: 'Vença um Battle Royale', icon: 'fa-crown', color: 'special', reward: { xp: 1000, points: 2000 } },
+            { id: 'guild_founder', name: 'Fundador', description: 'Crie uma guilda', icon: 'fa-users', color: 'silver', reward: { xp: 200, points: 500 } },
+            { id: 'guild_legend', name: 'Lenda da Guilda', description: 'Leve sua guilda ao top 10', icon: 'fa-shield-alt', color: 'gold', reward: { xp: 1000, points: 2500 } },
+            { id: 'social_butterfly', name: 'Borboleta Social', description: 'Faça 10 amigos', icon: 'fa-user-friends', color: 'silver', reward: { xp: 300, points: 500 } },
+            { id: 'popular', name: 'Popular', description: 'Receba 50 solicitações de amizade', icon: 'fa-star', color: 'gold', reward: { xp: 500, points: 1000 } },
+            { id: 'streak_3', name: 'Fogo Baixo', description: 'Mantenha streak de 3 dias', icon: 'fa-fire', color: 'bronze', reward: { xp: 100, points: 200 } },
+            { id: 'streak_7', name: 'Em Chamas', description: 'Mantenha streak de 7 dias', icon: 'fa-fire-alt', color: 'silver', reward: { xp: 300, points: 600 } },
+            { id: 'streak_30', name: 'Inferno', description: 'Mantenha streak de 30 dias', icon: 'fa-burn', color: 'gold', reward: { xp: 1000, points: 2000 } },
+            { id: 'streak_365', name: 'Lenda Viva', description: 'Mantenha streak de 1 ano', icon: 'fa-infinity', color: 'special', reward: { xp: 10000, points: 50000 } },
+            { id: 'shopaholic', name: 'Shopaholic', description: 'Compre 10 itens na loja', icon: 'fa-shopping-bag', color: 'silver', reward: { xp: 200, points: 0 } },
+            { id: 'collector', name: 'Colecionador', description: 'Desbloqueie 20 molduras', icon: 'fa-images', color: 'gold', reward: { xp: 800, points: 1500 } },
+            { id: 'vip_member', name: 'Membro VIP', description: 'Adquira o status VIP', icon: 'fa-crown', color: 'special', reward: { xp: 500, points: 1000 } },
+            { id: 'helper', name: 'Ajudante', description: 'Reporte 5 bugs válidos', icon: 'fa-bug', color: 'silver', reward: { xp: 300, points: 600 } },
+            { id: 'suggester', name: 'Inovador', description: 'Sugestão implementada', icon: 'fa-lightbulb', color: 'gold', reward: { xp: 1000, points: 2000 } },
+            { id: 'night_owl', name: 'Coruja', description: 'Estude entre 00h e 06h', icon: 'fa-moon', color: 'bronze', reward: { xp: 150, points: 300 } },
+            { id: 'early_bird', name: 'Madrugador', description: 'Estude antes das 06h', icon: 'fa-sun', color: 'bronze', reward: { xp: 150, points: 300 } },
+            { id: 'weekend_warrior', name: 'Guerreiro de Fim de Semana', description: 'Estude 4h no fim de semana', icon: 'fa-calendar-weekend', color: 'silver', reward: { xp: 250, points: 500 } },
+            { id: 'speed_runner', name: 'Speed Runner', description: 'Complete uma aula em menos de 2 minutos', icon: 'fa-running', color: 'silver', reward: { xp: 200, points: 400 } },
+            { id: 'perfectionist', name: 'Nota Máxima', description: 'Tire nota 100 em 10 quizzes seguidos', icon: 'fa-check-double', color: 'gold', reward: { xp: 600, points: 1200 } },
+            { id: 'polyglot', name: 'Poliglota', description: 'Estude 3 idiomas diferentes', icon: 'fa-globe', color: 'gold', reward: { xp: 800, points: 1500 } },
+            { id: 'programmer', name: 'Hello World', description: 'Complete o curso de Programação', icon: 'fa-code', color: 'special', reward: { xp: 2000, points: 5000 } },
+            { id: 'mathematician', name: 'Gênio da Matemática', description: 'Complete o curso de Matemática', icon: 'fa-calculator', color: 'special', reward: { xp: 2000, points: 5000 } },
+            { id: 'linguist', name: 'Linguista', description: 'Complete o curso de Inglês', icon: 'fa-language', color: 'special', reward: { xp: 2000, points: 5000 } },
+            { id: 'artist', name: 'Artista', description: 'Complete o curso de Design', icon: 'fa-palette', color: 'special', reward: { xp: 2000, points: 5000 } },
+            { id: 'rich', name: 'Milionário', description: 'Acumule 100.000 pontos', icon: 'fa-coins', color: 'gold', reward: { xp: 1000, points: 0 } },
+            { id: 'spender', name: 'Filantropo', description: 'Gaste 50.000 pontos na loja', icon: 'fa-hand-holding-usd', color: 'silver', reward: { xp: 500, points: 0 } },
+            { id: 'teacher', name: 'Professor', description: 'Torne-se um professor verificado', icon: 'fa-chalkboard-teacher', color: 'special', reward: { xp: 1000, points: 2000 } },
+            { id: 'mentor', name: 'Mentor', description: 'Ajude 10 alunos através do chat', icon: 'fa-hands-helping', color: 'gold', reward: { xp: 800, points: 1500 } },
+            { id: 'first_friend', name: 'Primeira Amizade', description: 'Adicione seu primeiro amigo', icon: 'fa-user-plus', color: 'bronze', reward: { xp: 100, points: 200 } },
+            { id: 'chatty', name: 'Tagarela', description: 'Envie 100 mensagens no chat', icon: 'fa-comments', color: 'silver', reward: { xp: 300, points: 500 } },
+            { id: 'strategist', name: 'Estrategista', description: 'Vença uma batalha sem errar nenhuma questão', icon: 'fa-chess', color: 'gold', reward: { xp: 800, points: 1500 } },
+            { id: 'comeback', name: 'Reviravolta', description: 'Vença uma batalha depois de estar perdendo por 3 pontos', icon: 'fa-history', color: 'silver', reward: { xp: 400, points: 800 } },
+            { id: 'unstoppable', name: 'Imparável', description: 'Vença 10 batalhas seguidas', icon: 'fa-bolt', color: 'gold', reward: { xp: 1500, points: 3000 } },
+            { id: 'explorer', name: 'Explorador', description: 'Visite todas as páginas do site', icon: 'fa-compass', color: 'bronze', reward: { xp: 150, points: 300 } },
+            { id: 'customizer', name: 'Personalizador', description: 'Mude seu avatar pela primeira vez', icon: 'fa-user-edit', color: 'bronze', reward: { xp: 100, points: 200 } },
+            { id: 'framed', name: 'Emoldurado', description: 'Equipe sua primeira moldura VIP', icon: 'fa-portrait', color: 'silver', reward: { xp: 200, points: 400 } },
+            { id: 'beta_tester', name: 'Beta Tester', description: 'Participou do beta do NEURO 3.0', icon: 'fa-flask', color: 'special', reward: { xp: 500, points: 1000 } },
+            { id: 'founder', name: 'Fundador', description: 'Um dos primeiros 100 usuários', icon: 'fa-rocket', color: 'special', reward: { xp: 2000, points: 5000 } }
+        ];
+
+        // Itens da loja expandidos
+        const shopItems = [
+            // Avatares
+            { id: 'avatar_ninja', name: 'Ninja', type: 'avatar', price: 500, icon: 'fa-user-ninja', vip: false },
+            { id: 'avatar_astronaut', name: 'Astronauta', type: 'avatar', price: 800, icon: 'fa-user-astronaut', vip: false },
+            { id: 'avatar_wizard', name: 'Mago', type: 'avatar', price: 1000, icon: 'fa-hat-wizard', vip: false },
+            { id: 'avatar_king', name: 'Rei', type: 'avatar', price: 1500, icon: 'fa-crown', vip: true },
+            { id: 'avatar_robot', name: 'Robô', type: 'avatar', price: 1200, icon: 'fa-robot', vip: false },
+            { id: 'avatar_ghost', name: 'Fantasma', type: 'avatar', price: 900, icon: 'fa-ghost', vip: false },
+            { id: 'avatar_alien', name: 'Alienígena', type: 'avatar', price: 1100, icon: 'fa-alien', vip: false },
+            { id: 'avatar_warrior', name: 'Guerreiro', type: 'avatar', price: 1300, icon: 'fa-khanda', vip: false },
+            
+            // Molduras (VIP Only)
+            { id: 'frame_gold', name: 'Ouro', type: 'frame', price: 2000, style: 'frame-gold', vip: true },
+            { id: 'frame_fire', name: 'Fogo', type: 'frame', price: 2500, style: 'frame-fire', vip: true },
+            { id: 'frame_ice', name: 'Gelo', type: 'frame', price: 2500, style: 'frame-ice', vip: true },
+            { id: 'frame_legendary', name: 'Lendária', type: 'frame', price: 5000, style: 'frame-legendary', vip: true },
+            { id: 'frame_neon', name: 'Neon', type: 'frame', price: 1800, style: 'border: 4px solid #0ff; box-shadow: 0 0 20px #0ff;', vip: true },
+            { id: 'frame_dark', name: 'Sombria', type: 'frame', price: 2200, style: 'border: 4px solid #333; box-shadow: 0 0 20px rgba(0,0,0,0.8);', vip: true },
+            
+            // Efeitos
+            { id: 'effect_confetti', name: 'Confete', type: 'effect', price: 800, description: 'Confete ao completar aula', vip: false },
+            { id: 'effect_fireworks', name: 'Fogos', type: 'effect', price: 1200, description: 'Fogos ao subir de nível', vip: false },
+            { id: 'effect_glow', name: 'Brilho', type: 'effect', price: 1000, description: 'Aura dourada no perfil', vip: true },
+            { id: 'effect_particles', name: 'Partículas', type: 'effect', price: 1500, description: 'Partículas flutuantes', vip: true },
+            
+            // Boosters
+            { id: 'boost_xp2', name: 'XP 2x (24h)', type: 'booster', price: 500, multiplier: 2, duration: 24, vip: false },
+            { id: 'boost_xp3', name: 'XP 3x (24h)', type: 'booster', price: 1000, multiplier: 3, duration: 24, vip: false },
+            { id: 'boost_points2', name: 'Pontos 2x (24h)', type: 'booster', price: 800, multiplier: 2, duration: 24, vip: false },
+            { id: 'boost_streak', name: 'Proteção Streak', type: 'booster', price: 600, description: 'Não perde streak por 1 dia de falta', vip: false },
+            
+            // VIP
+            { id: 'vip_month', name: 'VIP Mensal', type: 'vip', price: 5000, duration: 30, vip: true },
+            { id: 'vip_year', name: 'VIP Anual', type: 'vip', price: 45000, duration: 365, vip: true, discount: '25% OFF' }
+        ];
+
+        // Efeitos sonoros (URLs de exemplo - substituir por arquivos reais)
+        const sounds = {
+            complete: 'https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3',
+            achievement: 'https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3',
+            levelUp: 'https://assets.mixkit.co/active_storage/sfx/2017/2017-preview.mp3',
+            correct: 'https://assets.mixkit.co/active_storage/sfx/2001/2001-preview.mp3',
+            wrong: 'https://assets.mixkit.co/active_storage/sfx/2002/2002-preview.mp3',
+            battleStart: 'https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3',
+            battleWin: 'https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3',
+            click: 'https://assets.mixkit.co/active_storage/sfx/2020/2020-preview.mp3',
+            notification: 'https://assets.mixkit.co/active_storage/sfx/2021/2021-preview.mp3'
+        };
+
+        // ============== FUNÇÕES DE ÁUDIO ==============
+
+        function playSound(soundName) {
+            if (!soundEnabled) return;
+            const audio = new Audio(sounds[soundName]);
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log('Audio play failed:', e));
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('sound-toggle');
+            btn.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+            btn.classList.toggle('muted', !soundEnabled);
+            localStorage.setItem('soundEnabled', soundEnabled);
+        }
+
+        // ============== FUNÇÕES DE UTILIDADE ==============
+
+        function generateId() {
+            return Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-times-circle',
+                warning: 'fa-exclamation-circle'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas ${icons[type]}"></i>
+                </div>
+                <div>
+                    <strong>${type === 'success' ? 'Sucesso!' : type === 'error' ? 'Erro!' : 'Atenção!'}</strong>
+                    <p style="margin: 0; font-size: 0.9rem;">${message}</p>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            playSound('notification');
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function showAchievementPopup(achievement) {
+            const popup = document.getElementById('achievement-popup');
+            document.getElementById('achievement-popup-name').textContent = achievement.name;
+            popup.classList.add('show');
+            playSound('achievement');
+            
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 4000);
+        }
+
+        function showLevelUp(level) {
+            document.getElementById('levelup-level').textContent = level;
+            document.getElementById('levelup-overlay').classList.add('active');
+            playSound('levelUp');
+            createConfetti();
+        }
+
+        function closeLevelUp() {
+            document.getElementById('levelup-overlay').classList.remove('active');
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = ['#6366f1', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6'][Math.floor(Math.random() * 5)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        // ============== NAVEGAÇÃO ==============
+
+        function showPage(pageName) {
+            playSound('click');
+            
+            // Esconder todas as páginas
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Mostrar página selecionada
+            const targetPage = document.getElementById(`page-${pageName}`);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                currentPage = pageName;
+            }
+            
+            // Atualizar navegação ativa
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('onclick')?.includes(pageName)) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Carregar conteúdo específico
+            if (pageName === 'courses') loadCourses();
+            if (pageName === 'guilds') loadGuilds();
+            if (pageName === 'ranking') loadRanking();
+            if (pageName === 'shop') loadShop();
+            if (pageName === 'achievements') loadAchievements();
+            if (pageName === 'profile') loadProfile();
+            if (pageName === 'friends') loadFriends();
+            if (pageName === 'feedback') loadFeedback();
+            if (pageName === 'admin') loadAdmin();
+            if (pageName === 'codes') loadCodes();
+            
+            window.scrollTo(0, 0);
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            playSound('click');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // ============== AUTENTICAÇÃO ==============
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`${tab}-form`).classList.add('active');
+        }
+
+        function login(email, password) {
+            // Simulação de login
+            currentUser = {
+                uid: 'user_' + generateId(),
+                email: email,
+                displayName: 'Usuário Teste',
+                photoURL: null
+            };
+            
+            userData = {
+                uid: currentUser.uid,
+                name: 'Usuário Teste',
+                email: email,
+                level: 1,
+                xp: 0,
+                points: 1000,
+                streak: 3,
+                vip: false,
+                frame: null,
+                bio: '',
+                achievements: [],
+                inventory: [],
+                friends: [],
+                pendingFriends: [],
+                completedLessons: [],
+                stats: {
+                    battlesWon: 0,
+                    battlesPlayed: 0,
+                    quizzesCorrect: 0,
+                    totalQuizzes: 0,
+                    coursesCompleted: 0
+                },
+                createdAt: new Date().toISOString()
+            };
+            
+            updateUI();
+            closeModal('auth-modal');
+            showToast('Login realizado com sucesso!');
+            document.getElementById('loading-screen').style.display = 'none';
+        }
+
+        function logout() {
+            currentUser = null;
+            userData = null;
+            location.reload();
+        }
+
+        // ============== ATUALIZAÇÃO DA UI ==============
+
+        function updateUI() {
+            if (!currentUser || !userData) return;
+            
+            document.getElementById('navbar').style.display = 'flex';
+            document.getElementById('hud').style.display = 'flex';
+            document.getElementById('main-content').style.display = 'block';
+            
+            // HUD
+            document.getElementById('hud-level').textContent = `Nível ${userData.level}`;
+            document.getElementById('hud-points').textContent = formatNumber(userData.points);
+            document.getElementById('hud-streak').textContent = `${userData.streak} dias`;
+            document.getElementById('hud-username').textContent = userData.name;
+            
+            // Barra de XP
+            const xpNeeded = userData.level * 1000;
+            const xpProgress = (userData.xp / xpNeeded) * 100;
+            document.getElementById('hud-xp-bar').style.width = `${Math.min(xpProgress, 100)}%`;
+            
+            // Avatar na navbar
+            const navAvatar = document.getElementById('nav-avatar');
+            const navAvatarText = document.getElementById('nav-avatar-text');
+            const navVip = document.getElementById('nav-vip');
+            
+            if (currentUser.photoURL) {
+                navAvatar.src = currentUser.photoURL;
+                navAvatar.style.display = 'block';
+                navAvatarText.style.display = 'none';
+            } else {
+                navAvatar.style.display = 'none';
+                navAvatarText.style.display = 'flex';
+            }
+            
+            navVip.style.display = userData.vip ? 'block' : 'none';
+        }
+
+        // ============== SISTEMA DE AULAS ==============
+
+        function loadCourses() {
+            const grid = document.getElementById('courses-grid');
+            grid.innerHTML = '';
+            
+            Object.values(coursesData).forEach(course => {
+                const progress = calculateCourseProgress(course.id);
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                card.onclick = () => startCourse(course.id);
+                
+                card.innerHTML = `
+                    <div class="course-image" style="background: ${course.color};">
+                        <i class="fas ${course.icon}"></i>
+                        <span class="course-badge">${course.lessons.length} aulas</span>
+                    </div>
+                    <div class="course-info">
+                        <h3 class="course-title">${course.name}</h3>
+                        <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 15px;">${course.description}</p>
+                        <div class="course-meta">
+                            <span><i class="fas fa-book"></i> ${course.lessons.length} aulas</span>
+                            <span><i class="fas fa-clock"></i> ${course.lessons.length * 10}min</span>
+                        </div>
+                        <div class="course-progress">
+                            <div class="course-progress-bar" style="width: ${progress}%"></div>
+                        </div>
+                        <p style="text-align: center; margin-top: 10px; font-size: 0.9rem; color: var(--gray);">${progress}% completo</p>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function calculateCourseProgress(courseId) {
+            if (!userData) return 0;
+            const course = coursesData[courseId];
+            const completed = userData.completedLessons.filter(l => l.startsWith(courseId)).length;
+            return Math.round((completed / course.lessons.length) * 100);
+        }
+
+        function startCourse(courseId) {
+            currentCourse = courseId;
+            const course = coursesData[courseId];
+            const nextLesson = getNextLesson(courseId);
+            
+            if (nextLesson >= course.lessons.length) {
+                showToast('Parabéns! Você completou este curso!', 'success');
+                unlockAchievement('complete_' + courseId);
+                return;
+            }
+            
+            loadLesson(courseId, nextLesson);
+        }
+
+        function getNextLesson(courseId) {
+            if (!userData) return 0;
+            const completed = userData.completedLessons.filter(l => l.startsWith(courseId)).length;
+            return completed;
+        }
+
+        function loadLesson(courseId, lessonIndex) {
+            const course = coursesData[courseId];
+            const lesson = course.lessons[lessonIndex];
+            
+            currentLesson = { courseId, lessonIndex, lesson };
+            
+            document.getElementById('lesson-title').textContent = lesson.title;
+            document.getElementById('lesson-subtitle').textContent = `${course.name} > Aula ${lessonIndex + 1}`;
+            document.getElementById('lesson-content').innerHTML = `
+                <h2>${lesson.title}</h2>
+                <p>${lesson.content}</p>
+                <div style="margin-top: 30px; padding: 20px; background: rgba(99, 102, 241, 0.1); border-radius: 15px; border-left: 4px solid var(--primary);">
+                    <strong><i class="fas fa-lightbulb"></i> Dica NEURO:</strong>
+                    <p style="margin: 10px 0 0;">Revise este conteúdo antes de fazer o quiz. A prática leva à perfeição!</p>
+                </div>
+            `;
+            
+            // Configurar quiz
+            const quiz = lesson.quiz;
+            currentQuiz = quiz;
+            
+            // EMBARALHAR ALTERNATIVAS (CORREÇÃO DO BUG!)
+            const shuffledOptions = quiz.options.map((opt, idx) => ({ text: opt, originalIndex: idx }))
+                .sort(() => Math.random() - 0.5);
+            
+            const newCorrectIndex = shuffledOptions.findIndex(opt => opt.originalIndex === quiz.correct);
+            
+            document.getElementById('quiz-question').textContent = quiz.question;
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+            
+            shuffledOptions.forEach((opt, idx) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'quiz-option';
+                optionDiv.onclick = () => selectQuizOption(idx, newCorrectIndex);
+                optionDiv.innerHTML = `
+                    <div class="quiz-option-letter">${String.fromCharCode(65 + idx)}</div>
+                    <span>${opt.text}</span>
+                `;
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('quiz-result').innerHTML = '';
+            document.getElementById('complete-lesson-btn').style.display = 'none';
+            
+            showPage('lesson');
+        }
+
+        let selectedQuizOption = null;
+        let correctQuizOption = null;
+
+        function selectQuizOption(selected, correct) {
+            selectedQuizOption = selected;
+            correctQuizOption = correct;
+            
+            document.querySelectorAll('.quiz-option').forEach((opt, idx) => {
+                opt.classList.remove('selected');
+                if (idx === selected) {
+                    opt.classList.add('selected');
+                }
+            });
+        }
+
+        function submitQuiz() {
+            if (selectedQuizOption === null) {
+                showToast('Selecione uma alternativa!', 'warning');
+                return;
+            }
+            
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach((opt, idx) => {
+                opt.style.pointerEvents = 'none';
+                if (idx === correctQuizOption) {
+                    opt.classList.add('correct');
+                } else if (idx === selectedQuizOption && idx !== correctQuizOption) {
+                    opt.classList.add('wrong');
+                }
+            });
+            
+            const passed = selectedQuizOption === correctQuizOption;
+            const resultDiv = document.getElementById('quiz-result');
+            
+            if (passed) {
+                resultDiv.innerHTML = '<span style="color: var(--success);"><i class="fas fa-check-circle"></i> Correto! +50 XP</span>';
+                playSound('correct');
+                document.getElementById('complete-lesson-btn').style.display = 'block';
+                addXP(50);
+                userData.stats.quizzesCorrect++;
+                
+                if (userData.stats.quizzesCorrect >= 20) {
+                    unlockAchievement('quiz_master');
+                }
+            } else {
+                resultDiv.innerHTML = '<span style="color: var(--danger);"><i class="fas fa-times-circle"></i> Errado! Tente novamente.</span>';
+                playSound('wrong');
+                setTimeout(() => {
+                    options.forEach(opt => {
+                        opt.classList.remove('correct', 'wrong', 'selected');
+                        opt.style.pointerEvents = 'auto';
+                    });
+                    selectedQuizOption = null;
+                    resultDiv.innerHTML = '';
+                }, 2000);
+            }
+            
+            userData.stats.totalQuizzes++;
+            updateUI();
+        }
+
+        function completeLesson() {
+            if (!currentLesson) return;
+            
+            const lessonId = `${currentLesson.courseId}_${currentLesson.lessonIndex}`;
+            if (!userData.completedLessons.includes(lessonId)) {
+                userData.completedLessons.push(lessonId);
+                addXP(100);
+                addPoints(50);
+                playSound('complete');
+                createConfetti();
+                
+                showToast('Aula completada! +100 XP +50 Pontos');
+                
+                // Verificar conquistas
+                if (userData.completedLessons.length === 1) {
+                    unlockAchievement('first_steps');
+                }
+                if (userData.completedLessons.length >= 10) {
+                    unlockAchievement('dedicated');
+                }
+                if (userData.completedLessons.length >= 50) {
+                    unlockAchievement('scholar');
+                }
+                if (userData.completedLessons.length >= 100) {
+                    unlockAchievement('master');
+                }
+                
+                // Verificar se completou curso
+                const course = coursesData[currentLesson.courseId];
+                const courseCompleted = course.lessons.every((_, idx) => 
+                    userData.completedLessons.includes(`${currentLesson.courseId}_${idx}`)
+                );
+                
+                if (courseCompleted) {
+                    unlockAchievement('complete_' + currentLesson.courseId);
+                }
+            }
+            
+            showPage('courses');
+        }
+
+        // ============== SISTEMA DE XP E NÍVEL ==============
+
+        function addXP(amount) {
+            userData.xp += amount;
+            const newLevel = Math.floor(userData.xp / 1000) + 1;
+            
+            if (newLevel > userData.level) {
+                userData.level = newLevel;
+                showLevelUp(newLevel);
+            }
+            
+            updateUI();
+        }
+
+        function addPoints(amount) {
+            userData.points += amount;
+            updateUI();
+        }
+
+        // ============== SISTEMA DE CONQUISTAS ==============
+
+        function unlockAchievement(achievementId) {
+            if (userData.achievements.includes(achievementId)) return;
+            
+            const achievement = achievementsData.find(a => a.id === achievementId);
+            if (!achievement) return;
+            
+            userData.achievements.push(achievementId);
+            addXP(achievement.reward.xp);
+            addPoints(achievement.reward.points);
+            
+            showAchievementPopup(achievement);
+            
+            // Salvar no banco (simulação)
+            console.log('Conquista desbloqueada:', achievementId);
+        }
+
+        function loadAchievements() {
+            const grid = document.getElementById('achievements-grid');
+            grid.innerHTML = '';
+            
+            achievementsData.forEach(achievement => {
+                const unlocked = userData.achievements.includes(achievement.id);
+                const card = document.createElement('div');
+                card.className = `achievement-card ${unlocked ? '' : 'locked'}`;
+                
+                card.innerHTML = `
+                    <div class="achievement-icon ${achievement.color}">
+                        <i class="fas ${achievement.icon}"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3>${achievement.name}</h3>
+                        <p>${achievement.description}</p>
+                        <div class="achievement-reward">
+                            <span><i class="fas fa-star"></i> +${achievement.reward.xp} XP</span>
+                            <span><i class="fas fa-coins"></i> +${achievement.reward.points}</span>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // ============== SISTEMA DE GUILDAS (CORRIGIDO) ==============
+
+        let guilds = [
+            { id: 'guild_1', name: 'Code Masters', tag: 'CODE', description: 'Para quem ama programar', members: 15, maxMembers: 20, privacy: 'public', leader: 'user_123' },
+            { id: 'guild_2', name: 'Math Geniuses', tag: 'MATH', description: 'Matemática é vida', members: 8, maxMembers: 20, privacy: 'public', leader: 'user_456' },
+            { id: 'guild_3', name: 'Polyglots', tag: 'LANG', description: 'Aprendendo idiomas juntos', members: 12, maxMembers: 20, privacy: 'private', leader: 'user_789' }
+        ];
+
+        function loadGuilds() {
+            const list = document.getElementById('guilds-list');
+            list.innerHTML = '';
+            
+            // Verificar se usuário já tem guilda
+            const userGuild = guilds.find(g => g.leader === userData.uid || g.members.includes?.(userData.uid));
+            
+            if (userGuild) {
+                // Mostrar minha guilda
+                list.innerHTML = `
+                    <div class="card" style="margin-bottom: 30px;">
+                        <div class="card-header">
+                            <h3 class="card-title">Minha Guilda</h3>
+                            <button class="btn btn-danger btn-sm" onclick="leaveGuild()">Sair</button>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <div style="width: 80px; height: 80px; background: var(--gradient-1); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div>
+                                <h2>[${userGuild.tag}] ${userGuild.name}</h2>
+                                <p style="color: var(--gray);">${userGuild.description}</p>
+                                <div style="display: flex; gap: 20px; margin-top: 10px;">
+                                    <span><i class="fas fa-users"></i> ${userGuild.members}/${userGuild.maxMembers} membros</span>
+                                    <span><i class="fas fa-trophy"></i> Ranking: #3</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 10px;">
+                            <button class="btn btn-primary" onclick="openGuildChat()">
+                                <i class="fas fa-comments"></i> Chat da Guilda
+                            </button>
+                            <button class="btn btn-secondary" onclick="showGuildMembers()">
+                                <i class="fas fa-users"></i> Membros
+                            </button>
+                            ${userGuild.leader === userData.uid ? `
+                                <button class="btn btn-warning" onclick="manageGuild()">
+                                    <i class="fas fa-cog"></i> Gerenciar
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Lista de guildas disponíveis
+            const availableGuilds = guilds.filter(g => g.id !== userGuild?.id);
+            
+            if (availableGuilds.length === 0) {
+                list.innerHTML += '<p style="text-align: center; color: var(--gray);">Nenhuma guilda disponível no momento.</p>';
+                return;
+            }
+            
+            availableGuilds.forEach(guild => {
+                const card = document.createElement('div');
+                card.className = 'guild-card';
+                card.innerHTML = `
+                    <div class="guild-info">
+                        <h3><i class="fas fa-shield-alt" style="color: var(--primary);"></i> [${guild.tag}] ${guild.name}</h3>
+                        <p>${guild.description}</p>
+                        <div class="guild-stats">
+                            <span class="guild-stat"><i class="fas fa-users"></i> ${guild.members}/${guild.maxMembers}</span>
+                            <span class="guild-stat"><i class="fas fa-lock${guild.privacy === 'public' ? '-open' : ''}"></i> ${guild.privacy === 'public' ? 'Pública' : 'Privada'}</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="joinGuild('${guild.id}')" ${guild.members >= guild.maxMembers ? 'disabled' : ''}>
+                        ${guild.members >= guild.maxMembers ? 'Cheia' : 'Entrar'}
+                    </button>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function openCreateGuildModal() {
+            if (userData.points < 500) {
+                showToast('Você precisa de 500 pontos para criar uma guilda!', 'error');
+                return;
+            }
+            openModal('create-guild-modal');
+        }
+
+        function createGuild(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('guild-name').value;
+            const tag = document.getElementById('guild-tag').value.toUpperCase();
+            const description = document.getElementById('guild-desc').value;
+            const privacy = document.getElementById('guild-privacy').value;
+            
+            if (tag.length < 2 || tag.length > 4) {
+                showToast('A tag deve ter entre 2 e 4 caracteres', 'error');
+                return;
+            }
+            
+            const newGuild = {
+                id: 'guild_' + generateId(),
+                name: name,
+                tag: tag,
+                description: description,
+                members: 1,
+                maxMembers: 20,
+                privacy: privacy,
+                leader: userData.uid,
+                membersList: [userData.uid]
+            };
+            
+            guilds.push(newGuild);
+            userData.points -= 500;
+            
+            closeModal('create-guild-modal');
+            showToast('Guilda criada com sucesso!');
+            unlockAchievement('guild_founder');
+            updateUI();
+            loadGuilds();
+        }
+
+        function joinGuild(guildId) {
+            const guild = guilds.find(g => g.id === guildId);
+            if (!guild || guild.members >= guild.maxMembers) return;
+            
+            if (guild.privacy === 'private') {
+                showToast('Esta guilda é privada. Envie uma solicitação.', 'warning');
+                return;
+            }
+            
+            guild.members++;
+            if (!guild.membersList) guild.membersList = [];
+            guild.membersList.push(userData.uid);
+            
+            showToast(`Você entrou na guilda [${guild.tag}]!`);
+            loadGuilds();
+        }
+
+        function leaveGuild() {
+            if (!confirm('Tem certeza que deseja sair da guilda?')) return;
+            
+            const userGuild = guilds.find(g => g.leader === userData.uid || g.membersList?.includes(userData.uid));
+            if (userGuild) {
+                userGuild.members--;
+                userGuild.membersList = userGuild.membersList.filter(id => id !== userData.uid);
+                
+                if (userGuild.leader === userData.uid) {
+                    // Transferir liderança ou deletar guilda
+                    if (userGuild.membersList.length > 0) {
+                        userGuild.leader = userGuild.membersList[0];
+                    } else {
+                        guilds = guilds.filter(g => g.id !== userGuild.id);
+                    }
+                }
+            }
+            
+            showToast('Você saiu da guilda.');
+            loadGuilds();
+        }
+
+        // ============== SISTEMA DE BATALHAS ==============
+
+        let currentBattleMode = '1v1';
+
+        function selectBattleMode(mode) {
+            currentBattleMode = mode;
+            document.querySelectorAll('.battle-mode-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            document.getElementById('battle-lobby').style.display = mode === '1v1' ? 'block' : 'none';
+            document.getElementById('royale-lobby').style.display = mode === 'royale' ? 'block' : 'none';
+        }
+
+        function createBattle() {
+            const battleCode = Math.random().toString(36).substr(2, 6).toUpperCase();
+            currentBattle = {
+                code: battleCode,
+                player1: userData.uid,
+                player2: null,
+                status: 'waiting',
+                questions: [],
+                currentQuestion: 0,
+                scores: { [userData.uid]: 0 }
+            };
+            
+            document.getElementById('active-battle').style.display = 'block';
+            showToast(`Sala criada! Código: ${battleCode}`);
+            playSound('battleStart');
+            
+            // Simular entrada de oponente após 3 segundos
+            setTimeout(() => {
+                joinBattleSimulation();
+            }, 3000);
+        }
+
+        function joinBattleSimulation() {
+            currentBattle.player2 = 'opponent_' + generateId();
+            currentBattle.status = 'active';
+            currentBattle.scores[currentBattle.player2] = 0;
+            
+            document.getElementById('battle-player-2').classList.add('active');
+            document.getElementById('battle-player-2').querySelector('h4').textContent = 'Oponente';
+            
+            startBattleQuestion();
+        }
+
+        function startBattleQuestion() {
+            const questions = [
+                { q: 'Quanto é 15 × 4?', options: ['45', '60', '75', '80'], correct: 1 },
+                { q: 'Qual a capital do Brasil?', options: ['São Paulo', 'Rio de Janeiro', 'Brasília', 'Salvador'], correct: 2 },
+                { q: 'Quem pintou a Mona Lisa?', options: ['Van Gogh', 'Picasso', 'Da Vinci', 'Michelangelo'], correct: 2 },
+                { q: 'Qual o menor país do mundo?', options: ['Mônaco', 'Vaticano', 'San Marino', 'Liechtenstein'], correct: 1 }
+            ];
+            
+            const q = questions[Math.floor(Math.random() * questions.length)];
+            document.getElementById('battle-question').textContent = q.q;
+            
+            const optionsDiv = document.getElementById('battle-options');
+            optionsDiv.innerHTML = '';
+            
+            // EMBARALHAR opções da batalha também!
+            const shuffled = q.options.map((opt, idx) => ({ text: opt, originalIndex: idx }))
+                .sort(() => Math.random() - 0.5);
+            const newCorrect = shuffled.findIndex(o => o.originalIndex === q.correct);
+            
+            shuffled.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-dark';
+                btn.style.width = '100%';
+                btn.style.marginBottom = '10px';
+                btn.textContent = opt.text;
+                btn.onclick = () => answerBattleQuestion(idx === newCorrect);
+                optionsDiv.appendChild(btn);
+            });
+            
+            let timeLeft = 10;
+            const timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('battle-timer').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    answerBattleQuestion(false);
+                }
+            }, 1000);
+            
+            currentBattle.timer = timer;
+        }
+
+        function answerBattleQuestion(correct) {
+            clearInterval(currentBattle.timer);
+            
+            if (correct) {
+                currentBattle.scores[userData.uid] += 100;
+                document.getElementById('battle-player-1-score').textContent = `${currentBattle.scores[userData.uid]} pts`;
+                playSound('correct');
+            } else {
+                playSound('wrong');
+            }
+            
+            // Simular resposta do oponente
+            setTimeout(() => {
+                const opponentCorrect = Math.random() > 0.3;
+                if (opponentCorrect) {
+                    currentBattle.scores[currentBattle.player2] += 100;
+                    document.getElementById('battle-player-2-score').textContent = `${currentBattle.scores[currentBattle.player2]} pts`;
+                }
+                
+                // Próxima pergunta ou fim
+                currentBattle.currentQuestion++;
+                if (currentBattle.currentQuestion < 5) {
+                    startBattleQuestion();
+                } else {
+                    endBattle();
+                }
+            }, 1500);
+        }
+
+        function endBattle() {
+            const playerScore = currentBattle.scores[userData.uid];
+            const opponentScore = currentBattle.scores[currentBattle.player2];
+            const won = playerScore > opponentScore;
+            
+            if (won) {
+                addXP(100);
+                addPoints(50);
+                playSound('battleWin');
+                showToast('Vitória! +100 XP +50 Pontos');
+                unlockAchievement('battle_winner');
+                
+                userData.stats.battlesWon++;
+                if (userData.stats.battlesWon >= 50) {
+                    unlockAchievement('battle_legend');
+                }
+            } else {
+                showToast('Derrota! Tente novamente.', 'warning');
+            }
+            
+            userData.stats.battlesPlayed++;
+            updateUI();
+            
+            setTimeout(() => {
+                document.getElementById('active-battle').style.display = 'none';
+                document.getElementById('battle-player-2').classList.remove('active');
+                document.getElementById('battle-player-2').querySelector('h4').textContent = 'Aguardando...';
+                document.getElementById('battle-player-1-score').textContent = '0 pts';
+                document.getElementById('battle-player-2-score').textContent = '0 pts';
+            }, 3000);
+        }
+
+        function startBattleRoyale() {
+            showToast('Battle Royale iniciado! Preparando jogadores...');
+            playSound('battleStart');
+            
+            // Simular lobby
+            const grid = document.getElementById('br-players-grid');
+            grid.innerHTML = '';
+            
+            for (let i = 0; i < 10; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'br-player-slot' + (i === 0 ? ' occupied' : '');
+                slot.innerHTML = i === 0 ? `
+                    <div class="br-player-avatar"><i class="fas fa-user"></i></div>
+                    <div class="br-player-name">Você</div>
+                ` : `
+                    <div class="br-player-avatar" style="background: var(--gradient-2);"><i class="fas fa-robot"></i></div>
+                    <div class="br-player-name">Bot ${i}</div>
+                `;
+                grid.appendChild(slot);
+            }
+            
+            // Simular eliminações
+            let alive = 10;
+            const interval = setInterval(() => {
+                if (alive <= 1) {
+                    clearInterval(interval);
+                    showToast('Você venceu o Battle Royale! +1000 XP', 'success');
+                    unlockAchievement('royale_winner');
+                    addXP(1000);
+                    updateUI();
+                    return;
+                }
+                
+                const slots = document.querySelectorAll('.br-player-slot:not(.eliminated)');
+                const toEliminate = Math.floor(Math.random() * slots.length);
+                if (toEliminate !== 0) { // Não eliminar jogador
+                    slots[toEliminate].classList.add('eliminated');
+                    alive--;
+                }
+            }, 2000);
+        }
+
+        // ============== SISTEMA DE RANKING ==============
+
+        function loadRanking() {
+            const list = document.getElementById('ranking-list');
+            list.innerHTML = '';
+            
+            // Dados simulados
+            const players = [
+                { name: 'DragonMaster', level: 45, xp: 45000, avatar: 'fa-dragon' },
+                { name: 'NeonRider', level: 42, xp: 42000, avatar: 'fa-bolt' },
+                { name: 'CodeNinja', level: 38, xp: 38000, avatar: 'fa-user-ninja' },
+                { name: userData.name, level: userData.level, xp: userData.xp, avatar: 'fa-user', isUser: true },
+                { name: 'MathWizard', level: 35, xp: 35000, avatar: 'fa-hat-wizard' },
+                { name: 'SpeedRunner', level: 33, xp: 33000, avatar: 'fa-running' },
+                { name: 'Polyglot', level: 30, xp: 30000, avatar: 'fa-language' },
+                { name: 'ArtistPro', level: 28, xp: 28000, avatar: 'fa-palette' }
+            ].sort((a, b) => b.xp - a.xp);
+            
+            players.forEach((player, index) => {
+                const item = document.createElement('div');
+                item.className = 'ranking-item';
+                if (player.isUser) item.style.background = 'rgba(99, 102, 241, 0.2)';
+                
+                const positionClass = index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '';
+                
+                item.innerHTML = `
+                    <div class="ranking-position ${positionClass}">#${index + 1}</div>
+                    <div class="ranking-avatar">
+                        <i class="fas ${player.avatar}"></i>
+                    </div>
+                    <div class="ranking-info">
+                        <h4>${player.name} ${player.isUser ? '(Você)' : ''}</h4>
+                        <p>Nível ${player.level}</p>
+                    </div>
+                    <div class="ranking-xp">
+                        <span>${formatNumber(player.xp)}</span>
+                        <small>XP</small>
+                    </div>
+                `;
+                
+                list.appendChild(item);
+            });
+        }
+
+        function switchRanking(type) {
+            document.querySelectorAll('.ranking-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            loadRanking(); // Na prática, filtraria por tipo
+        }
+
+        // ============== SISTEMA DE LOJA ==============
+
+        function loadShop() {
+            loadShopItems('avatars');
+        }
+
+        function switchShop(category) {
+            document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            loadShopItems(category);
+        }
+
+        function loadShopItems(category) {
+            const grid = document.getElementById('shop-grid');
+            grid.innerHTML = '';
+            
+            const items = shopItems.filter(item => item.type === category);
+            
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `shop-item ${item.vip && !userData.vip ? 'vip-only' : ''}`;
+                
+                let imageHtml = '';
+                if (item.type === 'avatar') {
+                    imageHtml = `<i class="fas ${item.icon}"></i>`;
+                } else if (item.type === 'frame') {
+                    imageHtml = `<div style="width: 60px; height: 60px; border-radius: 50%; background: var(--gradient-1); ${item.style}"></div>`;
+                } else {
+                    imageHtml = `<i class="fas fa-box"></i>`;
+                }
+                
+                const canBuy = userData.points >= item.price && (!item.vip || userData.vip);
+                
+                card.innerHTML = `
+                    <div class="shop-item-image">${imageHtml}</div>
+                    <h4 class="shop-item-name">${item.name}</h4>
+                    <p class="shop-item-desc">${item.description || item.type}</p>
+                    <div class="shop-item-price">
+                        <i class="fas fa-coins"></i> ${formatNumber(item.price)}
+                    </div>
+                    <button class="btn btn-primary" onclick="buyItem('${item.id}')" ${!canBuy ? 'disabled' : ''}>
+                        ${userData.inventory.includes(item.id) ? 'Equipado' : item.vip && !userData.vip ? 'VIP Necessário' : 'Comprar'}
+                    </button>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function buyItem(itemId) {
+            const item = shopItems.find(i => i.id === itemId);
+            if (!item || userData.inventory.includes(itemId)) return;
+            
+            if (userData.points < item.price) {
+                showToast('Pontos insuficientes!', 'error');
+                return;
+            }
+            
+            if (item.vip && !userData.vip) {
+                showToast('Requer VIP!', 'error');
+                return;
+            }
+            
+            userData.points -= item.price;
+            userData.inventory.push(itemId);
+            
+            // Aplicar efeito imediato se for VIP
+            if (item.type === 'vip') {
+                userData.vip = true;
+                unlockAchievement('vip_member');
+            }
+            
+            showToast(`${item.name} comprado com sucesso!`);
+            playSound('achievement');
+            updateUI();
+            loadShopItems(item.type);
+        }
+
+        // ============== PERFIL E AMIGOS ==============
+
+        function loadProfile() {
+            if (!userData) return;
+            
+            document.getElementById('profile-name').textContent = userData.name;
+            document.getElementById('profile-id').textContent = '#' + userData.uid.substr(-6).toUpperCase();
+            document.getElementById('profile-bio').textContent = userData.bio || 'Nenhuma bio adicionada.';
+            document.getElementById('profile-level').textContent = userData.level;
+            document.getElementById('profile-xp').textContent = formatNumber(userData.xp);
+            document.getElementById('profile-courses').textContent = new Set(userData.completedLessons.map(l => l.split('_')[0])).size;
+            document.getElementById('profile-achievements').textContent = userData.achievements.length;
+            
+            // VIP
+            document.getElementById('profile-vip-icon').style.display = userData.vip ? 'inline' : 'none';
+            
+            // Frame
+            const frameDiv = document.getElementById('profile-frame');
+            frameDiv.className = 'profile-frame';
+            if (userData.frame) {
+                frameDiv.classList.add(userData.frame);
+            }
+            
+            // Avatar
+            const avatarDiv = document.getElementById('profile-avatar');
+            const avatarText = document.getElementById('profile-avatar-text');
+            const avatarImg = document.getElementById('profile-avatar-img');
+            
+            if (currentUser.photoURL) {
+                avatarImg.src = currentUser.photoURL;
+                avatarImg.style.display = 'block';
+                avatarText.style.display = 'none';
+            } else {
+                avatarImg.style.display = 'none';
+                avatarText.style.display = 'flex';
+            }
+            
+            // Conteúdo da aba ativa
+            switchProfileTab('activity');
+        }
+
+        function switchProfileTab(tab) {
+            document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const content = document.getElementById('profile-tab-content');
+            
+            if (tab === 'activity') {
+                content.innerHTML = `
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px;">Atividades Recentes</h3>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            ${userData.completedLessons.slice(-5).map(lesson => {
+                                const [courseId, idx] = lesson.split('_');
+                                const course = coursesData[courseId];
+                                return `
+                                    <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(99, 102, 241, 0.1); border-radius: 12px;">
+                                        <i class="fas fa-check-circle" style="color: var(--success); font-size: 1.5rem;"></i>
+                                        <div>
+                                            <div style="font-weight: 600;">Completou: ${course?.lessons[idx]?.title || 'Aula'}</div>
+                                            <div style="font-size: 0.85rem; color: var(--gray);">Hoje</div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('') || '<p style="color: var(--gray);">Nenhuma atividade recente.</p>'}
+                        </div>
+                    </div>
+                `;
+            } else if (tab === 'stats') {
+                content.innerHTML = `
+                    <div class="grid grid-2">
+                        <div class="card">
+                            <h3 style="margin-bottom: 20px;">Estatísticas de Batalha</h3>
+                            <div style="display: flex; flex-direction: column; gap: 15px;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Vitórias:</span>
+                                    <strong>${userData.stats.battlesWon}</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Total de Batalhas:</span>
+                                    <strong>${userData.stats.battlesPlayed}</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Taxa de Vitória:</span>
+                                    <strong>${userData.stats.battlesPlayed > 0 ? Math.round((userData.stats.battlesWon / userData.stats.battlesPlayed) * 100) : 0}%</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 style="margin-bottom: 20px;">Estatísticas de Quiz</h3>
+                            <div style="display: flex; flex-direction: column; gap: 15px;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Acertos:</span>
+                                    <strong>${userData.stats.quizzesCorrect}</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Total:</span>
+                                    <strong>${userData.stats.totalQuizzes}</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Precisão:</span>
+                                    <strong>${userData.stats.totalQuizzes > 0 ? Math.round((userData.stats.quizzesCorrect / userData.stats.totalQuizzes) * 100) : 0}%</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (tab === 'inventory') {
+                const userItems = shopItems.filter(item => userData.inventory.includes(item.id));
+                content.innerHTML = `
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px;">Meus Itens</h3>
+                        <div class="grid grid-4">
+                            ${userItems.map(item => `
+                                <div style="text-align: center; padding: 20px; background: rgba(99, 102, 241, 0.1); border-radius: 15px;">
+                                    <i class="fas ${item.icon || 'fa-box'}" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
+                                    <div style="font-weight: 600;">${item.name}</div>
+                                    <button class="btn btn-sm btn-primary" style="margin-top: 10px;" onclick="equipItem('${item.id}')">
+                                        Equipar
+                                    </button>
+                                </div>
+                            `).join('') || '<p style="color: var(--gray);">Nenhum item comprado ainda.</p>'}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function openEditProfileModal() {
+            document.getElementById('edit-name').value = userData.name;
+            document.getElementById('edit-bio').value = userData.bio || '';
+            
+            // Avatar selector
+            const avatarSelector = document.getElementById('avatar-selector');
+            avatarSelector.innerHTML = '';
+            const avatars = ['fa-user', 'fa-user-ninja', 'fa-user-astronaut', 'fa-user-graduate', 'fa-user-tie', 'fa-user-secret'];
+            avatars.forEach(icon => {
+                const div = document.createElement('div');
+                div.className = 'avatar-option';
+                div.innerHTML = `<i class="fas ${icon}"></i>`;
+                div.onclick = () => {
+                    document.querySelectorAll('.avatar-option').forEach(a => a.classList.remove('selected'));
+                    div.classList.add('selected');
+                };
+                avatarSelector.appendChild(div);
+            });
+            
+            // Frame selector
+            const frameSelector = document.getElementById('frame-selector');
+            frameSelector.innerHTML = '';
+            const frames = [
+                { id: null, name: 'Nenhuma', style: '' },
+                { id: 'frame-gold', name: 'Ouro', vip: true },
+                { id: 'frame-fire', name: 'Fogo', vip: true },
+                { id: 'frame-ice', name: 'Gelo', vip: true },
+                { id: 'frame-legendary', name: 'Lendária', vip: true }
+            ];
+            
+            frames.forEach(frame => {
+                const div = document.createElement('div');
+                div.className = `frame-option ${frame.vip && !userData.vip ? 'locked' : ''} ${userData.frame === frame.id ? 'selected' : ''}`;
+                div.innerHTML = `
+                    <div class="frame-preview ${frame.id || ''}" style="${frame.id ? '' : 'border: 2px solid var(--gray);'}"></div>
+                    <small>${frame.name}</small>
+                `;
+                if (!frame.vip || userData.vip) {
+                    div.onclick = () => {
+                        document.querySelectorAll('.frame-option').forEach(f => f.classList.remove('selected'));
+                        div.classList.add('selected');
+                    };
+                }
+                frameSelector.appendChild(div);
+            });
+            
+            openModal('edit-profile-modal');
+        }
+
+        function saveProfile() {
+            const newName = document.getElementById('edit-name').value;
+            const newBio = document.getElementById('edit-bio').value;
+            
+            if (newName) userData.name = newName;
+            userData.bio = newBio;
+            
+            // Pegar frame selecionado
+            const selectedFrame = document.querySelector('.frame-option.selected');
+            if (selectedFrame) {
+                const frameId = selectedFrame.querySelector('.frame-preview').classList[1];
+                userData.frame = frameId || null;
+            }
+            
+            closeModal('edit-profile-modal');
+            loadProfile();
+            updateUI();
+            showToast('Perfil atualizado!');
+        }
+
+        function equipItem(itemId) {
+            const item = shopItems.find(i => i.id === itemId);
+            if (!item) return;
+            
+            if (item.type === 'frame') {
+                userData.frame = item.style;
+                loadProfile();
+                showToast('Moldura equipada!');
+            }
+        }
+
+        // ============== SISTEMA DE AMIGOS ==============
+
+        function loadFriends() {
+            const friendsList = document.getElementById('friends-list');
+            friendsList.innerHTML = '';
+            
+            // Simular amigos
+            const mockFriends = [
+                { id: 'friend_1', name: 'CarlosDev', status: 'online', avatar: 'fa-code' },
+                { id: 'friend_2', name: 'MariaDesign', status: 'offline', avatar: 'fa-paint-brush' },
+                { id: 'friend_3', name: 'JoãoMath', status: 'online', avatar: 'fa-calculator' }
+            ];
+            
+            mockFriends.forEach(friend => {
+                const div = document.createElement('div');
+                div.className = 'friend-item';
+                div.onclick = () => selectFriend(friend);
+                
+                div.innerHTML = `
+                    <div class="friend-avatar">
+                        <i class="fas ${friend.avatar}"></i>
+                        <div class="friend-status ${friend.status}"></div>
+                    </div>
+                    <div class="friend-info">
+                        <div class="friend-name">${friend.name}</div>
+                        <div class="friend-status-text">${friend.status === 'online' ? 'Online' : 'Offline'}</div>
+                    </div>
+                `;
+                
+                friendsList.appendChild(div);
+            });
+            
+            // Solicitações pendentes
+            const requestsDiv = document.getElementById('friend-requests');
+            requestsDiv.innerHTML = `
+                <div class="friend-item">
+                    <div class="friend-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="friend-info">
+                        <div class="friend-name">Novo Usuário</div>
+                    </div>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="btn btn-sm btn-success" onclick="acceptFriend()"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="declineFriend()"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectFriend(friend) {
+            selectedFriend = friend;
+            document.getElementById('challenge-btn').disabled = friend.status !== 'online';
+            document.getElementById('chat-input').disabled = false;
+            document.getElementById('send-btn').disabled = false;
+            
+            // Atualizar header do chat
+            const chatHeader = document.querySelector('.chat-header');
+            chatHeader.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="friend-avatar">
+                        <i class="fas ${friend.avatar}"></i>
+                        <div class="friend-status ${friend.status}"></div>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">${friend.name}</div>
+                        <div style="font-size: 0.8rem; color: var(--gray);">${friend.status === 'online' ? 'Online' : 'Offline'}</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="challengeFriend()" ${friend.status !== 'online' ? 'disabled' : ''}>
+                    <i class="fas fa-gamepad"></i> Desafiar
+                </button>
+            `;
+            
+            // Limpar mensagens anteriores
+            document.getElementById('chat-messages').innerHTML = '<div style="text-align: center; color: var(--gray); margin-top: 20px;">Inicie uma conversa...</div>';
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message || !selectedFriend) return;
+            
+            const messagesDiv = document.getElementById('chat-messages');
+            if (messagesDiv.children.length === 1 && messagesDiv.children[0].textContent.includes('Inicie')) {
+                messagesDiv.innerHTML = '';
+            }
+            
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-message sent';
+            msgDiv.textContent = message;
+            messagesDiv.appendChild(msgDiv);
+            
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            // Simular resposta
+            setTimeout(() => {
+                const replyDiv = document.createElement('div');
+                replyDiv.className = 'chat-message received';
+                replyDiv.textContent = 'Legal! Vamos estudar juntos? 📚';
+                messagesDiv.appendChild(replyDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                playSound('notification');
+            }, 2000);
+        }
+
+        function challengeFriend() {
+            if (!selectedFriend) return;
+            showToast(`Desafio enviado para ${selectedFriend.name}!`);
+            showPage('battle');
+        }
+
+        function acceptFriend() {
+            showToast('Solicitação aceita!');
+            loadFriends();
+        }
+
+        function declineFriend() {
+            showToast('Solicitação recusada.');
+            loadFriends();
+        }
+
+        function searchFriend() {
+            const query = document.getElementById('friend-search').value;
+            if (!query) return;
+            
+            showToast(`Buscando por "${query}"...`);
+            // Simulação: adicionar como amigo
+            setTimeout(() => {
+                showToast('Usuário encontrado! Solicitação enviada.');
+            }, 1500);
+        }
+
+        // ============== FEEDBACK ==============
+
+        function switchFeedbackTab(tab) {
+            document.querySelectorAll('.feedback-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.getElementById('feedback-form').style.display = tab === 'history' ? 'none' : 'block';
+            document.getElementById('feedback-history').style.display = tab === 'history' ? 'block' : 'none';
+            
+            if (tab === 'report') {
+                document.getElementById('feedback-screenshot').style.display = 'block';
+            } else if (tab === 'suggest') {
+                document.getElementById('feedback-screenshot').style.display = 'none';
+            }
+        }
+
+        function submitFeedback() {
+            const title = document.getElementById('feedback-title').value;
+            const desc = document.getElementById('feedback-desc').value;
+            
+            if (!title || !desc) {
+                showToast('Preencha todos os campos!', 'warning');
+                return;
+            }
+            
+            showToast('Feedback enviado! Obrigado pela contribuição.');
+            unlockAchievement('helper');
+            
+            document.getElementById('feedback-title').value = '';
+            document.getElementById('feedback-desc').value = '';
+        }
+
+        // ============== ADMIN ==============
+
+        function loadAdmin() {
+            // Estatísticas
+            document.getElementById('admin-total-users').textContent = '1,234';
+            document.getElementById('admin-online-users').textContent = '89';
+            document.getElementById('admin-pending-teachers').textContent = '5';
+            
+            // Tabela de usuários
+            const tbody = document.getElementById('admin-users-table');
+            tbody.innerHTML = `
+                <tr>
+                    <td>João Silva</td>
+                    <td>joao@email.com</td>
+                    <td>15</td>
+                    <td><span class="status-badge online">Online</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning">Banir</button>
+                        <button class="btn btn-sm btn-danger">Excluir</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Maria Souza</td>
+                    <td>maria@email.com</td>
+                    <td>23</td>
+                    <td><span class="status-badge offline">Offline</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning">Banir</button>
+                        <button class="btn btn-sm btn-danger">Excluir</button>
+                    </td>
+                </tr>
+            `;
+            
+            // Professores pendentes
+            const pendingDiv = document.getElementById('pending-teachers-list');
+            pendingDiv.innerHTML = `
+                <div class="feedback-item">
+                    <div class="feedback-header">
+                        <div>
+                            <strong>Prof. Carlos</strong>
+                            <span class="feedback-type suggestion" style="margin-left: 10px;">Matemática</span>
+                        </div>
+                        <span class="feedback-status pending">Pendente</span>
+                    </div>
+                    <p>Quero ensinar cálculo avançado na plataforma.</p>
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <button class="btn btn-sm btn-success" onclick="approveTeacher()">
+                            <i class="fas fa-check"></i> Aprovar
+                        </button>
+                        <button class="btn btn-sm btn-danger">
+                            <i class="fas fa-times"></i> Recusar
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function approveTeacher() {
+            showToast('Professor aprovado!');
+            unlockAchievement('teacher');
+        }
+
+        function sendGlobalMessage() {
+            showToast('Mensagem global enviada para todos os usuários!');
+        }
+
+        // ============== GERADOR DE CÓDIGOS ==============
+
+        let generatedCodes = [];
+
+        function generateCode() {
+            const type = document.getElementById('code-type').value;
+            const value = document.getElementById('code-value').value;
+            const expiry = document.getElementById('code-expiry').value;
+            const maxUses = document.getElementById('code-uses').value;
+            
+            const code = Array(4).fill(0).map(() => 
+                Math.random().toString(36).substr(2, 4).toUpperCase()
+            ).join('-');
+            
+            const codeData = {
+                code: code,
+                type: type,
+                value: value,
+                expiry: parseInt(expiry),
+                maxUses: parseInt(maxUses),
+                uses: 0,
+                createdAt: new Date().toISOString(),
+                createdBy: userData.uid
+            };
+            
+            generatedCodes.push(codeData);
+            
+            document.getElementById('generated-code').textContent = code;
+            document.getElementById('generated-code').style.display = 'block';
+            document.getElementById('copy-btn').style.display = 'block';
+            
+            loadCodeHistory();
+            showToast('Código gerado com sucesso!');
+        }
+
+        function copyCode() {
+            const code = document.getElementById('generated-code').textContent;
+            navigator.clipboard.writeText(code);
+            showToast('Código copiado!');
+        }
+
+        function loadCodeHistory() {
+            const historyDiv = document.getElementById('code-history');
+            historyDiv.innerHTML = generatedCodes.map(c => `
+                <div class="code-item">
+                    <div>
+                        <strong>${c.code}</strong>
+                        <div style="font-size: 0.85rem; color: var(--gray);">
+                            ${c.type} - ${c.value} - Usos: ${c.uses}/${c.maxUses}
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-dark" onclick="navigator.clipboard.writeText('${c.code}')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function exportCodes() {
+            const csv = generatedCodes.map(c => 
+                `${c.code},${c.type},${c.value},${c.maxUses},${c.uses}`
+            ).join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'codes.csv';
+            a.click();
+            
+            showToast('Códigos exportados!');
+        }
+
+        // ============== INICIALIZAÇÃO ==============
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verificar preferência de som
+            const savedSound = localStorage.getItem('soundEnabled');
+            if (savedSound !== null) {
+                soundEnabled = savedSound === 'true';
+                if (!soundEnabled) {
+                    document.getElementById('sound-toggle').innerHTML = '<i class="fas fa-volume-mute"></i>';
+                    document.getElementById('sound-toggle').classList.add('muted');
+                }
+            }
+            
+            // Simular carregamento
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                    openModal('auth-modal');
+                }, 500);
+            }, 1500);
+            
+            // Formulários de auth
+            document.getElementById('login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                login(email, password);
+            });
+            
+            document.getElementById('register-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('register-name').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+                
+                currentUser = {
+                    uid: 'user_' + generateId(),
+                    email: email,
+                    displayName: name,
+                    photoURL: null
+                };
+                
+                userData = {
+                    uid: currentUser.uid,
+                    name: name,
+                    email: email,
+                    level: 1,
+                    xp: 0,
+                    points: 1000,
+                    streak: 1,
+                    vip: false,
+                    frame: null,
+                    bio: '',
+                    achievements: [],
+                    inventory: [],
+                    friends: [],
+                    pendingFriends: [],
+                    completedLessons: [],
+                    stats: {
+                        battlesWon: 0,
+                        battlesPlayed: 0,
+                        quizzesCorrect: 0,
+                        totalQuizzes: 0,
+                        coursesCompleted: 0
+                    },
+                    createdAt: new Date().toISOString()
+                };
+                
+                updateUI();
+                closeModal('auth-modal');
+                showToast('Conta criada com sucesso! Bem-vindo!');
+            });
+            
+            // Enter no chat
+            document.getElementById('chat-input')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+        });
+
+        // Prevenir menu de contexto em elementos sensíveis (segurança básica)
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.closest('.code-display')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

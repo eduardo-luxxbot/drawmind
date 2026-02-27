@@ -2796,4 +2796,172 @@
         }
 
         function renderZapGrupos() {
-            const list = document.getElementById('
+            const list = document.getElementById('zapGruposList');
+            if (!list) return;
+            
+            // Grupos do usuário + grupos públicos
+            const grupos = [
+                { id: 1, nome: 'Inglês Todo Dia', icon: '🇺🇸', membros: 234, lastMsg: 'Alguém quer praticar speaking?', time: '10:30', unread: 3, tipo: 'publico' },
+                { id: 2, nome: 'Python Brasil', icon: '🐍', membros: 892, lastMsg: 'Dúvida sobre loops', time: '11:45', unread: 12, tipo: 'publico' },
+                { id: 3, nome: 'Desenho Anime', icon: '✏️', membros: 156, lastMsg: 'Compartilhei meu sketch', time: '09:15', unread: 0, tipo: 'publico' },
+                ...(userData?.grupos || [])
+            ];
+            
+            list.innerHTML = grupos.map(g => `
+                <div onclick="enterZapGroup(${g.id})" style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; border-radius: 12px; cursor: pointer; transition: all 0.3s; ${g.unread > 0 ? 'background: rgba(255,255,255,0.05);' : ''} hover: background: rgba(255,255,255,0.1);">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">${g.icon}</div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                            <span style="font-weight: 600; font-size: 0.95rem;">${g.nome}</span>
+                            <span style="font-size: 0.75rem; color: var(--gray);">${g.time}</span>
+                        </div>
+                        <div style="font-size: 0.85rem; color: ${g.unread > 0 ? 'var(--light)' : 'var(--gray)'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; ${g.unread > 0 ? 'font-weight: 600;' : ''}">${g.lastMsg}</div>
+                    </div>
+                    ${g.unread > 0 ? `<span style="background: var(--success); color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">${g.unread}</span>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function enterZapGroup(groupId) {
+            currentZapGroup = groupId;
+            document.querySelector('.zap-tab:last-child').click();
+            
+            // Atualizar header
+            const grupo = { nome: 'Grupo ' + groupId, icon: '👥', membros: 100 };
+            document.getElementById('zapHeaderName').textContent = grupo.nome;
+            document.getElementById('zapHeaderStatus').textContent = `${grupo.membros} membros`;
+            document.getElementById('zapHeaderAvatar').textContent = grupo.icon;
+            
+            // Inicializar mensagens
+            if (!zapMessages[groupId]) {
+                zapMessages[groupId] = [
+                    { user: 'Sistema', text: `Bem-vindo ao grupo!`, time: '10:00', isSystem: true }
+                ];
+            }
+            
+            renderZapMessages();
+        }
+
+        function renderZapMessages() {
+            const area = document.getElementById('zapMessagesArea');
+            if (!area || !currentZapGroup) return;
+            
+            const msgs = zapMessages[currentZapGroup] || [];
+            area.innerHTML = msgs.map(m => `
+                <div style="max-width: 80%; padding: 0.75rem 1rem; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; ${m.isMe ? 'background: #005c4b; align-self: flex-end; border-bottom-right-radius: 4px;' : m.isSystem ? 'background: rgba(255,255,255,0.1); align-self: center; text-align: center; font-size: 0.8rem;' : 'background: #202c33; align-self: flex-start; border-bottom-left-radius: 4px;'}">
+                    <div>${m.text}</div>
+                    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.6); margin-top: 0.25rem; text-align: right;">${m.time}</div>
+                </div>
+            `).join('');
+            
+            area.scrollTop = area.scrollHeight;
+        }
+
+        function handleZapInput(e) {
+            if (e.key === 'Enter') sendZapMessage();
+        }
+
+        function sendZapMessage() {
+            const input = document.getElementById('zapInput');
+            const text = input.value.trim();
+            if (!text || !currentZapGroup) return;
+            
+            const msgs = zapMessages[currentZapGroup];
+            msgs.push({
+                user: 'Você',
+                text: text,
+                time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                isMe: true
+            });
+            
+            input.value = '';
+            renderZapMessages();
+            
+            // Simular resposta
+            setTimeout(() => {
+                msgs.push({
+                    user: 'Colega',
+                    text: 'Boa! Também estou estudando isso. 💪',
+                    time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                    isMe: false
+                });
+                renderZapMessages();
+            }, 2000);
+        }
+
+        // ==================== FUNÇÕES UTILITÁRIAS ====================
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const page = document.getElementById(`page-${pageId}`);
+            if (page) page.classList.add('active');
+            
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            const nav = document.getElementById(`nav-${pageId}`);
+            if (nav) nav.classList.add('active');
+            
+            // Atualizar ranking se necessário
+            if (pageId === 'ranking') renderRanking();
+        }
+
+        function openModal(id) {
+            const modal = document.getElementById(`modal${id.charAt(0).toUpperCase() + id.slice(1)}`);
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(`modal${id.charAt(0).toUpperCase() + id.slice(1)}`);
+            if (modal) modal.classList.remove('active');
+        }
+
+        function comprarItem(itemId) {
+            const item = lojaItens.find(i => i.id === itemId);
+            if (!item || !userData) return;
+            
+            if (userData.pontos < item.preco) {
+                alert('Pontos insuficientes!');
+                return;
+            }
+            
+            if (item.vip && !userData.vip && !userData.isAdm) {
+                alert('Este item é exclusivo para VIPs!');
+                return;
+            }
+            
+            userData.pontos -= item.preco;
+            userData.compras = userData.compras || [];
+            userData.compras.push(itemId);
+            
+            // Aplicar benefício
+            if (item.beneficio === 'vip') {
+                userData.vip = true;
+            }
+            
+            salvarUserData();
+            updateHUD();
+            renderLoja();
+            
+            alert(`✅ ${item.nome} comprado com sucesso!`);
+        }
+
+        function salvarProgressoAula() {
+            if (!userData) return;
+            userData.aulasCompletadas = (userData.aulasCompletadas || 0) + 1;
+            
+            // Verificar conquistas
+            checkConquistas();
+            salvarUserData();
+        }
+
+        // Fechar modais ao clicar fora
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        // Inicializar
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -4547,7 +4547,1662 @@
                     document.querySelectorAll('.modal.active').forEach(m => closeModal(m.id));
                 }
             });
-        });
+        });<!-- ==================== PARTE 5: CORREÇÕES E SISTEMA SOCIAL ==================== -->
+
+<!-- NOVO: Aba de Perfil do Usuário -->
+<div id="page-profile" class="page">
+    <div class="page-header">
+        <h1>👤 Meu Perfil</h1>
+        <p>Gerencie sua conta, resgate códigos e personalize sua experiência</p>
+    </div>
+
+    <div class="grid-2">
+        <!-- Informações do Perfil -->
+        <div class="card">
+            <h3>Informações Pessoais</h3>
+            <div style="text-align: center; margin: 30px 0;">
+                <div class="avatar" id="profileAvatar" style="width: 120px; height: 120px; font-size: 3rem; margin: 0 auto 20px; cursor: pointer;" onclick="changeAvatar()">
+                    👤
+                </div>
+                <h2 id="profileName">Usuário</h2>
+                <p id="profileEmail" style="color: var(--text-muted);">email@exemplo.com</p>
+            </div>
+            
+            <div class="form-group">
+                <label>Bio/Descrição:</label>
+                <textarea class="form-control" id="userBio" rows="3" placeholder="Conte um pouco sobre você..." onblur="saveBio()"></textarea>
+                <small style="color: var(--text-muted); display: block; margin-top: 8px;">Máximo 200 caracteres</small>
+            </div>
+
+            <div class="form-group">
+                <label>Título Exibido:</label>
+                <select class="form-control" id="userTitle" onchange="updateTitle()">
+                    <option value="">Nenhum título</option>
+                    <option value="aprendiz">🌱 Aprendiz</option>
+                    <option value="estudante">📚 Estudante Dedicado</option>
+                    <option value="guerreiro">⚔️ Guerreiro do Conhecimento</option>
+                    <option value="mestre">🎓 Mestre</option>
+                    <option value="lenda">👑 Lenda Viva</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Resgate de Códigos -->
+        <div class="card">
+            <h3>🎁 Resgatar Código</h3>
+            <p style="color: var(--text-muted); margin: 15px 0;">
+                Tem um código de presente, VIP ou recompensa? Resgate aqui!
+            </p>
+            
+            <div class="form-group">
+                <label>Digite o código:</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" class="form-control" id="redeemCode" placeholder="XXXX-XXXX-XXXX" style="text-transform: uppercase; font-family: monospace;">
+                    <button class="btn btn-primary" onclick="redeemCode()">Resgatar</button>
+                </div>
+            </div>
+
+            <div id="redeemHistory" style="margin-top: 25px;">
+                <h4 style="margin-bottom: 15px; font-size: 1rem;">Histórico de Resgates</h4>
+                <div id="redeemList" style="max-height: 200px; overflow-y: auto;">
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Nenhum código resgatado ainda.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estatísticas Detalhadas -->
+    <div class="card mt-20">
+        <h3>📊 Estatísticas Detalhadas</h3>
+        <div class="grid-4 mt-20" style="text-align: center;">
+            <div class="stat-box">
+                <div class="stat-value" id="profileLessons">0</div>
+                <div class="stat-label">Aulas Completadas</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="profileBattles">0</div>
+                <div class="stat-label">Batalhas Vencidas</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="profileAccuracy">0%</div>
+                <div class="stat-label">Precisão Quiz</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="profileStudyTime">0h</div>
+                <div class="stat-label">Tempo de Estudo</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventário -->
+    <div class="card mt-20">
+        <h3>🎒 Meu Inventário</h3>
+        <div class="shop-grid mt-20" id="profileInventory">
+            <p style="color: var(--text-muted); grid-column: 1/-1; text-align: center;">Seu inventário está vazio. Visite a loja!</p>
+        </div>
+    </div>
+</div>
+
+<!-- NOVO: Sistema de Amizades -->
+<div id="page-friends" class="page">
+    <div class="page-header">
+        <h1>👥 Amigos</h1>
+        <p>Conecte-se com outros estudantes e aprendam juntos</p>
+    </div>
+
+    <div class="grid-2">
+        <!-- Buscar Amigos -->
+        <div class="card">
+            <h3>🔍 Encontrar Amigos</h3>
+            <div class="form-group">
+                <label>Buscar por nome ou email:</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" class="form-control" id="friendSearch" placeholder="Digite o nome..." oninput="searchUsersRealtime()">
+                    <button class="btn btn-primary" onclick="searchUsers()">Buscar</button>
+                </div>
+            </div>
+
+            <div id="searchResults" style="margin-top: 20px; max-height: 400px; overflow-y: auto;">
+                <!-- Resultados em tempo real -->
+            </div>
+        </div>
+
+        <!-- Sugestões de Amizade -->
+        <div class="card">
+            <h3>💡 Sugestões para Você</h3>
+            <p style="color: var(--text-muted); margin: 10px 0; font-size: 0.9rem;">
+                Estudantes com interesses similares aos seus
+            </p>
+            <div id="friendSuggestions" style="margin-top: 15px;">
+                <!-- Sugestões geradas dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Amigos -->
+    <div class="card mt-20">
+        <h3>✅ Meus Amigos (<span id="friendsCount">0</span>)</h3>
+        <div id="friendsList" style="margin-top: 20px;">
+            <div class="member-list" id="friendsContainer">
+                <p style="color: var(--text-muted);">Você ainda não tem amigos adicionados.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pedidos Pendentes -->
+    <div class="card mt-20" id="pendingRequests" style="display: none;">
+        <h3>⏳ Pedidos Pendentes</h3>
+        <div id="pendingList" style="margin-top: 15px;"></div>
+    </div>
+</div>
+
+<!-- MODAL: Perfil de Outro Usuário -->
+<div id="userProfileModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>👤 Perfil</h2>
+            <button class="close-btn" onclick="closeModal('userProfileModal')">&times;</button>
+        </div>
+        <div id="userProfileContent"></div>
+    </div>
+</div>
+
+<style>
+/* ==================== ESTILOS ADICIONAIS ==================== */
+
+/* Perfil */
+.profile-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.profile-stat-card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 16px;
+    padding: 25px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.profile-stat-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255,255,255,0.08);
+}
+
+/* Amizades */
+.friend-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.friend-card:hover {
+    background: rgba(255,255,255,0.1);
+    transform: translateX(5px);
+}
+
+.friend-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--gradient-1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.friend-info {
+    flex: 1;
+}
+
+.friend-name {
+    font-weight: 600;
+    margin-bottom: 3px;
+}
+
+.friend-status {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.friend-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.status-online {
+    color: var(--success);
+}
+
+.status-offline {
+    color: var(--text-muted);
+}
+
+.status-studying {
+    color: var(--warning);
+}
+
+/* Sugestões */
+.suggestion-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    transition: all 0.3s;
+}
+
+.suggestion-card:hover {
+    border-color: var(--primary);
+    transform: translateX(5px);
+}
+
+.suggestion-reason {
+    font-size: 0.8rem;
+    color: var(--primary);
+    margin-top: 5px;
+}
+
+/* Chat persistente */
+.chat-message.system {
+    opacity: 0.7;
+    font-style: italic;
+}
+
+.chat-message.system .chat-text {
+    background: rgba(255,255,255,0.03);
+    border: 1px dashed rgba(255,255,255,0.1);
+}
+
+/* Emblemas de conquista no perfil */
+.profile-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: center;
+}
+
+.profile-badge {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: help;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.profile-badge:hover {
+    transform: scale(1.2);
+    background: var(--gradient-1);
+}
+
+.profile-badge.locked {
+    opacity: 0.3;
+    filter: grayscale(1);
+}
+
+/* Feed de atividades */
+.activity-feed {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    animation: fadeIn 0.5s;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-text {
+    margin-bottom: 5px;
+    line-height: 1.5;
+}
+
+.activity-time {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Desafios diários */
+.daily-challenge {
+    background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(234, 179, 8, 0.05));
+    border: 2px solid rgba(234, 179, 8, 0.3);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.daily-challenge::before {
+    content: '⭐';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 4rem;
+    opacity: 0.1;
+}
+
+.daily-challenge.completed {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
+    border-color: var(--success);
+}
+
+.challenge-progress {
+    margin-top: 15px;
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.challenge-progress-fill {
+    height: 100%;
+    background: var(--warning);
+    border-radius: 10px;
+    transition: width 0.5s;
+}
+
+.challenge-progress-fill.completed {
+    background: var(--success);
+}
+
+/* Sistema de mentoria */
+.mentorship-card {
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.15), rgba(5, 150, 105, 0.05));
+    border: 2px solid rgba(5, 150, 105, 0.3);
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.mentor-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #059669, #047857);
+    display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .mentor-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 14px;
+            background: rgba(5, 150, 105, 0.2);
+            color: #6ee7b7;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+</style>
+
+<script>
+// ==================== AULAS COM CONTEÚDO REAL ====================
+
+const LESSON_CONTENT = {
+    // MATEMÁTICA
+    math_basico: {
+        title: "Fundamentos da Aritmética",
+        subject: "Matemática",
+        level: "Iniciante",
+        duration: "25 min",
+        content: `
+            <h2>🎯 O que é Aritmética?</h2>
+            <p>A aritmética é o ramo da matemática que estuda as operações básicas com números: <strong>adição, subtração, multiplicação e divisão</strong>. É a base de toda a matemática mais avançada!</p>
+            
+            <div class="highlight-box">
+                <strong>Importância:</strong> Sem aritmética, não conseguiríamos calcular trocos, medir ingredientes de uma receita, ou entender estatísticas do dia a dia.
+            </div>
+
+            <h2>➕ Adição (Somar)</h2>
+            <p>A adição é a operação de <strong>juntar</strong> ou <strong>acrescentar</strong> quantidades.</p>
+            
+            <h3>Exemplo prático:</h3>
+            <p>Você tem <strong>15 reais</strong> e ganha mais <strong>8 reais</strong> de mesada. Quanto tem agora?</p>
+            <div class="highlight-box">
+                15 + 8 = <strong>23 reais</strong>
+            </div>
+            
+            <h3>Propriedades importantes:</h3>
+            <ul>
+                <li><strong>Comutativa:</strong> 5 + 3 = 3 + 5 = 8 (a ordem não importa)</li>
+                <li><strong>Elemento neutro:</strong> Qualquer número + 0 = ele mesmo (ex: 42 + 0 = 42)</li>
+            </ul>
+
+            <h2>➖ Subtração (Diminuir)</h2>
+            <p>A subtração é a operação de <strong>tirar</strong>, <strong>comparar diferenças</strong> ou <strong>completar</strong> quantidades.</p>
+            
+            <h3>Exemplo prático:</h3>
+            <p>Você tinha <strong>50 reais</strong> e gastou <strong>17 reais</strong> em um livro. Quanto sobrou?</p>
+            <div class="highlight-box">
+                50 - 17 = <strong>33 reais</strong>
+            </div>
+            
+            <p><strong>Dica:</strong> Para subtrair mentalmente, você pode "quebrar" o número: 50 - 17 = 50 - 10 - 7 = 40 - 7 = 33</p>
+
+            <h2>✖️ Multiplicação (Vezes)</h2>
+            <p>A multiplicação é uma <strong>adição repetida</strong>. É juntar grupos iguais várias vezes.</p>
+            
+            <h3>Exemplo prático:</h3>
+            <p>Você compra <strong>4 pacotes</strong> de canetas, cada um com <strong>6 canetas</strong>. Quantas canetas no total?</p>
+            <div class="highlight-box">
+                4 × 6 = <strong>24 canetas</strong> (ou seja: 6 + 6 + 6 + 6 = 24)
+            </div>
+            
+            <h3>Tabela de multiplicar útil:</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <tr style="background: rgba(255,255,255,0.05);">
+                    <td style="padding: 10px; border: 1px solid rgba(255,255,255,0.1);">2×2=4</td>
+                    <td style="padding: 10px; border: 1px solid rgba(255,255,255,0.1);">3×3=9</td>
+                    <td style="padding: 10px; border: 1px solid rgba(255,255,255,0.1);">4×4=16</td>
+                    <td style="padding: 10px; border: 1px solid rgba(255,255,255,0.1);">5×5=25</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid rgba(255,255,255,0.1);">6×6=36</td>
+                    <td style="padding: 10px; border: 1px solid rgba(255,255,255,0.1);">7×7=49</td>
+                    <td style="padding: 10px; border: 1px solid rgba(255,255,255,0.1);">8×8=64</td>
+                    <td style="padding: 10px; border: 1px solid rgba(255,255,255,0.1);">9×9=81</td>
+                </tr>
+            </table>
+
+            <h2>➗ Divisão (Dividir)</h2>
+            <p>A divisão é a operação de <strong>repartir</strong> igualmente ou <strong>descobrir quantas vezes</strong> um número cabe em outro.</p>
+            
+            <h3>Exemplo prático:</h3>
+            <p>Você tem <strong>48 balas</strong> para dividir igualmente entre <strong>6 amigos</strong>. Quantas balas cada um recebe?</p>
+            <div class="highlight-box">
+                48 ÷ 6 = <strong>8 balas</strong> para cada amigo
+            </div>
+            
+            <p><strong>Verificação:</strong> 8 × 6 = 48 ✓ (multiplicação é a operação inversa da divisão)</p>
+
+            <h2>🧠 Técnicas de Cálculo Mental</h2>
+            <ul>
+                <li><strong>Dobro e metade:</strong> Para multiplicar por 4, dobre o dobro. Ex: 15×4 = (15×2)×2 = 30×2 = 60</li>
+                <li><strong>Multiplicar por 9:</strong> Multiplique por 10 e subtraia o número. Ex: 7×9 = 70-7 = 63</li>
+                <li><strong>Multiplicar por 11:</strong> Para números de 1 dígito: 7×11 = 77. Para 2 dígitos: 12×11 = 132 (1... (1+2)... 2)</li>
+            </ul>
+
+            <h2>📝 Resumo Rápido</h2>
+            <div class="highlight-box">
+                <strong>Adição (+):</strong> Juntar | <strong>Subtração (-):</strong> Tirar<br>
+                <strong>Multiplicação (×):</strong> Grupos iguais | <strong>Divisão (÷):</strong> Repartir
+            </div>
+        `,
+        quiz: [
+            {
+                question: "Você tem R$ 45 e ganha R$ 28. Quanto tem agora?",
+                options: ["R$ 63", "R$ 73", "R$ 83", "R$ 93"],
+                correct: 1
+            },
+            {
+                question: "Uma caixa tem 12 bombons. Se você tem 5 caixas, quantos bombons no total?",
+                options: ["17", "50", "60", "25"],
+                correct: 2
+            },
+            {
+                question: "Qual é o resultado de 84 ÷ 7?",
+                options: ["11", "12", "13", "14"],
+                correct: 1
+            },
+            {
+                question: "João tinha 150 figurinhas e deu 67 para o irmão. Quantas sobraram?",
+                options: ["73", "83", "93", "103"],
+                correct: 1
+            },
+            {
+                question: "Usando a técnica do dobro, quanto é 25 × 4?",
+                options: ["50", "75", "100", "125"],
+                correct: 2
+            }
+        ]
+    },
+
+    // INGLÊS
+    english_basico: {
+        title: "Inglês Básico: Apresentações",
+        subject: "Inglês",
+        level: "A1 - Iniciante",
+        duration: "30 min",
+        content: `
+            <h2>🗣️ Por que aprender Inglês?</h2>
+            <p>O inglês é o <strong>idioma universal</strong> dos negócios, ciência, tecnologia e entretenimento. Com ele, você pode:</p>
+            <ul>
+                <li>🎬 Assistir filmes e séries sem legenda</li>
+                <li>💼 Conseguir melhores oportunidades de trabalho</li>
+                <li>🌎 Viajar pelo mundo com mais facilidade</li>
+                <li>📚 Acessar 80% do conteúdo da internet</li>
+            </ul>
+
+            <h2>👋 Cumprimentos Básicos (Greetings)</h2>
+            <p>Essenciais para qualquer conversa:</p>
+            
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <tr style="background: rgba(99,102,241,0.2);">
+                    <th style="padding: 15px; text-align: left; border: 1px solid rgba(255,255,255,0.1);">Inglês</th>
+                    <th style="padding: 15px; text-align: left; border: 1px solid rgba(255,255,255,0.1);">Português</th>
+                    <th style="padding: 15px; text-align: left; border: 1px solid rgba(255,255,255,0.1);">Quando usar</th>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);"><strong>Hello</strong></td>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);">Olá</td>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);">Qualquer momento (formal/informal)</td>
+                </tr>
+                <tr style="background: rgba(255,255,255,0.03);">
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);"><strong>Hi</strong></td>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);">Oi</td>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);">Informal, com amigos</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);"><strong>Good morning</strong></td>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);">Bom dia</td>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);">Até 12h</td>
+                </tr>
+                <tr style="background: rgba(255,255,255,0.03);">
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);"><strong>Good afternoon</strong></td>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);">Boa tarde</td>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);">12h às 18h</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);"><strong>Good evening</strong></td>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);">Boa noite (chegada)</td>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);">Após 18h</td>
+                </tr>
+                <tr style="background: rgba(255,255,255,0.03);">
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);"><strong>Good night</strong></td>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);">Boa noite (despedida)</td>
+                    <td style="padding: 12px; border: 1px solid rgba(255,255,255,0.1);">Ao dormir/ir embora à noite</td>
+                </tr>
+            </table>
+
+            <h2>🙋‍♂️ Apresentando-se (Introducing Yourself)</h2>
+            <p>Estrutura básica para se apresentar:</p>
+            
+            <div class="highlight-box">
+                <p><strong>My name is [nome]</strong> = Meu nome é [nome]</p>
+                <p><strong>I am from [país/cidade]</strong> = Eu sou de [país/cidade]</p>
+                <p><strong>I am [profissão/estudante]</strong> = Eu sou [profissão/estudante]</p>
+                <p><strong>Nice to meet you!</strong> = Prazer em conhecê-lo!</p>
+            </div>
+
+            <h3>Exemplo completo:</h3>
+            <div style="background: rgba(34,197,94,0.1); border-left: 4px solid var(--success); padding: 20px; border-radius: 0 12px 12px 0; margin: 20px 0;">
+                <p>"<strong>Hello! My name is Carlos. I am from Brazil. I am a student. Nice to meet you!</strong>"</p>
+                <p style="margin-top: 10px; color: var(--text-muted);">"Olá! Meu nome é Carlos. Eu sou do Brasil. Eu sou estudante. Prazer em conhecê-lo!"</p>
+            </div>
+
+            <h2>🔢 Números de 1 a 20</h2>
+            <p>Essenciais para preços, idades, datas:</p>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0;">
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">1 - One</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">2 - Two</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">3 - Three</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">4 - Four</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">5 - Five</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">6 - Six</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">7 - Seven</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">8 - Eight</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">9 - Nine</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">10 - Ten</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">11 - Eleven</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">12 - Twelve</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">13 - Thirteen</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">14 - Fourteen</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">15 - Fifteen</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">16 - Sixteen</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">17 - Seventeen</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">18 - Eighteen</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">19 - Nineteen</div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center;">20 - Twenty</div>
+            </div>
+
+            <h2>💡 Dicas de Pronúncia</h2>
+            <ul>
+                <li><strong>TH</strong> (em "three", "thirteen"): Coloque a língua entre os dentes e sopre suavemente</li>
+                <li><strong>R</strong> (em "Brazil"): Mais suave que o português, quase um "R" de carro</li>
+                <li><strong>V</strong> (em "evening"): Dente inferior no lábio superior, diferente de "B"</li>
+            </ul>
+
+            <h2>🎯 Prática Rápida</h2>
+            <p>Complete as frases:</p>
+            <ol>
+                <li>______ name is Ana. (My/Your)</li>
+                <li>I ______ from Portugal. (is/am/are)</li>
+                <li>______ to meet you! (Nice/Good/Hello)</li>
+            </ol>
+        `,
+        quiz: [
+            {
+                question: "Como se diz 'Bom dia' em inglês?",
+                options: ["Good night", "Good morning", "Good afternoon", "Hello"],
+                correct: 1
+            },
+            {
+                question: "Qual a tradução de 'My name is John'?",
+                options: ["Meu nome é João", "Eu sou João", "O nome dele é João", "Olá, João"],
+                correct: 0
+            },
+            {
+                question: "Complete: 'I _____ from Brazil.'",
+                options: ["is", "are", "am", "be"],
+                correct: 2
+            },
+            {
+                question: "Qual número é 'fifteen'?",
+                options: ["5", "15", "50", "13"],
+                correct: 1
+            },
+            {
+                question: "Quando usamos 'Good evening'?",
+                options: ["De manhã", "À tarde", "Ao chegar à noite", "Ao dormir"],
+                correct: 2
+            }
+        ]
+    },
+
+    // PROGRAMAÇÃO
+    programming_basico: {
+        title: "Introdução à Programação com Python",
+        subject: "Programação",
+        level: "Iniciante",
+        duration: "35 min",
+        content: `
+            <h2>🐍 O que é Programação?</h2>
+            <p>Programação é o ato de <strong>escrever instruções</strong> que um computador pode entender e executar. É como ensinar uma receita para alguém que segue passo a passo sem questionar!</p>
+            
+            <div class="highlight-box">
+                <strong>Por que Python?</strong> É a linguagem mais amigável para iniciantes, usada por empresas como Google, Netflix e Instagram. Sintaxe limpa e poderosa!
+            </div>
+
+            <h2>💻 Seu Primeiro Código: "Hello, World!"</h2>
+            <p>Tradição em programação: o primeiro programa sempre exibe uma mensagem na tela.</p>
+            
+            <div style="background: #1e1e1e; border-radius: 12px; padding: 20px; margin: 20px 0; font-family: 'Courier New', monospace; border: 1px solid #333;">
+                <div style="color: #6a9955;"># Isso é um comentário (o computador ignora)</div>
+                <div style="color: #dcdcaa;">print</div>
+                <div style="color: #ce9178;">("Hello, World!")</div>
+            </div>
+            
+            <p><strong>Resultado:</strong> Hello, World!</p>
+
+            <h2>📦 Variáveis: Caixas para Guardar Dados</h2>
+            <p>Variáveis são como <strong>etiquetas</strong> em caixas onde guardamos informações.</p>
+            
+            <div style="background: #1e1e1e; border-radius: 12px; padding: 20px; margin: 20px 0; font-family: 'Courier New', monospace;">
+                <div style="color: #9cdcfe;">nome</div> = <div style="color: #ce9178;">"Maria"</div>  <div style="color: #6a9955;"># texto (string)</div><br>
+                <div style="color: #9cdcfe;">idade</div> = <div style="color: #b5cea8;">25</div>         <div style="color: #6a9955;"># número inteiro (int)</div><br>
+                <div style="color: #9cdcfe;">altura</div> = <div style="color: #b5cea8;">1.65</div>      <div style="color: #6a9955;"># número decimal (float)</div><br><br>
+                
+                <div style="color: #dcdcaa;">print</div>(<div style="color: #9cdcfe;">nome</div>)        <div style="color: #6a9955;"># Mostra: Maria</div><br>
+                <div style="color: #dcdcaa;">print</div>(<div style="color: #9cdcfe;">idade</div> + <div style="color: #b5cea8;">5</div>)  <div style="color: #6a9955;"># Mostra: 30</div>
+            </div>
+
+            <h2>🔀 Condicionais: Tomando Decisões (if/else)</h2>
+            <p>Seu programa pode tomar decisões baseadas em condições!</p>
+            
+            <div style="background: #1e1e1e; border-radius: 12px; padding: 20px; margin: 20px 0; font-family: 'Courier New', monospace;">
+                <div style="color: #9cdcfe;">idade</div> = <div style="color: #b5cea8;">18</div><br><br>
+                
+                <div style="color: #c586c0;">if</div> <div style="color: #9cdcfe;">idade</div> >= <div style="color: #b5cea8;">18</div>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<div style="color: #dcdcaa;">print</div>(<div style="color: #ce9178;">"Você é maior de idade!"</div>)<br>
+                <div style="color: #c586c0;">else</div>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<div style="color: #dcdcaa;">print</div>(<div style="color: #ce9178;">"Você é menor de idade!"</div>)
+            </div>
+            
+            <p><strong>Operadores de comparação:</strong></p>
+            <ul>
+                <li><code>==</code> igual a</li>
+                <li><code>!=</code> diferente de</li>
+                <li><code>></code> maior que</li>
+                <li><code><</code> menor que</li>
+                <li><code>>=</code> maior ou igual</li>
+                <li><code><=</code> menor ou igual</li>
+            </ul>
+
+            <h2>🔄 Loops: Repetindo Ações (for)</h2>
+            <p>Automatize tarefas repetitivas!</p>
+            
+            <div style="background: #1e1e1e; border-radius: 12px; padding: 20px; margin: 20px 0; font-family: 'Courier New', monospace;">
+                <div style="color: #6a9955;"># Contar de 1 a 5</div><br>
+                <div style="color: #c586c0;">for</div> <div style="color: #9cdcfe;">i</div> <div style="color: #c586c0;">in</div> <div style="color: #dcdcaa;">range</div>(<div style="color: #b5cea8;">1</div>, <div style="color: #b5cea8;">6</div>):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<div style="color: #dcdcaa;">print</div>(<div style="color: #9cdcfe;">i</div>)<br><br>
+                
+                <div style="color: #6a9955;"># Resultado:</div><br>
+                <div style="color: #6a9955;"># 1</div><br>
+                <div style="color: #6a9955;"># 2</div><br>
+                <div style="color: #6a9955;"># 3</div><br>
+                <div style="color: #6a9955;"># 4</div><br>
+                <div style="color: #6a9955;"># 5</div>
+            </div>
+
+            <h2>📋 Listas: Guardando Múltiplos Itens</h2>
+            <p>Uma variável pode guardar uma coleção de valores!</p>
+            
+            <div style="background: #1e1e1e; border-radius: 12px; padding: 20px; margin: 20px 0; font-family: 'Courier New', monospace;">
+                <div style="color: #9cdcfe;">frutas</div> = [<div style="color: #ce9178;">"maçã"</div>, <div style="color: #ce9178;">"banana"</div>, <div style="color: #ce9178;">"laranja"</div>]<br><br>
+                
+                <div style="color: #dcdcaa;">print</div>(<div style="color: #9cdcfe;">frutas</div>[<div style="color: #b5cea8;">0</div>])   <div style="color: #6a9955;"># maçã (primeiro item)</div><br>
+                <div style="color: #dcdcaa;">print</div>(<div style="color: #dcdcaa;">len</div>(<div style="color: #9cdcfe;">frutas</div>))  <div style="color: #6a9955;"># 3 (quantidade de itens)</div><br><br>
+                
+                <div style="color: #9cdcfe;">frutas</div>.<div style="color: #dcdcaa;">append</div>(<div style="color: #ce9178;">"uva"</div>)  <div style="color: #6a9955;"># Adiciona item</div>
+            </div>
+
+            <h2>🎯 Projeto Prático: Calculadora de IMC</h2>
+            <p>Vamos criar algo útil! Índice de Massa Corporal:</p>
+            
+            <div style="background: #1e1e1e; border-radius: 12px; padding: 20px; margin: 20px 0; font-family: 'Courier New', monospace;">
+                <div style="color: #6a9955;"># Entrada de dados</div><br>
+                <div style="color: #9cdcfe;">peso</div> = <div style="color: #b5cea8;">70</div>   <div style="color: #6a9955;"># kg</div><br>
+                <div style="color: #9cdcfe;">altura</div> = <div style="color: #b5cea8;">1.75</div> <div style="color: #6a9955;"># metros</div><br><br>
+                
+                <div style="color: #6a9955;"># Cálculo</div><br>
+                <div style="color: #9cdcfe;">imc</div> = <div style="color: #9cdcfe;">peso</div> / (<div style="color: #9cdcfe;">altura</div> ** <div style="color: #b5cea8;">2</div>)<br><br>
+                
+                <div style="color: #dcdcaa;">print</div>(<div style="color: #ce9178;">f"Seu IMC é: {imc:.2f}"</div>)<br><br>
+                
+                <div style="color: #c586c0;">if</div> <div style="color: #9cdcfe;">imc</div> < <div style="color: #b5cea8;">18.5</div>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<div style="color: #dcdcaa;">print</div>(<div style="color: #ce9178;">"Abaixo do peso"</div>)<br>
+                <div style="color: #c586c0;">elif</div> <div style="color: #9cdcfe;">imc</div> < <div style="color: #b5cea8;">25</div>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<div style="color: #dcdcaa;">print</div>(<div style="color: #ce9178;">"Peso normal"</div>)<br>
+                <div style="color: #c586c0;">else</div>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<div style="color: #dcdcaa;">print</div>(<div style="color: #ce9178;">"Acima do peso"</div>)
+            </div>
+
+            <h2>🚀 Próximos Passos</h2>
+            <ul>
+                <li>Pratique no <strong>Google Colab</strong> (gratuito, roda no navegador)</li>
+                <li>Instale o <strong>VS Code</strong> para programar no computador</li>
+                <li>Explore bibliotecas como <strong>matplotlib</strong> (gráficos) e <strong>pandas</strong> (dados)</li>
+                <li>Participe de comunidades como o <strong>Reddit r/learnpython</strong></li>
+            </ul>
+
+            <div class="highlight-box">
+                <strong>Lembre-se:</strong> Programação é como aprender um instrumento musical. Pratique 30 minutos todos os dias e você verá progresso incrível em poucas semanas!
+            </div>
+        `,
+        quiz: [
+            {
+                question: "O que faz o comando print() em Python?",
+                options: ["Ler dados do usuário", "Mostrar mensagem na tela", "Calcular valores", "Criar variáveis"],
+                correct: 1
+            },
+            {
+                question: "Qual o resultado de: idade = 20",
+                options: ["Cria uma variável chamada idade com valor 20", "Mostra 20 na tela", "Soma 20", "Nada"],
+                correct: 0
+            },
+            {
+                question: "O que significa o operador '=='?",
+                options: ["Atribuição", "Comparação de igualdade", "Maior que", "Diferente"],
+                correct: 1
+            },
+            {
+                question: "Qual estrutura repete ações múltiplas vezes?",
+                options: ["if", "else", "for", "print"],
+                correct: 2
+            },
+            {
+                question: "O que acontece com: frutas = ['maçã', 'banana']; frutas.append('uva')?",
+                options: ["Remove 'uva'", "Adiciona 'uva' à lista", "Mostra 'uva'", "Cria nova lista"],
+                correct: 1
+            }
+        ]
+    }
+};
+
+// ==================== SISTEMA DE GUILDA EM TEMPO REAL ====================
+
+class GuildSystem {
+    constructor() {
+        this.unsubscribe = null;
+        this.chatUnsubscribe = null;
+    }
+
+    async createGuild(name, description) {
+        if (!currentUser) return;
+        
+        const guildData = {
+            name: name,
+            description: description,
+            leader: currentUser.uid,
+            leaderName: currentUser.username,
+            members: [{
+                uid: currentUser.uid,
+                username: currentUser.username,
+                role: 'leader',
+                joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }],
+            level: 1,
+            xp: 0,
+            points: 0,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            lastActivity: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        try {
+            const docRef = await db.collection('guilds').add(guildData);
+            
+            // Atualizar usuário
+            await db.collection('users').doc(currentUser.uid).update({
+                guild: docRef.id,
+                guildName: name
+            });
+
+            currentUser.guild = docRef.id;
+            currentUser.guildName = name;
+            
+            AudioManager.playSuccess();
+            showNotification('Guilda criada com sucesso!', 'success');
+            renderGuilds();
+            
+            // Iniciar listeners em tempo real
+            this.listenToGuild(docRef.id);
+            
+        } catch (error) {
+            console.error('Erro ao criar guilda:', error);
+            showNotification('Erro ao criar guilda. Tente novamente.', 'error');
+        }
+    }
+
+    async searchGuilds(searchTerm = '') {
+        try {
+            let query = db.collection('guilds').orderBy('name');
+            
+            if (searchTerm) {
+                query = query.where('name', '>=', searchTerm)
+                            .where('name', '<=', searchTerm + '\uf8ff');
+            }
+
+            const snapshot = await query.limit(20).get();
+            const guilds = [];
+            
+            snapshot.forEach(doc => {
+                guilds.push({ id: doc.id, ...doc.data() });
+            });
+
+            return guilds;
+        } catch (error) {
+            console.error('Erro ao buscar guildas:', error);
+            return [];
+        }
+    }
+
+    async joinGuild(guildId) {
+        if (!currentUser || currentUser.guild) {
+            showNotification('Você já está em uma guilda!', 'error');
+            return;
+        }
+
+        try {
+            const guildRef = db.collection('guilds').doc(guildId);
+            
+            await db.runTransaction(async (transaction) => {
+                const guildDoc = await transaction.get(guildRef);
+                if (!guildDoc.exists) throw new Error('Guilda não encontrada');
+                
+                const guildData = guildDoc.data();
+                
+                // Verificar se não está cheia (máximo 50 membros)
+                if (guildData.members.length >= 50) {
+                    throw new Error('Guilda está cheia');
+                }
+
+                // Adicionar membro
+                const newMember = {
+                    uid: currentUser.uid,
+                    username: currentUser.username,
+                    role: 'member',
+                    joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                transaction.update(guildRef, {
+                    members: firebase.firestore.FieldValue.arrayUnion(newMember),
+                    lastActivity: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Atualizar usuário
+                transaction.update(db.collection('users').doc(currentUser.uid), {
+                    guild: guildId,
+                    guildName: guildData.name
+                });
+            });
+
+            currentUser.guild = guildId;
+            AudioManager.playSuccess();
+            showNotification('Você entrou na guilda!', 'success');
+            renderGuilds();
+            this.listenToGuild(guildId);
+
+        } catch (error) {
+            showNotification(error.message, 'error');
+        }
+    }
+
+    listenToGuild(guildId) {
+        // Parar listeners anteriores
+        if (this.unsubscribe) this.unsubscribe();
+        if (this.chatUnsubscribe) this.chatUnsubscribe();
+
+        // Listener da guilda (dados gerais)
+        this.unsubscribe = db.collection('guilds').doc(guildId)
+            .onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    updateGuildUI(data);
+                }
+            });
+
+        // Listener do chat (últimas 2 horas)
+        const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+        
+        this.chatUnsubscribe = db.collection('guilds').doc(guildId)
+            .collection('chat')
+            .where('timestamp', '>', twoHoursAgo)
+            .orderBy('timestamp', 'asc')
+            .onSnapshot((snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added') {
+                        const msg = change.doc.data();
+                        addChatMessage(msg, false); // false = não é mensagem local
+                    }
+                });
+            });
+    }
+
+    async sendMessage(guildId, message) {
+        if (!message.trim()) return;
+
+        const msgData = {
+            userId: currentUser.uid,
+            username: currentUser.username,
+            text: message,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            type: 'user'
+        };
+
+        try {
+            await db.collection('guilds').doc(guildId)
+                .collection('chat').add(msgData);
+        } catch (error) {
+            console.error('Erro ao enviar mensagem:', error);
+            // Fallback: adicionar localmente
+            addChatMessage({ ...msgData, timestamp: new Date() }, true);
+        }
+    }
+
+    async addGuildXP(guildId, amount) {
+        try {
+            const guildRef = db.collection('guilds').doc(guildId);
+            
+            await db.runTransaction(async (transaction) => {
+                const guildDoc = await transaction.get(guildRef);
+                const data = guildDoc.data();
+                
+                const newXP = (data.xp || 0) + amount;
+                let newLevel = data.level || 1;
+                
+                // Verificar level up da guilda
+                while (newLevel < 7 && newXP >= CONFIG.GUILD_LEVELS[newLevel + 1].xpNeeded) {
+                    newLevel++;
+                    // Notificar membros do level up
+                    this.sendSystemMessage(guildId, `🎉 A guilda subiu para o nível ${newLevel}!`);
+                }
+
+                transaction.update(guildRef, {
+                    xp: newXP,
+                    level: newLevel,
+                    lastActivity: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            });
+        } catch (error) {
+            console.error('Erro ao adicionar XP:', error);
+        }
+    }
+
+    async sendSystemMessage(guildId, text) {
+        try {
+            await db.collection('guilds').doc(guildId)
+                .collection('chat').add({
+                    type: 'system',
+                    text: text,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+        } catch (e) {
+            console.log('Erro ao enviar mensagem do sistema:', e);
+        }
+    }
+}
+
+const guildSystem = new GuildSystem();
+
+// ==================== SISTEMA DE AMIZADES EM TEMPO REAL ====================
+
+class FriendsSystem {
+    constructor() {
+        this.unsubscribeFriends = null;
+        this.unsubscribeRequests = null;
+    }
+
+    async searchUsers(searchTerm) {
+        if (!searchTerm || searchTerm.length < 2) return [];
+
+        try {
+            const snapshot = await db.collection('users')
+                .where('username', '>=', searchTerm)
+                .where('username', '<=', searchTerm + '\uf8ff')
+                .limit(10)
+                .get();
+
+            const users = [];
+            snapshot.forEach(doc => {
+                if (doc.id !== currentUser.uid) {
+                    users.push({ id: doc.id, ...doc.data() });
+                }
+            });
+
+            return users;
+        } catch (error) {
+            console.error('Erro na busca:', error);
+            return [];
+        }
+    }
+
+    async getSuggestions() {
+        try {
+            // Buscar usuários com interesses similares (mesma guilda, nível próximo, etc.)
+            const snapshot = await db.collection('users')
+                .where('level', '>=', currentUser.level - 5)
+                .where('level', '<=', currentUser.level + 5)
+                .limit(5)
+                .get();
+
+            const suggestions = [];
+            snapshot.forEach(doc => {
+                if (doc.id !== currentUser.uid && !currentUser.friends.includes(doc.id)) {
+                    const data = doc.data();
+                    suggestions.push({
+                        id: doc.id,
+                        ...data,
+                        reason: this.getSuggestionReason(data)
+                    });
+                }
+            });
+
+            return suggestions;
+        } catch (error) {
+            console.error('Erro ao buscar sugestões:', error);
+            return [];
+        }
+    }
+
+    getSuggestionReason(userData) {
+        if (userData.guild && userData.guild === currentUser.guild) {
+            return 'Mesma guilda';
+        }
+        if (Math.abs(userData.level - currentUser.level) <= 3) {
+            return 'Nível similar';
+        }
+        return 'Recomendado para você';
+    }
+
+    async sendFriendRequest(targetUserId) {
+        try {
+            // Verificar se já são amigos ou já existe pedido
+            const existing = await db.collection('friendRequests')
+                .where('from', '==', currentUser.uid)
+                .where('to', '==', targetUserId)
+                .get();
+
+            if (!existing.empty) {
+                showNotification('Pedido de amizade já enviado!', 'warning');
+                return;
+            }
+
+            await db.collection('friendRequests').add({
+                from: currentUser.uid,
+                fromName: currentUser.username,
+                to: targetUserId,
+                status: 'pending',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            AudioManager.playSuccess();
+            showNotification('Pedido de amizade enviado!', 'success');
+
+        } catch (error) {
+            showNotification('Erro ao enviar pedido.', 'error');
+        }
+    }
+
+    async acceptFriendRequest(requestId, fromUserId) {
+        try {
+            const batch = db.batch();
+
+            // Atualizar pedido
+            batch.update(db.collection('friendRequests').doc(requestId), {
+                status: 'accepted'
+            });
+
+            // Adicionar em ambos os usuários
+            batch.update(db.collection('users').doc(currentUser.uid), {
+                friends: firebase.firestore.FieldValue.arrayUnion(fromUserId)
+            });
+
+            batch.update(db.collection('users').doc(fromUserId), {
+                friends: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+            });
+
+            await batch.commit();
+
+            currentUser.friends.push(fromUserId);
+            AudioManager.playSuccess();
+            showNotification('Amizade aceita!', 'success');
+            renderFriends();
+
+        } catch (error) {
+            showNotification('Erro ao aceitar pedido.', 'error');
+        }
+    }
+
+    listenToFriends() {
+        if (this.unsubscribeFriends) this.unsubscribeFriends();
+        if (this.unsubscribeRequests) this.unsubscribeRequests();
+
+        // Listener de amigos
+        this.unsubscribeFriends = db.collection('users').doc(currentUser.uid)
+            .onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    currentUser.friends = data.friends || [];
+                    renderFriendsList();
+                }
+            });
+
+        // Listener de pedidos pendentes
+        this.unsubscribeRequests = db.collection('friendRequests')
+            .where('to', '==', currentUser.uid)
+            .where('status', '==', 'pending')
+            .onSnapshot((snapshot) => {
+                const requests = [];
+                snapshot.forEach(doc => {
+                    requests.push({ id: doc.id, ...doc.data() });
+                });
+                renderPendingRequests(requests);
+            });
+    }
+}
+
+const friendsSystem = new FriendsSystem();
+
+// ==================== FUNÇÕES DE INTERFACE ATUALIZADAS ====================
+
+function renderGuilds() {
+    const container = document.getElementById('guildsContainer');
+    
+    if (!currentUser.guild) {
+        container.innerHTML = `
+            <div class="grid-2">
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🏰</div>
+                    <h3>Criar Nova Guilda</h3>
+                    <p style="color: var(--text-muted); margin: 15px 0;">
+                        Custo: 1.000 pontos<br>
+                        Seja o líder da sua própria guilda!
+                    </p>
+                    <div class="form-group" style="text-align: left;">
+                        <input type="text" class="form-control" id="newGuildName" placeholder="Nome da guilda" maxlength="30">
+                        <textarea class="form-control mt-10" id="newGuildDesc" placeholder="Descrição (opcional)" rows="2" maxlength="100"></textarea>
+                    </div>
+                    <button class="btn btn-primary btn-large w-full" onclick="createNewGuild()">
+                        Criar Guilda
+                    </button>
+                </div>
+                
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🔍</div>
+                    <h3>Encontrar Guilda</h3>
+                    <p style="color: var(--text-muted); margin: 15px 0;">
+                        Procure guildas existentes para entrar
+                    </p>
+                    <div class="form-group" style="text-align: left;">
+                        <input type="text" class="form-control" id="searchGuildInput" placeholder="Nome da guilda..." oninput="searchGuildsRealtime()">
+                    </div>
+                    <div id="guildSearchResults" style="max-height: 200px; overflow-y: auto; margin-top: 15px; text-align: left;">
+                        <!-- Resultados em tempo real -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-20">
+                <h3>🏆 Guildas em Destaque</h3>
+                <div id="featuredGuilds" style="margin-top: 20px;">
+                    <p style="color: var(--text-muted);">Carregando...</p>
+                </div>
+            </div>
+        `;
+        
+        loadFeaturedGuilds();
+    } else {
+        // Mostrar guilda atual com dados em tempo real
+        container.innerHTML = `
+            <div id="guildDetailContainer">
+                <p style="text-align: center; color: var(--text-muted);">Carregando dados da guilda...</p>
+            </div>
+        `;
+        
+        // Iniciar listener
+        guildSystem.listenToGuild(currentUser.guild);
+    }
+}
+
+async function createNewGuild() {
+    const name = document.getElementById('newGuildName').value.trim();
+    const desc = document.getElementById('newGuildDesc').value.trim();
+    
+    if (!name) {
+        showNotification('Digite um nome para a guilda!', 'error');
+        return;
+    }
+    
+    if (currentUser.points < 1000) {
+        showNotification('Pontos insuficientes! Necessário: 1.000', 'error');
+        return;
+    }
+    
+    await guildSystem.createGuild(name, desc);
+}
+
+async function searchGuildsRealtime() {
+    const searchTerm = document.getElementById('searchGuildInput').value.trim();
+    const resultsContainer = document.getElementById('guildSearchResults');
+    
+    if (searchTerm.length < 2) {
+        resultsContainer.innerHTML = '';
+        return;
+    }
+    
+    const guilds = await guildSystem.searchGuilds(searchTerm);
+    
+    if (guilds.length === 0) {
+        resultsContainer.innerHTML = '<p style="color: var(--text-muted);">Nenhuma guilda encontrada.</p>';
+        return;
+    }
+    
+    resultsContainer.innerHTML = guilds.map(g => `
+        <div class="friend-card" style="cursor: default;">
+            <div class="friend-avatar" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">⚔️</div>
+            <div class="friend-info">
+                <div class="friend-name">${g.name}</div>
+                <div class="friend-status">Nível ${g.level} • ${g.members.length} membros</div>
+            </div>
+            <button class="btn btn-primary" onclick="joinGuild('${g.id}')" style="padding: 8px 16px; font-size: 0.9rem;">
+                Entrar
+            </button>
+        </div>
+    `).join('');
+}
+
+function updateGuildUI(guildData) {
+    const container = document.getElementById('guildDetailContainer');
+    if (!container) return;
+    
+    const isLeader = guildData.leader === currentUser.uid;
+    const memberCount = guildData.members.length;
+    const nextLevelXP = CONFIG.GUILD_LEVELS[guildData.level + 1]?.xpNeeded || 'MAX';
+    const xpProgress = nextLevelXP !== 'MAX' ? (guildData.xp / nextLevelXP * 100) : 100;
+    
+    container.innerHTML = `
+        <div class="guild-header">
+            <div class="guild-info">
+                <div class="guild-badge">
+                    <span>⚔️</span>
+                    <span>Nível ${guildData.level} - ${CONFIG.GUILD_LEVELS[guildData.level].name}</span>
+                </div>
+                <h1 class="guild-name">${guildData.name}</h1>
+                <p style="opacity: 0.9; font-size: 1.1rem;">${guildData.description || 'Sem descrição'}</p>
+                
+                <div class="guild-stats">
+                    <div class="guild-stat">
+                        <div class="guild-stat-value">${guildData.xp.toLocaleString()}</div>
+                        <div class="guild-stat-label">XP Total</div>
+                    </div>
+                    <div class="guild-stat">
+                        <div class="guild-stat-value">${memberCount}</div>
+                        <div class="guild-stat-label">Membros</div>
+                    </div>
+                    <div class="guild-stat">
+                        <div class="guild-stat-value">#${guildData.ranking || '--'}</div>
+                        <div class="guild-stat-label">Ranking</div>
+                    </div>
+                </div>
+                
+                <div class="guild-xp-bar">
+                    <div class="guild-xp-fill" style="width: ${xpProgress}%"></div>
+                </div>
+                <p style="text-align: center; margin-top: 10px; opacity: 0.8;">
+                    ${guildData.xp.toLocaleString()} / ${nextLevelXP.toLocaleString()} XP 
+                    ${nextLevelXP !== 'MAX' ? `para nível ${guildData.level + 1}` : '(Nível Máximo)'}
+                </p>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h3>👥 Membros (${memberCount}/50)</h3>
+                <div class="member-list" style="margin-top: 20px;">
+                    ${guildData.members.map(m => `
+                        <div class="member-avatar ${m.uid === currentUser.uid ? 'online' : ''}" 
+                             data-name="${m.username} ${m.role === 'leader' ? '👑' : ''}"
+                             title="${m.username} ${m.role === 'leader' ? '(Líder)' : ''}">
+                            ${m.username.charAt(0).toUpperCase()}
+                        </div>
+                    `).join('')}
+                </div>
+                ${isLeader ? `
+                    <button class="btn btn-secondary w-full mt-20" onclick="manageGuild()">
+                        ⚙️ Gerenciar Guilda
+                    </button>
+                ` : ''}
+            </div>
+            
+            <div class="card">
+                <h3>💬 Chat da Guilda</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin: 10px 0;">
+                    Histórico de 2 horas • ${new Date().toLocaleDateString()}
+                </p>
+                <div class="chat-container" style="margin-top: 15px; height: 350px;">
+                    <div class="chat-messages" id="guildChatMessages">
+                        <div class="chat-message system">
+                            <div class="chat-text">Bem-vindo ao chat da guilda! Mensagens ficam disponíveis por 2 horas.</div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" class="chat-input" id="guildChatInput" 
+                               placeholder="Digite sua mensagem..." 
+                               onkeypress="if(event.key==='Enter') sendGuildMessage()">
+                        <button class="btn btn-primary" onclick="sendGuildMessage()">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-20">
+            <h3>🎯 Desafios da Guilda</h3>
+            <div style="margin-top: 20px;">
+                <div class="daily-challenge">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 700; margin-bottom: 5px;">Completar 50 aulas em equipe</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Progresso: 32/50</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 1.5rem;">🏆</div>
+                            <div style="font-size: 0.85rem; color: var(--warning);">+500 XP</div>
+                        </div>
+                    </div>
+                    <div class="challenge-progress">
+                        <div class="challenge-progress-fill" style="width: 64%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+async function sendGuildMessage() {
+    const input = document.getElementById('guildChatInput');
+    const message = input.value.trim();
+    if (!message || !currentUser.guild) return;
+
+    // Adicionar localmente imediatamente (feedback instantâneo)
+    addChatMessage({
+        username: currentUser.username,
+        text: message,
+        timestamp: new Date(),
+        type: 'user'
+    }, true);
+
+    input.value = '';
+    
+    // Enviar para o servidor
+    await guildSystem.sendMessage(currentUser.guild, message);
+}
+
+function addChatMessage(msg, isLocal) {
+    const container = document.getElementById('guildChatMessages');
+    if (!container) return;
+
+    const div = document.createElement('div');
+    div.className = `chat-message ${msg.type === 'system' ? 'system' : ''}`;
+    
+    if (msg.type === 'system') {
+        div.innerHTML = `<div class="chat-text">${msg.text}</div>`;
+    } else {
+        const isMe = msg.userId === currentUser?.uid;
+        div.innerHTML = `
+            <div class="chat-message-header">
+                <span class="chat-username" style="${isMe ? 'color: var(--success);' : ''}">
+                    ${msg.username} ${isMe ? '(Você)' : ''}
+                </span>
+                ${msg.userId === currentUser?.guildLeader ? '<span class="chat-badge">Líder</span>' : ''}
+                <span class="chat-time">${formatTime(msg.timestamp)}</span>
+            </div>
+            <div class="chat-text">${escapeHtml(msg.text)}</div>
+        `;
+    }
+    
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+}
+
+// ==================== SISTEMA DE PERFIL E RESGATE ====================
+
+function showProfile() {
+    showPage('profile');
+    loadProfileData();
+}
+
+function loadProfileData() {
+    if (!currentUser) return;
+    
+    document.getElementById('profileName').textContent = currentUser.username;
+    document.getElementById('profileEmail').textContent = currentUser.email;
+    document.getElementById('userBio').value = currentUser.bio || '';
+    
+    // Avatar
+    const avatar = document.getElementById('profileAvatar');
+    avatar.textContent = currentUser.avatar || '👤';
+    if (currentUser.vip2) avatar.classList.add('vip2');
+    else if (currentUser.vip) avatar.classList.add('vip');
+    
+    // Estatísticas
+    document.getElementById('profileLessons').textContent = currentUser.lessonsCompleted || 0;
+    document.getElementById('profileBattles').textContent = currentUser.battlesWon || 0;
+    document.getElementById('profileAccuracy').textContent = (currentUser.quizAccuracy || 0) + '%';
+    document.getElementById('profileStudyTime').textContent = (currentUser.studyTime || 0) + 'h';
+    
+    // Inventário
+    renderProfileInventory();
+    
+    // Histórico de códigos
+    renderRedeemHistory();
+}
+
+async function redeemCode() {
+    const codeInput = document.getElementById('redeemCode');
+    const code = codeInput.value.trim().toUpperCase();
+    
+    if (!code) {
+        showNotification('Digite um código!', 'error');
+        return;
+    }
+    
+    // Verificar código
+    const result = await checkCode(code);
+    
+    if (!result.valid) {
+        AudioManager.playError();
+        showNotification('Código inválido ou já utilizado!', 'error');
+        return;
+    }
+    
+    // Aplicar benefícios
+    await applyCodeBenefits(result);
+    
+    // Salvar no histórico
+    const history = JSON.parse(localStorage.getItem('redeemHistory') || '[]');
+    history.unshift({
+        code: code,
+        type: result.type,
+        date: new Date().toISOString(),
+        amount: result.amount
+    });
+    localStorage.setItem('redeemHistory', JSON.stringify(history.slice(0, 10)));
+    
+    codeInput.value = '';
+    renderRedeemHistory();
+    updateHUD();
+    
+    AudioManager.playSuccess();
+    showNotification('Código resgatado com sucesso!', 'success');
+}
+
+function renderRedeemHistory() {
+    const history = JSON.parse(localStorage.getItem('redeemHistory') || '[]');
+    const container = document.getElementById('redeemList');
+    
+    if (history.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">Nenhum código resgatado ainda.</p>';
+        return;
+    }
+    
+    container.innerHTML = history.map(h => `
+        <div style="padding: 12px; background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 8px; font-size: 0.9rem;">
+            <div style="display: flex; justify-content: space-between;">
+                <span style="font-family: monospace; font-weight: 600;">${h.code}</span>
+                <span style="color: var(--success); text-transform: uppercase; font-size: 0.8rem;">${h.type}</span>
+            </div>
+            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">
+                ${new Date(h.date).toLocaleDateString()} ${h.amount ? `• +${h.amount}` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+
+// ==================== CÓDIGO DE PROFESSOR ====================
+
+const TEACHER_CODE = 'PROF-NEURO-2024';
+
+async function verifyTeacher() {
+    const code = prompt('Digite o código de verificação de professor:');
+    
+    if (code === TEACHER_CODE) {
+        currentUser.isTeacher = true;
+        
+        if (db) {
+            await db.collection('users').doc(currentUser.uid).update({
+                isTeacher: true,
+                teacherVerifiedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+        
+        AudioManager.playSuccess();
+        showNotification('👨‍🏫 Parabéns! Você agora é um professor verificado!', 'success');
+        updateHUD();
+        
+        // Adicionar conquista
+        unlockAchievement('teacher_verified');
+    } else {
+        AudioManager.playError();
+        showNotification('Código inválido. Entre em contato com a administração.', 'error');
+    }
+}
+
+// Adicionar conquista de professor
+ACHIEVEMENTS.teacher_verified = {
+    id: 'teacher_verified',
+    name: 'Educador Verificado',
+    desc: 'Obtenha a verificação de professor',
+    icon: '👨‍🏫',
+    points: 500
+};
+
+// ==================== UTILITÁRIOS ====================
+
+function formatTime(timestamp) {
+    if (!timestamp) return '--:--';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Inicializar listeners quando logar
+function initRealtimeListeners() {
+    if (currentUser) {
+        friendsSystem.listenToFriends();
+        if (currentUser.guild) {
+            guildSystem.listenToGuild(currentUser.guild);
+        }
+    }
+}
+
+// Adicionar à função showMainApp
+const originalShowMainApp = showMainApp;
+showMainApp = function() {
+    originalShowMainApp();
+    initRealtimeListeners();
+};
     </script>
 </body>
 </html>

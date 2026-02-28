@@ -1,457 +1,115 @@
-    <!-- Loading Screen -->
-    <div id="loading-screen">
-        <div class="loader"></div>
-        <h2 style="color: white; margin-top: 20px; font-weight: 600;">Carregando NEURO 3.0...</h2>
-        <p style="color: rgba(255,255,255,0.8); margin-top: 10px;">Preparando sua experiência educacional</p>
-    </div>
+    <script>
+        // ==================== PARTE 3: SISTEMA AVANÇADO DE CÓDIGOS ====================
 
-    <!-- Auth Modal -->
-    <div id="auth-modal" class="auth-modal" style="display: none;">
-        <div class="auth-container">
-            <div class="auth-tabs">
-                <div class="auth-tab active" onclick="switchAuthTab('login')">Login</div>
-                <div class="auth-tab" onclick="switchAuthTab('register')">Criar Conta</div>
-            </div>
-            
-            <div id="login-form">
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="login-email" placeholder="seu@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Senha</label>
-                    <input type="password" id="login-password" placeholder="••••••••">
-                </div>
-                <button class="btn btn-primary" onclick="login()">
-                    <i class="ph ph-sign-in"></i> Entrar
-                </button>
-                <p style="text-align: center; margin-top: 20px; color: var(--gray);">
-                    <a href="#" onclick="resetPassword()" style="color: var(--primary);">Esqueceu a senha?</a>
-                </p>
-            </div>
-            
-            <div id="register-form" style="display: none;">
-                <div class="form-group">
-                    <label>Nome Completo</label>
-                    <input type="text" id="register-name" placeholder="Seu Nome">
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="register-email" placeholder="seu@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Senha</label>
-                    <input type="password" id="register-password" placeholder="Mínimo 6 caracteres">
-                </div>
-                <div class="form-group">
-                    <label>Confirmar Senha</label>
-                    <input type="password" id="register-confirm" placeholder="••••••••">
-                </div>
-                <div class="form-group">
-                    <label>Código de Convite (opcional)</label>
-                    <input type="text" id="register-code" placeholder="XXXX-XXXX-XXXX">
-                </div>
-                <button class="btn btn-primary" onclick="register()">
-                    <i class="ph ph-user-plus"></i> Criar Conta
-                </button>
-            </div>
-        </div>
-    </div>
+        const generatedCodes = [];
+        let currentCodeType = 'item';
 
-    <!-- Navigation -->
-    <nav id="main-nav" style="display: none;">
-        <div class="logo">
-            <i class="ph ph-brain"></i>
-            NEURO 3.0
-        </div>
-        
-        <ul class="nav-links">
-            <li><a href="#" onclick="showSection('home')" class="active"><i class="ph ph-house"></i> Início</a></li>
-            <li><a href="#" onclick="showSection('cursos')"><i class="ph ph-books"></i> Cursos</a></li>
-            <li><a href="#" onclick="showSection('guildas')"><i class="ph ph-users-three"></i> Guildas</a></li>
-            <li><a href="#" onclick="showSection('ranking')"><i class="ph ph-trophy"></i> Ranking</a></li>
-            <li><a href="#" onclick="showSection('loja')"><i class="ph ph-storefront"></i> Loja</a></li>
-            <li><a href="#" onclick="showSection('conquistas')"><i class="ph ph-medal"></i> Conquistas</a></li>
-        </ul>
-        
-        <div class="user-menu">
-            <div class="hud-item" onclick="showSection('perfil')" style="cursor: pointer;">
-                <div class="user-avatar" id="nav-avatar">
-                    <span id="nav-avatar-text">U</span>
-                    <span class="vip-crown" id="nav-vip" style="display: none;">👑</span>
-                </div>
-            </div>
-            <button onclick="logout()" style="background: none; border: none; cursor: pointer; color: var(--gray);">
-                <i class="ph ph-sign-out" style="font-size: 24px;"></i>
-            </button>
-        </div>
-    </nav>
-
-    <!-- HUD Gamificação -->
-    <div class="hud" id="game-hud" style="display: none;">
-        <div class="hud-item hud-level">
-            <i class="ph ph-crown"></i>
-            <span>Nível <span id="hud-level">1</span></span>
-        </div>
-        <div class="hud-item hud-xp">
-            <i class="ph ph-lightning"></i>
-            <span id="hud-xp">0 XP</span>
-        </div>
-        <div class="hud-item hud-points">
-            <i class="ph ph-coins"></i>
-            <span id="hud-points">0</span>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <main id="main-content" style="display: none;">
-        
-        <!-- HOME -->
-        <section id="section-home" class="section active">
-            <div style="text-align: center; padding: 40px 0;">
-                <h1 style="font-size: 48px; margin-bottom: 20px; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                    Bem-vindo ao NEURO 3.0
-                </h1>
-                <p style="font-size: 20px; color: var(--gray); max-width: 600px; margin: 0 auto;">
-                    Sua plataforma educacional gamificada com Inteligência Artificial integrada
-                </p>
-            </div>
+        function updateCodeForm() {
+            const type = document.getElementById('codeType').value;
+            currentCodeType = type;
+            const label = document.getElementById('codeValueLabel');
+            const input = document.getElementById('codeValue');
             
-            <div class="card-grid" id="home-stats">
-                <!-- Preenchido via JS -->
-            </div>
+            const labels = {
+                'item': 'ID do Item',
+                'vip': 'Dias de VIP',
+                'points': 'Quantidade de Pontos',
+                'xp': 'Quantidade de XP',
+                'teacher': 'Código Único (automático)',
+                'admin': 'Código Único (automático)'
+            };
             
-            <h2 style="margin: 40px 0 20px; font-size: 28px;">Continuar Estudando</h2>
-            <div class="card-grid" id="continue-studying">
-                <!-- Preenchido via JS -->
-            </div>
-        </section>
+            label.textContent = labels[type] || 'Valor';
+            
+            if(type === 'teacher' || type === 'admin') {
+                input.disabled = true;
+                input.placeholder = 'Gerado automaticamente';
+            } else {
+                input.disabled = false;
+                input.placeholder = type === 'item' ? 'ex: vip_month' : 'ex: 1000';
+            }
+        }
 
-        <!-- CURSOS -->
-        <section id="section-cursos" class="section">
-            <h1 style="font-size: 36px; margin-bottom: 10px;">Catálogo de Cursos</h1>
-            <p style="color: var(--gray); margin-bottom: 30px;">Escolha entre 12 idiomas e 20+ matérias</p>
+        function generateCodes() {
+            const type = document.getElementById('codeType').value;
+            const quantity = parseInt(document.getElementById('codeQuantity').value) || 1;
+            const expiry = parseInt(document.getElementById('codeExpiry').value) || 30;
+            const value = document.getElementById('codeValue').value;
             
-            <div style="display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
-                <button class="btn btn-primary" onclick="filterCursos('todos')" style="width: auto; padding: 10px 20px;">Todos</button>
-                <button class="btn" onclick="filterCursos('idiomas')" style="width: auto; padding: 10px 20px; background: #e0e7ff; color: var(--primary);">Idiomas</button>
-                <button class="btn" onclick="filterCursos('exatas')" style="width: auto; padding: 10px 20px; background: #fce7f3; color: var(--secondary);">Exatas</button>
-                <button class="btn" onclick="filterCursos('humanas')" style="width: auto; padding: 10px 20px; background: #d1fae5; color: var(--success);">Humanas</button>
-            </div>
+            const codes = [];
+            const timestamp = Date.now();
             
-            <div class="card-grid" id="cursos-grid">
-                <!-- Preenchido via JS -->
-            </div>
-        </section>
-
-        <!-- AULA -->
-        <section id="section-aula" class="section">
-            <div class="aula-container">
-                <div class="aula-header">
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
-                        <div>
-                            <span id="aula-categoria" style="color: var(--primary); font-weight: 600; text-transform: uppercase; font-size: 14px;">Categoria</span>
-                            <h1 id="aula-titulo" style="font-size: 32px; margin: 10px 0;">Título da Aula</h1>
-                            <p id="aula-info" style="color: var(--gray);">Aula 1 de 20 • Nível Básico</p>
-                        </div>
-                        <button onclick="showSection('cursos')" style="background: none; border: none; cursor: pointer; font-size: 24px; color: var(--gray);">
-                            <i class="ph ph-x"></i>
-                        </button>
-                    </div>
-                </div>
+            for(let i = 0; i < quantity; i++) {
+                const code = generateUniqueCode(type);
+                const codeData = {
+                    code: code,
+                    type: type,
+                    value: value,
+                    createdAt: timestamp,
+                    expiresAt: timestamp + (expiry * 24 * 60 * 60 * 1000),
+                    used: false,
+                    usedBy: null,
+                    usedAt: null
+                };
                 
-                <div class="aula-content" id="aula-conteudo">
-                    <!-- Conteúdo da aula -->
-                </div>
-                
-                <div class="quiz-container" id="quiz-container" style="display: none;">
-                    <h3 style="margin-bottom: 20px; color: var(--primary);"><i class="ph ph-check-circle"></i> Quiz de Fixação</h3>
-                    <div id="quiz-content">
-                        <!-- Quiz embaralhado -->
-                    </div>
-                </div>
-                
-                <div style="margin-top: 30px; display: flex; gap: 15px;">
-                    <button class="btn btn-primary" id="btn-proxima-aula" onclick="proximaAula()" style="display: none;">
-                        Próxima Aula <i class="ph ph-arrow-right"></i>
-                    </button>
-                    <button class="btn" onclick="marcarConcluida()" style="background: var(--success); color: white; display: none;" id="btn-concluir">
-                        <i class="ph ph-check"></i> Marcar como Concluída
-                    </button>
-                </div>
-            </div>
-        </section>
+                codes.push(codeData);
+                generatedCodes.push(codeData);
+            }
+            
+            displayGeneratedCodes(codes);
+            showToast(`${quantity} código(s) gerado(s) com sucesso!`, 'success');
+        }
 
-        <!-- GUILDAS -->
-        <section id="section-guildas" class="section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                <div>
-                    <h1 style="font-size: 36px;">Guildas</h1>
-                    <p style="color: var(--gray);">Forme equipes e conquiste o topo do ranking</p>
-                </div>
-                <button class="btn btn-primary" onclick="openCriarGuilda()" style="width: auto;">
-                    <i class="ph ph-plus"></i> Criar Guilda
-                </button>
-            </div>
+        function generateUniqueCode(type) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
             
-            <div class="guilda-grid" id="guildas-lista">
-                <!-- Preenchido via JS -->
-            </div>
-        </section>
+            // Prefixo baseado no tipo
+            const prefixes = {
+                'item': 'ITM',
+                'vip': 'VIP',
+                'points': 'PTS',
+                'xp': 'EXP',
+                'teacher': 'TCH',
+                'admin': 'ADM'
+            };
+            
+            code += prefixes[type] || 'NEU';
+            
+            // Gerar 3 grupos de 4 caracteres
+            for(let g = 0; g < 3; g++) {
+                code += '-';
+                for(let i = 0; i < 4; i++) {
+                    code += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+            }
+            
+            // Verificar se já existe (colisão improvável mas possível)
+            if(generatedCodes.some(c => c.code === code)) {
+                return generateUniqueCode(type);
+            }
+            
+            return code;
+        }
 
-        <!-- RANKING -->
-        <section id="section-ranking" class="section">
-            <h1 style="font-size: 36px; margin-bottom: 10px;">Ranking Global</h1>
-            <p style="color: var(--gray); margin-bottom: 30px;">Os melhores alunos da plataforma</p>
+        function displayGeneratedCodes(codes) {
+            const container = document.getElementById('generatedCodes');
+            const list = document.getElementById('codesList');
             
-            <div class="ranking-table" id="ranking-lista">
-                <div class="ranking-row header">
-                    <div>Pos</div>
-                    <div>Jogador</div>
-                    <div>Nível</div>
-                    <div class="rank-xp">XP</div>
+            container.style.display = 'block';
+            list.innerHTML = codes.map(c => `
+                <div style="padding:0.5rem; border-bottom:1px solid rgba(255,255,255,0.1); font-family:monospace; font-size:1.1rem;">
+                    <span style="color:var(--primary); font-weight:700;">${c.code}</span>
+                    <span style="color:var(--gray); font-size:0.8rem; margin-left:1rem;">
+                        ${c.type} • ${c.value || 'N/A'} • Expira em ${Math.floor((c.expiresAt - c.createdAt) / (1000 * 60 * 60 * 24))} dias
+                    </span>
                 </div>
-                <!-- Preenchido via JS -->
-            </div>
-        </section>
+            `).join('');
+        }
 
-        <!-- LOJA -->
-        <section id="section-loja" class="section">
-            <h1 style="font-size: 36px; margin-bottom: 10px;">Loja de Recompensas</h1>
-            <p style="color: var(--gray); margin-bottom: 30px;">Gaste seus pontos em itens exclusivos</p>
+        function copyCodes() {
+            const codes = generatedCodes.slice(-parseInt(document.getElementById('codeQuantity').value));
+            const text = codes.map(c => `${c.code} | ${c.type} | ${c.value || 'N/A'}`).join('\n');
             
-            <div class="emprestimo-box" id="emprestimo-section">
-                <h3><i class="ph ph-currency-dollar"></i> Sistema de Empréstimo</h3>
-                <p>Precisa de pontos urgentes? Pegue emprestado e pague com juros de 10% ao dia!</p>
-                <div class="emprestimo-valor" id="emprestimo-disponivel">1.000</div>
-                <p>pontos disponíveis</p>
-                <button class="btn" onclick="solicitarEmprestimo()" style="background: white; color: var(--primary); margin-top: 20px; width: auto;">
-                    <i class="ph ph-hand-coins"></i> Solicitar Empréstimo
-                </button>
-            </div>
-            
-            <div class="loja-grid" id="loja-itens">
-                <!-- Preenchido via JS -->
-            </div>
-        </section>
-
-        <!-- CONQUISTAS -->
-        <section id="section-conquistas" class="section">
-            <h1 style="font-size: 36px; margin-bottom: 10px;">Conquistas</h1>
-            <p style="color: var(--gray); margin-bottom: 30px;">Desbloqueie badges e mostre suas habilidades</p>
-            
-            <div style="margin-bottom: 30px; padding: 20px; background: #fef3c7; border-radius: 15px; border-left: 4px solid var(--warning);">
-                <h4 style="color: var(--warning); margin-bottom: 10px;"><i class="ph ph-warning"></i> Conquistas Secretas</h4>
-                <p style="color: #92400e; font-size: 14px;">Existem conquistas ocultas que só aparecem quando desbloqueadas. Tente descobri-las!</p>
-            </div>
-            
-            <div class="card-grid" id="conquistas-lista">
-                <!-- Preenchido via JS -->
-            </div>
-        </section>
-
-        <!-- PERFIL -->
-        <section id="section-perfil" class="section">
-            <div class="perfil-header">
-                <div class="perfil-avatar" id="perfil-avatar">
-                    <span id="perfil-avatar-text">U</span>
-                    <span class="vip-crown" id="perfil-vip" style="display: none;">👑</span>
-                </div>
-                <div class="perfil-info">
-                    <h1 id="perfil-nome">Usuário <span id="perfil-verificado" style="display: none;"><i class="ph ph-seal-check" style="color: var(--primary);"></i></span></h1>
-                    <p id="perfil-email" style="color: var(--gray);">usuario@email.com</p>
-                    
-                    <div class="perfil-stats">
-                        <div class="perfil-stat">
-                            <div class="perfil-stat-value" id="perfil-nivel">1</div>
-                            <div class="perfil-stat-label">Nível</div>
-                        </div>
-                        <div class="perfil-stat">
-                            <div class="perfil-stat-value" id="perfil-xp">0</div>
-                            <div class="perfil-stat-label">XP</div>
-                        </div>
-                        <div class="perfil-stat">
-                            <div class="perfil-stat-value" id="perfil-pontos">0</div>
-                            <div class="perfil-stat-label">Pontos</div>
-                        </div>
-                        <div class="perfil-stat">
-                            <div class="perfil-stat-value" id="perfil-aulas">0</div>
-                            <div class="perfil-stat-label">Aulas</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                <div>
-                    <h2 style="margin-bottom: 20px;"><i class="ph ph-users"></i> Amigos</h2>
-                    <div style="background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px;">
-                        <div class="form-group" style="margin-bottom: 15px;">
-                            <label>Adicionar Amigo</label>
-                            <div style="display: flex; gap: 10px;">
-                                <input type="text" id="add-friend-input" placeholder="Email ou nome de usuário" style="flex: 1;">
-                                <button class="btn btn-primary" onclick="adicionarAmigo()" style="width: auto;">
-                                    <i class="ph ph-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="amigos-lista" id="lista-amigos">
-                        <!-- Preenchido via JS -->
-                    </div>
-                </div>
-                
-                <div>
-                    <h2 style="margin-bottom: 20px;"><i class="ph ph-gear"></i> Configurações</h2>
-                    <div style="background: white; border-radius: 15px; padding: 20px;">
-                        <div class="form-group">
-                            <label>Resgatar Código</label>
-                            <div class="code-input-group">
-                                <input type="text" id="resgate-code" placeholder="XXXX-XXXX-XXXX" maxlength="14">
-                                <button class="btn btn-primary" onclick="resgatarCodigo()" style="width: auto;">
-                                    <i class="ph ph-gift"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group" style="margin-top: 20px;">
-                            <label>URL da Foto de Perfil (opcional)</label>
-                            <input type="url" id="perfil-foto-url" placeholder="https://exemplo.com/foto.jpg" onchange="atualizarFotoPerfil()">
-                        </div>
-                        
-                        <button class="btn" onclick="toggleTema()" style="width: 100%; margin-top: 20px; background: var(--dark); color: white;">
-                            <i class="ph ph-moon"></i> Alternar Tema
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ADM PAINEL -->
-        <section id="section-adm" class="section">
-            <h1 style="font-size: 36px; margin-bottom: 10px;"><i class="ph ph-shield"></i> Painel Administrativo</h1>
-            <p style="color: var(--gray); margin-bottom: 30px;">Gerenciamento completo da plataforma</p>
-            
-            <div class="adm-dashboard">
-                <div class="adm-card">
-                    <h3>Total de Usuários</h3>
-                    <div class="adm-card-value" id="adm-total-users">0</div>
-                </div>
-                <div class="adm-card">
-                    <h3>Usuários Online</h3>
-                    <div class="adm-card-value" id="adm-online-users">0</div>
-                </div>
-                <div class="adm-card">
-                    <h3>Aulas Hoje</h3>
-                    <div class="adm-card-value" id="adm-aulas-hoje">0</div>
-                </div>
-                <div class="adm-card">
-                    <h3>Guildas Ativas</h3>
-                    <div class="adm-card-value" id="adm-total-guildas">0</div>
-                </div>
-            </div>
-            
-            <div style="background: white; border-radius: 20px; padding: 30px; margin-top: 30px;">
-                <h3 style="margin-bottom: 20px;">Professores Pendentes</h3>
-                <div id="adm-professores-pendentes">
-                    <!-- Preenchido via JS -->
-                </div>
-            </div>
-            
-            <div style="background: white; border-radius: 20px; padding: 30px; margin-top: 30px;">
-                <h3 style="margin-bottom: 20px;">Gerenciar Usuários</h3>
-                <div class="form-group">
-                    <input type="text" id="adm-search-user" placeholder="Buscar usuário por email..." onkeyup="searchUsers()">
-                </div>
-                <div id="adm-users-list">
-                    <!-- Preenchido via JS -->
-                </div>
-            </div>
-            
-            <div style="background: white; border-radius: 20px; padding: 30px; margin-top: 30px;">
-                <h3 style="margin-bottom: 20px;">Mensagem Global</h3>
-                <div class="form-group">
-                    <textarea id="adm-global-msg" rows="4" placeholder="Digite uma mensagem para todos os usuários..." style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 10px; resize: vertical;"></textarea>
-                </div>
-                <button class="btn btn-primary" onclick="sendGlobalMessage()" style="width: auto;">
-                    <i class="ph ph-broadcast"></i> Enviar para Todos
-                </button>
-            </div>
-        </section>
-
-        <!-- GERADOR DE CÓDIGOS -->
-        <section id="section-gerador" class="section">
-            <h1 style="font-size: 36px; margin-bottom: 10px;"><i class="ph ph-key"></i> Gerador de Códigos</h1>
-            <p style="color: var(--gray); margin-bottom: 30px;">Crie códigos de recompensa únicos</p>
-            
-            <div style="background: white; border-radius: 20px; padding: 30px; max-width: 600px;">
-                <div class="form-group">
-                    <label>Tipo de Recompensa</label>
-                    <select id="code-tipo">
-                        <option value="pontos">Pontos</option>
-                        <option value="xp">XP</option>
-                        <option value="vip">VIP</option>
-                        <option value="item">Item da Loja</option>
-                        <option value="professor">Acesso Professor</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Valor/Quantidade</label>
-                    <input type="number" id="code-valor" placeholder="Ex: 1000" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Quantidade de Códigos</label>
-                    <input type="number" id="code-quantidade" placeholder="Ex: 10" min="1" max="100" value="1">
-                </div>
-                <div class="form-group">
-                    <label>Validade (dias)</label>
-                    <input type="number" id="code-validade" placeholder="Ex: 30" min="1" value="30">
-                </div>
-                <button class="btn btn-primary" onclick="gerarCodigos()">
-                    <i class="ph ph-magic-wand"></i> Gerar Códigos
-                </button>
-                
-                <div id="codes-generated" style="margin-top: 30px; display: none;">
-                    <h4 style="margin-bottom: 15px;">Códigos Gerados:</h4>
-                    <textarea id="codes-list" rows="10" style="width: 100%; font-family: monospace; padding: 15px; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 10px;" readonly></textarea>
-                    <button class="btn" onclick="downloadCodes()" style="margin-top: 15px; width: auto; background: var(--success); color: white;">
-                        <i class="ph ph-download"></i> Download TXT
-                    </button>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Botão IA Flutuante -->
-    <button class="ai-tutor-btn" id="ai-btn" onclick="toggleAIChat()" style="display: none;">
-        <i class="ph ph-robot"></i>
-    </button>
-
-    <!-- Chat IA -->
-    <div class="ai-chat-container" id="ai-chat">
-        <div class="ai-chat-header">
-            <div>
-                <h4 style="margin: 0;"><i class="ph ph-robot"></i> Tutor IA</h4>
-                <small style="opacity: 0.9;">Gemini Powered</small>
-            </div>
-            <button onclick="toggleAIChat()" style="background: none; border: none; color: white; cursor: pointer; font-size: 20px;">
-                <i class="ph ph-x"></i>
-            </button>
-        </div>
-        <div class="ai-chat-messages" id="ai-messages">
-            <div class="ai-message bot">
-                Olá! Sou seu tutor inteligente. Estou aqui para ajudar com qualquer dúvida sobre esta aula. Pergunte-me qualquer coisa! 🤖
-            </div>
-        </div>
-        <div class="ai-chat-input">
-            <input type="text" id="ai-input" placeholder="Digite sua dúvida..." onkeypress="if(event.key==='Enter') sendToAI()">
-            <button onclick="sendToAI()"><i class="ph ph-paper-plane-right"></i></button>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer id="main-footer" style="display: none;">
-        <p>&copy; 2026 NEURO 3.0 - Plataforma Educacional Gamificada</p>
-        <p style="margin-top: 10px; opacity: 0.8; font-size: 14px;">Powered by Google Gemini AI + Firebase</p>
-    </footer>
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Códigos copiados para

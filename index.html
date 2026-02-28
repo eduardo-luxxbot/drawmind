@@ -1,115 +1,2237 @@
-    <script>
-        // ==================== PARTE 3: SISTEMA AVANÇADO DE CÓDIGOS ====================
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEURO 3.0 - Plataforma Educacional Gamificada</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        const generatedCodes = [];
-        let currentCodeType = 'item';
-
-        function updateCodeForm() {
-            const type = document.getElementById('codeType').value;
-            currentCodeType = type;
-            const label = document.getElementById('codeValueLabel');
-            const input = document.getElementById('codeValue');
-            
-            const labels = {
-                'item': 'ID do Item',
-                'vip': 'Dias de VIP',
-                'points': 'Quantidade de Pontos',
-                'xp': 'Quantidade de XP',
-                'teacher': 'Código Único (automático)',
-                'admin': 'Código Único (automático)'
-            };
-            
-            label.textContent = labels[type] || 'Valor';
-            
-            if(type === 'teacher' || type === 'admin') {
-                input.disabled = true;
-                input.placeholder = 'Gerado automaticamente';
-            } else {
-                input.disabled = false;
-                input.placeholder = type === 'item' ? 'ex: vip_month' : 'ex: 1000';
-            }
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --neon-glow: 0 0 20px rgba(99, 102, 241, 0.5);
         }
 
-        function generateCodes() {
-            const type = document.getElementById('codeType').value;
-            const quantity = parseInt(document.getElementById('codeQuantity').value) || 1;
-            const expiry = parseInt(document.getElementById('codeExpiry').value) || 30;
-            const value = document.getElementById('codeValue').value;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--darker);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animações */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
+            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.8); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-slideIn { animation: slideIn 0.6s ease-out; }
+        
+        /* Background Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 10s infinite;
+        }
+
+        /* Navegação */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* HUD Gamificação */
+        .hud {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 1rem;
+            display: flex;
+            gap: 1.5rem;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--neon-glow);
+        }
+
+        .hud-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .hud-item i {
+            font-size: 1.2rem;
+        }
+
+        .hud-xp { color: var(--accent); }
+        .hud-points { color: var(--warning); }
+        .hud-level { color: var(--success); }
+        .hud-streak { color: var(--secondary); }
+
+        .vip-badge {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* Container Principal */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 2rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: var(--neon-glow);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        /* Botões */
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--gradient-2);
+            color: white;
+        }
+
+        .btn-accent {
+            background: var(--gradient-3);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Modais */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--dark);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Formulários */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--light);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Páginas */
+        .page {
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Cursos Grid */
+        .course-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-image {
+            width: 100%;
+            height: 180px;
+            background: var(--gradient-1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .course-level {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0,0,0,0.7);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-1);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Quiz */
+        .quiz-container {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            color: var(--light);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        .quiz-option.wrong {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Badge e Conquistas */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-gold { background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; }
+        .badge-silver { background: linear-gradient(135deg, #c0c0c0, #e8e8e8); color: #000; }
+        .badge-bronze { background: linear-gradient(135deg, #cd7f32, #daa520); color: #fff; }
+
+        /* Perfil */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border: 4px solid var(--primary);
+            position: relative;
+        }
+
+        .avatar.vip::after {
+            content: '👑';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            font-size: 1.5rem;
+            background: var(--dark);
+            border-radius: 50%;
+            padding: 0.2rem;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hud { 
+                position: relative; 
+                top: 0; 
+                right: 0; 
+                margin: 1rem;
+                flex-wrap: wrap;
+            }
+            .hero h1 { font-size: 2rem; }
+            .profile-header { flex-direction: column; text-align: center; }
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            background: var(--dark);
+            border-left: 4px solid var(--primary);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--warning); }
+
+        /* Sistema de Códigos */
+        .code-input {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .code-input input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            color: var(--light);
+        }
+
+        .code-input input:focus {
+            border-color: var(--primary);
+            outline: none;
+            transform: scale(1.1);
+        }
+
+        /* Admin Badge */
+        .admin-badge {
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* Estilos de Desenho Preview */
+        .art-style {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            margin: 0.3rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .art-style:hover, .art-style.active {
+            background: var(--primary);
+            transform: scale(1.05);
+        }
+
+        /* Chat/Comentários */
+        .chat-message {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .chat-content {
+            flex: 1;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+
+        .chat-name {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .chat-time {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Esconder scrollbar mas manter funcionalidade */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--darker);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        /* Animação de conquista desbloqueada */
+        .achievement-unlock {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: var(--dark);
+            border: 2px solid gold;
+            border-radius: 24px;
+            padding: 2rem;
+            text-align: center;
+            z-index: 4000;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .achievement-unlock.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .achievement-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: float 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Partículas de Fundo -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Navegação -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-brain"></i>
+            NEURO 3.0
+        </div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#" onclick="showPage('home')"><i class="fas fa-home"></i> Início</a></li>
+            <li><a href="#" onclick="showPage('courses')"><i class="fas fa-graduation-cap"></i> Cursos</a></li>
+            <li><a href="#" onclick="showPage('guilds')"><i class="fas fa-users"></i> Guildas</a></li>
+            <li><a href="#" onclick="showPage('ranking')"><i class="fas fa-trophy"></i> Ranking</a></li>
+            <li><a href="#" onclick="showPage('shop')"><i class="fas fa-store"></i> Loja</a></li>
+            <li><a href="#" onclick="showPage('achievements')"><i class="fas fa-medal"></i> Conquistas</a></li>
+            <li><a href="#" onclick="showPage('teachers')"><i class="fas fa-chalkboard-teacher"></i> Professores</a></li>
+            <li id="adminLink" style="display:none;"><a href="#" onclick="showPage('admin')"><i class="fas fa-crown"></i> ADM</a></li>
+        </ul>
+        <div style="display:flex; gap:1rem; align-items:center;">
+            <button class="btn btn-primary" id="authBtn" onclick="openModal('authModal')">
+                <i class="fas fa-user"></i> Entrar
+            </button>
+            <div id="userMenu" style="display:none; position:relative;">
+                <button class="btn" onclick="toggleUserMenu()" style="padding:0.5rem;">
+                    <span id="userDisplayName">User</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div id="userDropdown" style="display:none; position:absolute; top:100%; right:0; background:var(--dark); border:1px solid rgba(99,102,241,0.3); border-radius:12px; padding:0.5rem; min-width:150px; margin-top:0.5rem;">
+                    <a href="#" onclick="showPage('profile'); toggleUserMenu();" style="display:block; padding:0.5rem; color:var(--light); text-decoration:none;"><i class="fas fa-user-circle"></i> Perfil</a>
+                    <a href="#" onclick="openModal('redeemModal'); toggleUserMenu();" style="display:block; padding:0.5rem; color:var(--light); text-decoration:none;"><i class="fas fa-gift"></i> Resgatar Código</a>
+                    <hr style="border-color:rgba(255,255,255,0.1); margin:0.5rem 0;">
+                    <a href="#" onclick="logout()" style="display:block; padding:0.5rem; color:var(--danger); text-decoration:none;"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HUD Gamificação -->
+    <div class="hud" id="hud" style="display:none;">
+        <div class="hud-item hud-level" title="Nível">
+            <i class="fas fa-star"></i>
+            <span id="hudLevel">1</span>
+        </div>
+        <div class="hud-item hud-xp" title="XP">
+            <i class="fas fa-bolt"></i>
+            <span id="hudXP">0</span>
+        </div>
+        <div class="hud-item hud-points" title="Pontos NEURO">
+            <i class="fas fa-coins"></i>
+            <span id="hudPoints">0</span>
+        </div>
+        <div class="hud-item hud-streak" title="Streak Diária">
+            <i class="fas fa-fire"></i>
+            <span id="hudStreak">0</span>
+        </div>
+        <div id="hudVIP" style="display:none;" class="vip-badge">
+            <i class="fas fa-crown"></i> VIP
+        </div>
+    </div>
+
+    <!-- Container Principal -->
+    <div class="container">
+        
+        <!-- PÁGINA: HOME -->
+        <div class="page active" id="page-home">
+            <div class="hero">
+                <h1 class="animate-float">Aprenda sem Limites</h1>
+                <p>NEURO 3.0 é a plataforma educacional mais avançada do mundo. Aprenda 12+ idiomas, 20+ matérias com 6 professores IA personalizados.</p>
+                <button class="btn btn-primary btn-lg" onclick="openModal('authModal')">
+                    <i class="fas fa-rocket"></i> Começar Agora
+                </button>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <i class="fas fa-robot" style="font-size:3rem; color:var(--primary); margin-bottom:1rem;"></i>
+                    <h3>6 Professores IA</h3>
+                    <p>Luna, Marco, Zoe, Viktor, Yuki e Rafa. Cada um com personalidade única e método de ensino especializado.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-gamepad" style="font-size:3rem; color:var(--secondary); margin-bottom:1rem;"></i>
+                    <h3>Gamificação Total</h3>
+                    <p>Pontos, conquistas, níveis, streaks diárias, guildas e batalhas 1v1. Aprender nunca foi tão divertido.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-globe" style="font-size:3rem; color:var(--accent); margin-bottom:1rem;"></i>
+                    <h3>12+ Idiomas</h3>
+                    <p>Do básico ao avançado (A1-C2). Inglês, Espanhol, Mandarim, Japonês e muito mais com aulas completas.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-paint-brush" style="font-size:3rem; color:var(--warning); margin-bottom:1rem;"></i>
+                    <h3>8 Estilos de Arte</h3>
+                    <p>Anime, Realismo, Cartoon, Mangá, Sketch, Aquarela, Digital e Pixel Art. Libere sua criatividade.</p>
+                </div>
+            </div>
+
+            <div style="margin-top:4rem; text-align:center;">
+                <h2 style="margin-bottom:2rem;">Como Funciona</h2>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:2rem;">
+                    <div style="padding:2rem;">
+                        <div style="width:80px; height:80px; background:var(--gradient-1); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:2rem;">1</div>
+                        <h4>Escolha seu Caminho</h4>
+                        <p>Selecione entre idiomas, matérias acadêmicas ou artes visuais.</p>
+                    </div>
+                    <div style="padding:2rem;">
+                        <div style="width:80px; height:80px; background:var(--gradient-2); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:2rem;">2</div>
+                        <h4>Aprenda com IA</h4>
+                        <p>Conteúdo personalizado gerado por inteligência artificial adaptativo.</p>
+                    </div>
+                    <div style="padding:2rem;">
+                        <div style="width:80px; height:80px; background:var(--gradient-3); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:2rem;">3</div>
+                        <h4>Conquiste e Evolua</h4>
+                        <p>Complete aulas, ganhe pontos, suba de nível e desbloqueie recompensas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA: CURSOS -->
+        <div class="page" id="page-courses">
+            <h1><i class="fas fa-graduation-cap"></i> Catálogo de Cursos</h1>
+            <p style="color:var(--gray); margin-bottom:2rem;">Escolha entre 12 idiomas, 20+ matérias e 8 estilos de arte.</p>
             
-            const codes = [];
-            const timestamp = Date.now();
+            <div style="display:flex; gap:1rem; margin-bottom:2rem; flex-wrap:wrap;">
+                <button class="btn btn-primary active" onclick="filterCourses('all')">Todos</button>
+                <button class="btn" onclick="filterCourses('language')">Idiomas</button>
+                <button class="btn" onclick="filterCourses('subject')">Matérias</button>
+                <button class="btn" onclick="filterCourses('art')">Artes</button>
+            </div>
+
+            <div class="card-grid" id="coursesGrid">
+                <!-- Cursos serão gerados via JS -->
+            </div>
+        </div>
+
+        <!-- PÁGINA: AULA (Dinâmica) -->
+        <div class="page" id="page-lesson">
+            <button class="btn" onclick="showPage('courses')" style="margin-bottom:1rem;">
+                <i class="fas fa-arrow-left"></i> Voltar aos Cursos
+            </button>
             
-            for(let i = 0; i < quantity; i++) {
-                const code = generateUniqueCode(type);
-                const codeData = {
-                    code: code,
-                    type: type,
-                    value: value,
-                    createdAt: timestamp,
-                    expiresAt: timestamp + (expiry * 24 * 60 * 60 * 1000),
-                    used: false,
-                    usedBy: null,
-                    usedAt: null
-                };
+            <div id="lessonContent">
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                        <span class="badge" id="lessonCategory">Categoria</span>
+                        <span style="color:var(--gray);" id="lessonProgress">Aula 1 de 20</span>
+                    </div>
+                    <h1 id="lessonTitle">Título da Aula</h1>
+                    <div id="lessonInstructor" style="display:flex; align-items:center; gap:0.5rem; margin:1rem 0; color:var(--primary);">
+                        <i class="fas fa-robot"></i> <span>Professor IA</span>
+                    </div>
+                    
+                    <div id="lessonMaterial" style="line-height:1.8; font-size:1.1rem; margin:2rem 0;">
+                        <!-- Conteúdo da aula -->
+                    </div>
+
+                    <div style="background:rgba(99,102,241,0.1); padding:1.5rem; border-radius:12px; margin:2rem 0;">
+                        <h4><i class="fas fa-lightbulb"></i> Dica do Professor</h4>
+                        <p id="lessonTip" style="margin-top:0.5rem; color:var(--gray);"></p>
+                    </div>
+
+                    <button class="btn btn-primary" id="startQuizBtn" onclick="startQuiz()" style="width:100%;">
+                        <i class="fas fa-question-circle"></i> Iniciar Quiz (5 Questões)
+                    </button>
+                </div>
+
+                <!-- Quiz Container -->
+                <div class="quiz-container" id="quizContainer" style="display:none;">
+                    <h3><i class="fas fa-brain"></i> Quiz de Revisão</h3>
+                    <p style="color:var(--gray); margin-bottom:1rem;">Acerte pelo menos 60% para completar a aula!</p>
+                    
+                    <div id="quizQuestion"></div>
+                    <div id="quizOptions"></div>
+                    
+                    <div style="display:flex; justify-content:space-between; margin-top:2rem;">
+                        <span id="quizProgress">Questão 1/5</span>
+                        <span id="quizScore">Acertos: 0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA: PERFIL -->
+        <div class="page" id="page-profile">
+            <div class="card">
+                <div class="profile-header">
+                    <div class="avatar" id="profileAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <h2 id="profileName">Usuário</h2>
+                        <div id="profileBadges" style="margin:0.5rem 0;">
+                            <span class="badge badge-bronze" id="profileLevelBadge">Nível 1</span>
+                            <span class="vip-badge" id="profileVIPBadge" style="display:none;"><i class="fas fa-crown"></i> VIP</span>
+                            <span class="admin-badge" id="profileAdminBadge" style="display:none;"><i class="fas fa-shield-alt"></i> ADMIN</span>
+                        </div>
+                        <p style="color:var(--gray);" id="profileEmail">email@exemplo.com</p>
+                        <p style="margin-top:0.5rem; font-size:0.9rem;">
+                            <i class="fas fa-fire" style="color:var(--secondary);"></i> Streak: <span id="profileStreak">0</span> dias | 
+                            <i class="fas fa-trophy" style="color:var(--warning);"></i> Conquistas: <span id="profileAchievements">0</span>/50
+                        </p>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin:2rem 0;">
+                    <div class="card" style="text-align:center;">
+                        <i class="fas fa-star" style="font-size:2rem; color:var(--success);"></i>
+                        <h3 id="statLevel">1</h3>
+                        <p>Nível Atual</p>
+                    </div>
+                    <div class="card" style="text-align:center;">
+                        <i class="fas fa-bolt" style="font-size:2rem; color:var(--accent);"></i>
+                        <h3 id="statXP">0</h3>
+                        <p>XP Total</p>
+                    </div>
+                    <div class="card" style="text-align:center;">
+                        <i class="fas fa-coins" style="font-size:2rem; color:var(--warning);"></i>
+                        <h3 id="statPoints">0</h3>
+                        <p>Pontos NEURO</p>
+                    </div>
+                    <div class="card" style="text-align:center;">
+                        <i class="fas fa-check-circle" style="font-size:2rem; color:var(--primary);"></i>
+                        <h3 id="statLessons">0</h3>
+                        <p>Aulas Completadas</p>
+                    </div>
+                </div>
+
+                <h3 style="margin-bottom:1rem;"><i class="fas fa-chart-line"></i> Progresso por Categoria</h3>
+                <div id="profileProgress"></div>
+
+                <h3 style="margin:2rem 0 1rem;"><i class="fas fa-paint-brush"></i> Estilo de Arte Favorito</h3>
+                <div id="artStyles">
+                    <span class="art-style" onclick="selectArtStyle(this)">Anime</span>
+                    <span class="art-style" onclick="selectArtStyle(this)">Realismo</span>
+                    <span class="art-style" onclick="selectArtStyle(this)">Cartoon</span>
+                    <span class="art-style" onclick="selectArtStyle(this)">Mangá</span>
+                    <span class="art-style" onclick="selectArtStyle(this)">Sketch</span>
+                    <span class="art-style" onclick="selectArtStyle(this)">Aquarela</span>
+                    <span class="art-style" onclick="selectArtStyle(this)">Digital</span>
+                    <span class="art-style" onclick="selectArtStyle(this)">Pixel Art</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA: GUILDA (Placeholder - Parte 2) -->
+        <div class="page" id="page-guilds">
+            <h1><i class="fas fa-users"></i> Guildas & Clans</h1>
+            <p>Parte 2 - Sistema completo de guildas com chat, ranking e desafios.</p>
+        </div>
+
+        <!-- PÁGINA: RANKING (Placeholder - Parte 2) -->
+        <div class="page" id="page-ranking">
+            <h1><i class="fas fa-trophy"></i> Ranking Global</h1>
+            <p>Parte 2 - Ranking completo com filtros por categoria.</p>
+        </div>
+
+        <!-- PÁGINA: LOJA -->
+        <div class="page" id="page-shop">
+            <h1><i class="fas fa-store"></i> Loja NEURO</h1>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                <p style="color:var(--gray);">Gaste seus pontos em recompensas exclusivas!</p>
+                <div class="hud-item hud-points">
+                    <i class="fas fa-coins"></i>
+                    <span id="shopPoints">0</span> Pontos
+                </div>
+            </div>
+
+            <div class="card-grid" id="shopGrid">
+                <!-- Itens da loja via JS -->
+            </div>
+        </div>
+
+        <!-- PÁGINA: CONQUISTAS -->
+        <div class="page" id="page-achievements">
+            <h1><i class="fas fa-medal"></i> Conquistas</h1>
+            <p style="color:var(--gray); margin-bottom:2rem;">Desbloqueie todas as 50+ conquistas secretas e visíveis!</p>
+            
+            <div style="margin-bottom:2rem;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                    <span>Progresso Total</span>
+                    <span id="achievementProgressText">0/50</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="achievementProgressBar" style="width:0%"></div>
+                </div>
+            </div>
+
+            <div class="card-grid" id="achievementsGrid">
+                <!-- Conquistas via JS -->
+            </div>
+        </div>
+
+        <!-- PÁGINA: PROFESSORES -->
+        <div class="page" id="page-teachers">
+            <h1><i class="fas fa-chalkboard-teacher"></i> Professores Verificados</h1>
+            <p style="color:var(--gray); margin-bottom:2rem;">Professores reais com selo de verificação.</p>
+            
+            <div class="card-grid" id="teachersGrid">
+                <div class="card">
+                    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+                        <div style="width:60px; height:60px; background:var(--gradient-1); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div>
+                            <h3>Prof. Exemplo</h3>
+                            <span class="badge" style="background:var(--success);"><i class="fas fa-check-circle"></i> Verificado</span>
+                        </div>
+                    </div>
+                    <p>Matemática • Física • Química</p>
+                    <button class="btn btn-primary" style="width:100%; margin-top:1rem;">Ver Perfil</button>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:2rem; text-align:center;">
+                <h3>Quer se tornar um professor verificado?</h3>
+                <p style="color:var(--gray); margin:1rem 0;">Use um código de professor ou solicite verificação.</p>
+                <button class="btn btn-secondary" onclick="openModal('redeemModal')">
+                    <i class="fas fa-key"></i> Inserir Código
+                </button>
+            </div>
+        </div>
+
+        <!-- PÁGINA: ADMIN (Parte 3) -->
+        <div class="page" id="page-admin">
+            <h1><i class="fas fa-crown"></i> Painel Administrativo</h1>
+            <div class="admin-badge" style="margin-bottom:2rem;"><i class="fas fa-shield-alt"></i> ACESSO TOTAL</div>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <h3><i class="fas fa-key"></i> Gerador de Códigos</h3>
+                    <p>Gere códigos únicos para itens, VIP, pontos, XP, professor e ADM.</p>
+                    <button class="btn btn-primary" onclick="showPage('codeGenerator')">Acessar</button>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-users-cog"></i> Gerenciar Usuários</h3>
+                    <p>Visualize e edite dados de todos os usuários.</p>
+                    <button class="btn btn-secondary">Em breve</button>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-chart-bar"></i> Estatísticas</h3>
+                    <p>Visualize métricas da plataforma em tempo real.</p>
+                    <button class="btn btn-accent">Em breve</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA: GERADOR DE CÓDIGOS (Parte 3) -->
+        <div class="page" id="page-codeGenerator">
+            <button class="btn" onclick="showPage('admin')" style="margin-bottom:1rem;">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+            <h1><i class="fas fa-key"></i> Gerador de Códigos</h1>
+            
+            <div class="card" style="max-width:600px;">
+                <div class="form-group">
+                    <label>Tipo de Código</label>
+                    <select id="codeType" onchange="updateCodeForm()">
+                        <option value="item">Item da Loja</option>
+                        <option value="vip">VIP</option>
+                        <option value="points">Pontos NEURO</option>
+                        <option value="xp">XP</option>
+                        <option value="teacher">Professor Verificado</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="codeValueGroup">
+                    <label id="codeValueLabel">Valor</label>
+                    <input type="number" id="codeValue" placeholder="Ex: 1000">
+                </div>
+
+                <div class="form-group">
+                    <label>Quantidade de Códigos</label>
+                    <input type="number" id="codeQuantity" value="1" min="1" max="100">
+                </div>
+
+                <div class="form-group">
+                    <label>Validade (dias)</label>
+                    <input type="number" id="codeExpiry" value="30" min="1">
+                </div>
+
+                <button class="btn btn-primary" onclick="generateCodes()" style="width:100%;">
+                    <i class="fas fa-magic"></i> Gerar Códigos
+                </button>
+
+                <div id="generatedCodes" style="margin-top:2rem; display:none;">
+                    <h4>Códigos Gerados:</h4>
+                    <div id="codesList" style="background:rgba(0,0,0,0.3); padding:1rem; border-radius:8px; margin-top:1rem; font-family:monospace;"></div>
+                    <button class="btn btn-secondary" onclick="copyCodes()" style="margin-top:1rem;">
+                        <i class="fas fa-copy"></i> Copiar Todos
+                    </button>
+                    <button class="btn btn-accent" onclick="downloadCodes()" style="margin-top:1rem;">
+                        <i class="fas fa-download"></i> Download CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAIS -->
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('authModal')"><i class="fas fa-times"></i></button>
+            
+            <div id="authLogin">
+                <h2 style="text-align:center; margin-bottom:1.5rem;"><i class="fas fa-brain"></i> Bem-vindo ao NEURO 3.0</h2>
                 
-                codes.push(codeData);
-                generatedCodes.push(codeData);
-            }
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="seu@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••">
+                </div>
+
+                <button class="btn btn-primary" onclick="login()" style="width:100%; margin-bottom:1rem;">
+                    Entrar
+                </button>
+
+                <p style="text-align:center; color:var(--gray); margin:1rem 0;">ou</p>
+
+                <button class="btn" onclick="showRegister()" style="width:100%; background:rgba(255,255,255,0.1);">
+                    Criar Conta
+                </button>
+            </div>
+
+            <div id="authRegister" style="display:none;">
+                <h2 style="text-align:center; margin-bottom:1.5rem;"><i class="fas fa-user-plus"></i> Criar Conta</h2>
+                
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" id="regName" placeholder="Seu Nome">
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="seu@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="regPassword" placeholder="Mínimo 6 caracteres">
+                </div>
+
+                <div class="form-group">
+                    <label>Código de Convite (opcional)</label>
+                    <input type="text" id="regCode" placeholder="XXXX-XXXX-XXXX">
+                </div>
+
+                <button class="btn btn-primary" onclick="register()" style="width:100%; margin-bottom:1rem;">
+                    Criar Conta
+                </button>
+
+                <button class="btn" onclick="showLogin()" style="width:100%; background:rgba(255,255,255,0.1);">
+                    Já tenho conta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Redeem Code Modal -->
+    <div class="modal-overlay" id="redeemModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('redeemModal')"><i class="fas fa-times"></i></button>
+            <h2 style="text-align:center; margin-bottom:1rem;"><i class="fas fa-gift"></i> Resgatar Código</h2>
+            <p style="text-align:center; color:var(--gray); margin-bottom:1.5rem;">Digite seu código de 12 caracteres</p>
             
-            displayGeneratedCodes(codes);
-            showToast(`${quantity} código(s) gerado(s) com sucesso!`, 'success');
+            <div class="code-input">
+                <input type="text" maxlength="4" onkeyup="moveCodeInput(this, 0)">
+                <span style="font-size:2rem; color:var(--gray);">-</span>
+                <input type="text" maxlength="4" onkeyup="moveCodeInput(this, 1)">
+                <span style="font-size:2rem; color:var(--gray);">-</span>
+                <input type="text" maxlength="4" onkeyup="moveCodeInput(this, 2)">
+            </div>
+
+            <button class="btn btn-primary" onclick="redeemCode()" style="width:100%; margin-top:1rem;">
+                <i class="fas fa-check"></i> Resgatar
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Achievement Unlock Modal -->
+    <div class="achievement-unlock" id="achievementUnlock">
+        <div class="achievement-icon">🏆</div>
+        <h2>Conquista Desbloqueada!</h2>
+        <h3 id="achievementName">Nome da Conquista</h3>
+        <p id="achievementDesc" style="color:var(--gray); margin-top:0.5rem;"></p>
+        <button class="btn btn-primary" onclick="closeAchievement()" style="margin-top:1.5rem;">
+            <i class="fas fa-check"></i> Incrível!
+        </button>
+    </div>
+
+    <script>
+        // ==================== PARTE 1: CONFIGURAÇÃO E DADOS ====================
+        
+        // Firebase Config - SUBSTITUA COM SUAS CREDENCIAIS
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "seu-projeto.firebaseapp.com",
+            projectId: "seu-projeto",
+            storageBucket: "seu-projeto.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456"
+        };
+
+        // Inicialização Firebase (descomente quando configurar)
+        // firebase.initializeApp(firebaseConfig);
+        // const auth = firebase.auth();
+        // const db = firebase.firestore();
+
+        // Estado Global
+        let currentUser = null;
+        let userData = {
+            uid: null,
+            name: '',
+            email: '',
+            level: 1,
+            xp: 0,
+            points: 0,
+            streak: 0,
+            vip: false,
+            admin: false,
+            teacher: false,
+            completedLessons: [],
+            achievements: [],
+            artStyle: '',
+            guild: null
+        };
+
+        // Dados dos 12 Idiomas (120 aulas cada, A1-C2)
+        const languages = {
+            english: {
+                name: 'Inglês',
+                flag: '🇺🇸',
+                levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                lessons: generateLanguageLessons('Inglês', 120)
+            },
+            spanish: {
+                name: 'Espanhol',
+                flag: '🇪🇸',
+                levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                lessons: generateLanguageLessons('Espanhol', 120)
+            },
+            french: {
+                name: 'Francês',
+                flag: '🇫🇷',
+                levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                lessons: generateLanguageLessons('Francês', 120)
+            },
+            german: {
+                name: 'Alemão',
+                flag: '🇩🇪',
+                levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                lessons: generateLanguageLessons('Alemão', 120)
+            },
+            italian: {
+                name: 'Italiano',
+                flag: '🇮🇹',
+                levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                lessons: generateLanguageLessons('Italiano', 120)
+            },
+            chinese: {
+                name: 'Mandarim',
+                flag: '🇨🇳',
+                levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                lessons: generateLanguageLessons('Mandarim', 120)
+            },
+            japanese: {
+                name: 'Japonês',
+                flag: '🇯🇵',
+                levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                lessons: generateLanguageLessons('Japonês', 120)
+            },
+            korean: {
+                name: 'Coreano',
+                flag: '🇰🇷',
+                levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                lessons: generateLanguageLessons('Coreano', 120)
+            },
+            russian: {
+                name: 'Russo',
+                flag: '🇷🇺',
+                levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                lessons: generateLanguageLessons('Russo', 120)
+            },
+            portuguese: {
+                name: 'Português',
+                flag: '🇧🇷',
+                levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                lessons: generateLanguageLessons('Português', 120)
+            },
+            arabic: {
+                name: 'Árabe',
+                flag: '🇸🇦',
+                levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                lessons: generateLanguageLessons('Árabe', 120)
+            },
+            dutch: {
+                name: 'Holandês',
+                flag: '🇳🇱',
+                levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+                lessons: generateLanguageLessons('Holandês', 120)
+            }
+        };
+
+        // 20+ Matérias (20 aulas cada)
+        const subjects = {
+            math: { name: 'Matemática', icon: '🔢', lessons: generateSubjectLessons('Matemática', 20) },
+            physics: { name: 'Física', icon: '⚛️', lessons: generateSubjectLessons('Física', 20) },
+            chemistry: { name: 'Química', icon: '⚗️', lessons: generateSubjectLessons('Química', 20) },
+            biology: { name: 'Biologia', icon: '🧬', lessons: generateSubjectLessons('Biologia', 20) },
+            history: { name: 'História', icon: '📜', lessons: generateSubjectLessons('História', 20) },
+            geography: { name: 'Geografia', icon: '🌍', lessons: generateSubjectLessons('Geografia', 20) },
+            philosophy: { name: 'Filosofia', icon: '🤔', lessons: generateSubjectLessons('Filosofia', 20) },
+            sociology: { name: 'Sociologia', icon: '👥', lessons: generateSubjectLessons('Sociologia', 20) },
+            literature: { name: 'Literatura', icon: '📚', lessons: generateSubjectLessons('Literatura', 20) },
+            programming: { name: 'Programação', icon: '💻', lessons: generateSubjectLessons('Programação', 20) },
+            design: { name: 'Design', icon: '🎨', lessons: generateSubjectLessons('Design', 20) },
+            music: { name: 'Música', icon: '🎵', lessons: generateSubjectLessons('Música', 20) },
+            economics: { name: 'Economia', icon: '💰', lessons: generateSubjectLessons('Economia', 20) },
+            psychology: { name: 'Psicologia', icon: '🧠', lessons: generateSubjectLessons('Psicologia', 20) },
+            astronomy: { name: 'Astronomia', icon: '🔭', lessons: generateSubjectLessons('Astronomia', 20) },
+            medicine: { name: 'Medicina', icon: '⚕️', lessons: generateSubjectLessons('Medicina', 20) },
+            law: { name: 'Direito', icon: '⚖️', lessons: generateSubjectLessons('Direito', 20) },
+            engineering: { name: 'Engenharia', icon: '🔧', lessons: generateSubjectLessons('Engenharia', 20) },
+            business: { name: 'Administração', icon: '💼', lessons: generateSubjectLessons('Administração', 20) },
+            art_history: { name: 'História da Arte', icon: '🖼️', lessons: generateSubjectLessons('História da Arte', 20) }
+        };
+
+        // 8 Estilos de Arte (20 aulas cada)
+        const artStyles = {
+            anime: { name: 'Anime', icon: '🎌', lessons: generateArtLessons('Anime', 20) },
+            realism: { name: 'Realismo', icon: '🎭', lessons: generateArtLessons('Realismo', 20) },
+            cartoon: { name: 'Cartoon', icon: '😄', lessons: generateArtLessons('Cartoon', 20) },
+            manga: { name: 'Mangá', icon: '🇯🇵', lessons: generateArtLessons('Mangá', 20) },
+            sketch: { name: 'Sketch', icon: '✏️', lessons: generateArtLessons('Sketch', 20) },
+            watercolor: { name: 'Aquarela', icon: '🌊', lessons: generateArtLessons('Aquarela', 20) },
+            digital: { name: 'Arte Digital', icon: '🖱️', lessons: generateArtLessons('Arte Digital', 20) },
+            pixel: { name: 'Pixel Art', icon: '👾', lessons: generateArtLessons('Pixel Art', 20) }
+        };
+
+        // Professores IA
+        const aiTeachers = {
+            luna: { name: 'Luna', personality: 'Gentil e Paciente', method: 'Tradicional', color: '#ec4899', icon: '🌙' },
+            marco: { name: 'Marco', personality: 'Estritamente Eficiente', method: 'Intensivo', color: '#6366f1', icon: '🎯' },
+            zoe: { name: 'Zoe', personality: 'Criativa e Divertida', method: 'Gamificado', color: '#f59e0b', icon: '🎨' },
+            viktor: { name: 'Viktor', personality: 'Analítico e Preciso', method: 'Científico', color: '#06b6d4', icon: '🔬' },
+            yuki: { name: 'Yuki', personality: 'Calma e Inspiradora', method: 'Imersivo', color: '#22c55e', icon: '❄️' },
+            rafa: { name: 'Rafa', personality: 'Extrovertido e Social', method: 'Colaborativo', color: '#ef4444', icon: '🔥' }
+        };
+
+        // Loja
+        const shopItems = [
+            { id: 'xp_boost', name: 'Boost de XP 2x', desc: 'Dobre seus ganhos de XP por 24h', price: 500, icon: '⚡' },
+            { id: 'streak_protect', name: 'Proteção de Streak', desc: 'Não perca sua streak por 1 dia de inatividade', price: 300, icon: '🛡️' },
+            { id: 'vip_month', name: 'VIP Mensal', desc: 'Acesso a conteúdos exclusivos por 30 dias', price: 1000, icon: '👑' },
+            { id: 'vip_year', name: 'VIP Anual', desc: 'Acesso VIP por 1 ano completo', price: 5000, icon: '💎' },
+            { id: 'custom_avatar', name: 'Avatar Customizado', desc: 'Upload sua própria foto de perfil', price: 800, icon: '📷' },
+            { id: 'theme_dark', name: 'Tema Neon', desc: 'Tema exclusivo com efeitos neon', price: 600, icon: '🌈' },
+            { id: 'badge_early', name: 'Badge Fundador', desc: 'Exclusivo para primeiros usuários', price: 2000, icon: '🚀' },
+            { id: 'guild_create', name: 'Criar Guilda', desc: 'Crie sua própria guilda/clan', price: 1500, icon: '🏰' }
+        ];
+
+        // Conquistas (50+)
+        const achievements = [
+            { id: 'first_lesson', name: 'Primeiros Passos', desc: 'Complete sua primeira aula', icon: '🎯', secret: false, condition: (u) => u.completedLessons.length >= 1 },
+            { id: 'streak_7', name: 'Semana de Fogo', desc: 'Mantenha streak por 7 dias', icon: '🔥', secret: false, condition: (u) => u.streak >= 7 },
+            { id: 'streak_30', name: 'Mês de Ouro', desc: 'Mantenha streak por 30 dias', icon: '🏆', secret: false, condition: (u) => u.streak >= 30 },
+            { id: 'streak_365', name: 'Lenda Anual', desc: 'Um ano completo de streak!', icon: '👑', secret: false, condition: (u) => u.streak >= 365 },
+            { id: 'level_10', name: 'Aprendiz', desc: 'Alcance o nível 10', icon: '⭐', secret: false, condition: (u) => u.level >= 10 },
+            { id: 'level_50', name: 'Mestre', desc: 'Alcance o nível 50', icon: '🎓', secret: false, condition: (u) => u.level >= 50 },
+            { id: 'level_100', name: 'Grão-Mestre', desc: 'Alcance o nível 100', icon: '🏅', secret: false, condition: (u) => u.level >= 100 },
+            { id: 'rich', name: 'Milionário', desc: 'Acumule 1.000.000 de pontos', icon: '💰', secret: false, condition: (u) => u.points >= 1000000 },
+            { id: 'polyglot', name: 'Poliglota', desc: 'Complete aulas em 5 idiomas diferentes', icon: '🌍', secret: false, condition: (u) => countUniqueCategories(u, 'language') >= 5 },
+            { id: 'artist', name: 'Artista Completo', desc: 'Complete todos os estilos de arte', icon: '🎨', secret: false, condition: (u) => countUniqueCategories(u, 'art') >= 8 },
+            { id: 'scholar', name: 'Erudito', desc: 'Complete 20 matérias diferentes', icon: '📚', secret: false, condition: (u) => countUniqueCategories(u, 'subject') >= 20 },
+            { id: 'perfect_quiz', name: 'Gênio', desc: 'Acerte 100% em 10 quizzes seguidos', icon: '🧠', secret: false, condition: (u) => u.perfectQuizzes >= 10 },
+            { id: 'night_owl', name: 'Coruja', desc: 'Estude entre 00h e 05h', icon: '🦉', secret: true, condition: (u) => u.nightOwl },
+            { id: 'speed_runner', name: 'Velocista', desc: 'Complete uma aula em menos de 2 minutos', icon: '⚡', secret: true, condition: (u) => u.speedRun },
+            { id: 'collector', name: 'Colecionador', desc: 'Desbloqueie 25 conquistas', icon: '🎒', secret: false, condition: (u) => u.achievements.length >= 25 },
+            { id: 'social', name: 'Socialite', desc: 'Faça 10 amigos na plataforma', icon: '👥', secret: false, condition: (u) => u.friends >= 10 },
+            { id: 'guild_master', name: 'Líder de Guilda', desc: 'Crie ou lidere uma guilda top 10', icon: '🏰', secret: false, condition: (u) => u.guildMaster },
+            { id: 'pvp_winner', name: 'Campeão PvP', desc: 'Vença 50 batalhas 1v1', icon: '⚔️', secret: false, condition: (u) => u.pvpWins >= 50 },
+            { id: 'teacher_pet', name: 'Favorito', desc: 'Complete 100 aulas com o mesmo professor IA', icon: '❤️', secret: true, condition: (u) => u.favoriteTeacher >= 100 },
+            { id: 'code_breaker', name: 'Quebrador de Códigos', desc: 'Resgate 10 códigos secretos', icon: '🔓', secret: true, condition: (u) => u.codesRedeemed >= 10 }
+        ];
+
+        // Geradores de Conteúdo
+        function generateLanguageLessons(lang, count) {
+            const lessons = [];
+            const topics = [
+                'Saudações', 'Apresentações', 'Família', 'Cores', 'Números', 'Datas', 'Horas',
+                'Comida', 'Roupas', 'Corpo', 'Casa', 'Cidade', 'Transporte', 'Clima',
+                'Profissões', 'Hobbies', 'Viagem', 'Compras', 'Restaurante', 'Hotel',
+                'Gramática Básica', 'Verbos', 'Advérbios', 'Adjetivos', 'Preposições',
+                'Conversação', 'Negócios', 'Acadêmico', 'Cultura', 'Literatura'
+            ];
+            
+            for(let i = 0; i < count; i++) {
+                const level = Math.floor(i / 20); // 20 aulas por nível (A1-C2)
+                const levelName = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'][level] || 'C2';
+                const topic = topics[i % topics.length];
+                
+                lessons.push({
+                    id: `${lang.toLowerCase()}_${i}`,
+                    title: `${topic} - ${levelName}.${(i % 20) + 1}`,
+                    content: generateLessonContent(lang, topic, levelName, i),
+                    level: levelName,
+                    xp: 50 + (level * 10),
+                    quiz: generateQuiz(`${lang} - ${topic}`, 5)
+                });
+            }
+            return lessons;
         }
 
-        function generateUniqueCode(type) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let code = '';
-            
-            // Prefixo baseado no tipo
-            const prefixes = {
-                'item': 'ITM',
-                'vip': 'VIP',
-                'points': 'PTS',
-                'xp': 'EXP',
-                'teacher': 'TCH',
-                'admin': 'ADM'
+        function generateSubjectLessons(subject, count) {
+            const lessons = [];
+            const concepts = {
+                'Matemática': ['Álgebra', 'Geometria', 'Cálculo', 'Estatística', 'Trigonometria', 'Números Complexos', 'Matrizes', 'Vetores', 'Probabilidade', 'Análise'],
+                'Física': ['Mecânica', 'Termodinâmica', 'Eletromagnetismo', 'Óptica', 'Ondas', 'Relatividade', 'Física Quântica', 'Astrofísica', 'Nuclear', 'Fluidos'],
+                'Química': ['Átomos', 'Ligações', 'Reações', 'Termoquímica', 'Eletroquímica', 'Orgânica', 'Inorgânica', 'Analítica', 'Físico-Química', 'Ambiental'],
+                'Biologia': ['Células', 'Genética', 'Evolução', 'Ecologia', 'Anatomia', 'Fisiologia', 'Microbiologia', 'Botânica', 'Zoologia', 'Biotec']
             };
             
-            code += prefixes[type] || 'NEU';
+            const topics = concepts[subject] || ['Introdução', 'Conceitos Básicos', 'Teoria', 'Prática', 'Avançado', 'Especialização', 'Aplicações', 'Projetos'];
             
-            // Gerar 3 grupos de 4 caracteres
-            for(let g = 0; g < 3; g++) {
-                code += '-';
-                for(let i = 0; i < 4; i++) {
-                    code += chars.charAt(Math.floor(Math.random() * chars.length));
+            for(let i = 0; i < count; i++) {
+                lessons.push({
+                    id: `${subject.toLowerCase()}_${i}`,
+                    title: `Aula ${i + 1}: ${topics[i % topics.length]} ${Math.floor(i/10) + 1}`,
+                    content: generateSubjectContent(subject, topics[i % topics.length], i),
+                    level: i < 7 ? 'Básico' : i < 14 ? 'Intermediário' : 'Avançado',
+                    xp: 60,
+                    quiz: generateQuiz(`${subject} - ${topics[i % topics.length]}`, 5)
+                });
+            }
+            return lessons;
+        }
+
+        function generateArtLessons(style, count) {
+            const lessons = [];
+            const techniques = {
+                'Anime': ['Proporções', 'Olhos', 'Cabelos', 'Expressões', 'Poses', 'Roupas', 'Cenários', 'Cores', 'Sombreamento', 'Lineart'],
+                'Realismo': ['Anatomia', 'Luz e Sombra', 'Texturas', 'Retrato', 'Mãos', 'Perspectiva', 'Composição', 'Cores Reais', 'Detalhes', 'Técnica'],
+                'Cartoon': ['Exagero', 'Formas Simples', 'Cores Vibrantes', 'Movimento', 'Comédia', 'Personagens', 'Storyboard', 'Expressão', 'Estilização', 'Finalização'],
+                'Mangá': ['Speedlines', 'Onomatopeias', 'Page Layout', 'Tonalização', 'Screen Tone', 'Chibi', 'Dramatic Scenes', 'Action', 'Romance', 'Horror'],
+                'Sketch': ['Linhas Rápidas', 'Gestos', 'Observação', 'Simplificação', 'Movimento', 'Anatomia Rápida', 'Retrato Sketch', 'Paisagem', 'Urban Sketch', 'Sketchbook'],
+                'Aquarela': ['Papel e Pincéis', 'Diluição', 'Camadas', 'Wet-on-Wet', 'Wet-on-Dry', 'Cores', 'Paisagens', 'Florais', 'Retrato', 'Abstrato'],
+                'Arte Digital': ['Tablets', 'Software', 'Camadas', 'Pincéis Digitais', 'Colorização', 'Rendering', 'Concept Art', 'Character Design', 'Environment', 'VFX'],
+                'Pixel Art': ['Resolução', 'Paleta', 'Dithering', 'Animação', 'Sprites', 'Tilesets', 'Isométrico', 'Cenários', 'Personagens', 'Efeitos']
+            };
+            
+            const topics = techniques[style] || ['Básico', 'Intermediário', 'Avançado'];
+            
+            for(let i = 0; i < count; i++) {
+                lessons.push({
+                    id: `art_${style.toLowerCase()}_${i}`,
+                    title: `${style} ${i + 1}: ${topics[i % topics.length]}`,
+                    content: generateArtContent(style, topics[i % topics.length], i),
+                    level: i < 7 ? 'Iniciante' : i < 14 ? 'Intermediário' : 'Avançado',
+                    xp: 70,
+                    quiz: generateQuiz(`${style} - ${topics[i % topics.length]}`, 5)
+                });
+            }
+            return lessons;
+        }
+
+        function generateLessonContent(lang, topic, level, index) {
+            const contents = {
+                'Saudações': `Bem-vindo à aula de ${topic} em ${lang}! Nesta aula nível ${level}, você aprenderá as saudações formais e informais. 
+                
+<strong>Conteúdo NEURO:</strong>
+• Bom dia / Boa tarde / Boa noite
+• Olá / Oi / Ei
+• Como vai? / Tudo bem?
+• Prazer em conhecê-lo
+• Até logo / Tchau / Até amanhã
+
+<strong>Exemplos práticos:</strong>
+Imagine que você está chegando em um café em um país onde se fala ${lang}. Como você cumprimentaria o garçom? E como se despediria?
+
+<strong>Pronúncia:</strong>
+Preste atenção na entonação. Em ${lang}, a entonação pode mudar completamente o significado de uma saudação.
+
+<strong>Prática:</strong>
+Tente criar 3 diálogos diferentes usando as saudações aprendidas hoje.`,
+
+                'Apresentações': `Aula de ${topic} - Nível ${level}. Aprenda a se apresentar profissional e socialmente em ${lang}.
+
+<strong>Conteúdo NEURO:</strong>
+• Meu nome é...
+• Eu sou de...
+• Eu trabalho como...
+• Eu tenho X anos
+• Meus hobbies são...
+
+<strong>Estrutura formal:</strong>
+"Olá, meu nome é [Nome]. Sou de [Cidade] e trabalho como [Profissão]. Tenho [Idade] anos e gosto de [Hobby]."
+
+<strong>Estrutura informal:</strong>
+"Oi! Eu sou o [Nome], tenho [Idade] e curto [Hobby]. E você?"
+
+<strong>Cultura:</strong>
+Em países de língua ${lang}, é comum [informação cultural específica sobre apresentações].`
+            };
+            
+            return contents[topic] || `Aula ${index + 1} de ${lang} - Nível ${level}. 
+
+<strong>Conteúdo NEURO:</strong>
+Nesta aula você explorará ${topic} em profundidade. 
+
+• Conceitos fundamentais
+• Vocabulário essencial  
+• Exemplos práticos
+• Exercícios de fixação
+
+<strong>Contexto Cultural:</strong>
+Entenda como ${topic} é utilizado no dia a dia de falantes nativos de ${lang}.
+
+<strong>Dica do Professor:</strong>
+Pratique em voz alta! A repetição é a mãe da fluência.`;
+        }
+
+        function generateSubjectContent(subject, topic, index) {
+            return `<strong>${subject} - ${topic} (Aula ${index + 1})</strong>
+
+<strong>Conteúdo NEURO:</strong>
+Nesta aula de ${subject}, vamos aprofundar em ${topic}.
+
+<strong>Conceitos Principais:</strong>
+• Definição e fundamentos
+• Fórmulas e aplicações
+• Exemplos resolvidos
+• Exercícios práticos
+
+<strong>Na Prática:</strong>
+Veja como ${topic} é aplicado no mundo real através de exemplos concretos e casos de estudo.
+
+<strong>Para Refletir:</strong>
+Como ${topic} influencia nossa compreensão do universo? Que novas descobertas foram possíveis através deste conhecimento?
+
+<strong>Desafio:</strong>
+Resolva os problemas propostos e verifique suas respostas no final da aula.`;
+        }
+
+        function generateArtContent(style, topic, index) {
+            return `<strong>${style} - ${topic} (Aula ${index + 1})</strong>
+
+<strong>Conteúdo NEURO:</strong>
+Técnica avançada de ${topic} no estilo ${style}.
+
+<strong>Materiais Necessários:</strong>
+• Lista específica para esta técnica
+• Configurações recomendadas
+• Referências visuais
+
+<strong>Passo a Passo:</strong>
+1. Preparação da superfície/canvas
+2. Esboço inicial e proporções
+3. Desenvolvimento das formas
+4. Detalhamento e acabamento
+5. Revisão e ajustes finais
+
+<strong>Dicas Profissionais:</strong>
+Erros comuns a evitar e segredos dos mestres em ${style}.
+
+<strong>Inspiração:</strong>
+Analise obras famosas que utilizam esta técnica e entenda o que as torna especiais.
+
+<strong>Prática:</strong>
+Crie sua própria obra aplicando ${topic} e compartilhe com a comunidade!`;
+        }
+
+        function generateQuiz(context, numQuestions) {
+            const questions = [
+                {
+                    question: `Qual é o conceito principal de ${context}?`,
+                    options: ['Alternativa A correta', 'Alternativa B', 'Alternativa C', 'Alternativa D'],
+                    correct: 0
+                },
+                {
+                    question: `Em ${context}, qual afirmação é verdadeira?`,
+                    options: ['Opção 1', 'Opção 2 correta', 'Opção 3', 'Opção 4'],
+                    correct: 1
+                },
+                {
+                    question: `Qual a melhor prática em ${context}?`,
+                    options: ['Prática A', 'Prática B', 'Prática C correta', 'Prática D'],
+                    correct: 2
+                },
+                {
+                    question: `Complete: Em ${context}, é fundamental...`,
+                    options: ['Ignorar o básico', 'Pular etapas', 'Praticar regularmente', 'Evitar erros'],
+                    correct: 2
+                },
+                {
+                    question: `Qual destes NÃO é relacionado a ${context}?`,
+                    options: ['Conceito relacionado', 'Outro conceito', 'Conceito correto', 'Conceito não-relacionado'],
+                    correct: 3
+                }
+            ];
+            
+            // Embaralhar questões e alternativas
+            const shuffled = questions.sort(() => 0.5 - Math.random()).slice(0, numQuestions);
+            return shuffled.map(q => ({
+                ...q,
+                options: shuffleArray(q.options)
+            }));
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Variáveis de estado da aula atual
+        let currentCourse = null;
+        let currentLessonIndex = 0;
+        let currentQuiz = null;
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        // ==================== PARTE 1: FUNÇÕES DE INTERFACE ====================
+
+        function init() {
+            createParticles();
+            renderCourses();
+            renderShop();
+            renderAchievements();
+            
+            // Verificar usuário logado (simulação)
+            checkAuth();
+        }
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for(let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page-${pageName}`).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function showRegister() {
+            document.getElementById('authLogin').style.display = 'none';
+            document.getElementById('authRegister').style.display = 'block';
+        }
+
+        function showLogin() {
+            document.getElementById('authLogin').style.display = 'block';
+            document.getElementById('authRegister').style.display = 'none';
+        }
+
+        // ==================== PARTE 1: SISTEMA DE CURSOS ====================
+
+        function renderCourses(filter = 'all') {
+            const grid = document.getElementById('coursesGrid');
+            grid.innerHTML = '';
+            
+            // Renderizar Idiomas
+            if(filter === 'all' || filter === 'language') {
+                Object.entries(languages).forEach(([key, lang]) => {
+                    const card = createCourseCard(key, lang, 'language');
+                    grid.appendChild(card);
+                });
+            }
+            
+            // Renderizar Matérias
+            if(filter === 'all' || filter === 'subject') {
+                Object.entries(subjects).forEach(([key, subj]) => {
+                    const card = createCourseCard(key, subj, 'subject');
+                    grid.appendChild(card);
+                });
+            }
+            
+            // Renderizar Artes
+            if(filter === 'all' || filter === 'art') {
+                Object.entries(artStyles).forEach(([key, art]) => {
+                    const card = createCourseCard(key, art, 'art');
+                    grid.appendChild(card);
+                });
+            }
+        }
+
+        function createCourseCard(key, data, type) {
+            const div = document.createElement('div');
+            div.className = 'card course-card';
+            div.onclick = () => openCourse(key, type);
+            
+            const progress = calculateCourseProgress(key, type);
+            const icon = type === 'language' ? data.flag : type === 'subject' ? data.icon : data.icon;
+            const totalLessons = type === 'language' ? 120 : 20;
+            
+            div.innerHTML = `
+                <div class="course-image">${icon}</div>
+                <span class="course-level">${data.levels ? 'A1-C2' : '20 Aulas'}</span>
+                <h3>${data.name}</h3>
+                <p style="color:var(--gray); font-size:0.9rem; margin:0.5rem 0;">
+                    ${type === 'language' ? '12 níveis • 120 aulas' : '20 aulas completas'}
+                </p>
+                <div style="display:flex; gap:0.5rem; margin:1rem 0; flex-wrap:wrap;">
+                    ${type === 'language' ? '<span class="badge badge-bronze">Idioma</span>' : 
+                      type === 'subject' ? '<span class="badge badge-silver">Matéria</span>' : 
+                      '<span class="badge" style="background:var(--gradient-2);">Arte</span>'}
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width:${progress}%"></div>
+                </div>
+                <p style="font-size:0.8rem; color:var(--gray); margin-top:0.5rem;">
+                    ${progress}% completo
+                </p>
+            `;
+            return div;
+        }
+
+        function filterCourses(type) {
+            renderCourses(type);
+        }
+
+        function calculateCourseProgress(courseKey, type) {
+            if(!currentUser) return 0;
+            // Simulação - implementar com dados reais do Firestore
+            return Math.floor(Math.random() * 100);
+        }
+
+        function openCourse(courseKey, type) {
+            const course = type === 'language' ? languages[courseKey] : 
+                          type === 'subject' ? subjects[courseKey] : artStyles[courseKey];
+            
+            currentCourse = { key: courseKey, type: type, data: course };
+            currentLessonIndex = 0;
+            
+            showPage('lesson');
+            loadLesson(0);
+        }
+
+        function loadLesson(index) {
+            const lessons = currentCourse.data.lessons;
+            const lesson = lessons[index];
+            
+            document.getElementById('lessonCategory').textContent = currentCourse.data.name;
+            document.getElementById('lessonProgress').textContent = `Aula ${index + 1} de ${lessons.length}`;
+            document.getElementById('lessonTitle').textContent = lesson.title;
+            document.getElementById('lessonMaterial').innerHTML = lesson.content.replace(/\n/g, '<br>');
+            
+            // Selecionar professor IA baseado no tipo
+            const teacherKeys = Object.keys(aiTeachers);
+            const teacher = aiTeachers[teacherKeys[index % teacherKeys.length]];
+            document.getElementById('lessonInstructor').innerHTML = `
+                <span style="color:${teacher.color};">${teacher.icon}</span>
+                <span>Prof. ${teacher.name} (${teacher.personality})</span>
+            `;
+            
+            document.getElementById('lessonTip').textContent = 
+                `Dica de ${teacher.name}: "${teacher.method === 'Gamificado' ? 'Divirta-se aprendendo! Faça como se fosse um jogo.' : 
+                  teacher.method === 'Tradicional' ? 'Repita os conceitos até decorar. A prática leva à perfeição.' :
+                  teacher.method === 'Intensivo' ? 'Foque 100%. Elimine distrações e mergulhe no conteúdo.' :
+                  teacher.method === 'Imersivo' ? 'Imagine-se no contexto. Visualize situações reais de uso.' :
+                  teacher.method === 'Científico' ? 'Entenda o 'porquê' por trás de cada regra. Lógica é fundamental.' :
+                  'Aprenda colaborando. Discuta com outros estudantes.'}"`;
+            
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('startQuizBtn').style.display = 'block';
+        }
+
+        function startQuiz() {
+            const lesson = currentCourse.data.lessons[currentLessonIndex];
+            currentQuiz = lesson.quiz;
+            quizIndex = 0;
+            quizScore = 0;
+            
+            document.getElementById('startQuizBtn').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'block';
+            
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = currentQuiz[quizIndex];
+            document.getElementById('quizQuestion').innerHTML = `<h4>${q.question}</h4>`;
+            
+            const optionsDiv = document.getElementById('quizOptions');
+            optionsDiv.innerHTML = '';
+            
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-option';
+                btn.textContent = opt;
+                btn.onclick = () => answerQuestion(idx);
+                optionsDiv.appendChild(btn);
+            });
+            
+            document.getElementById('quizProgress').textContent = `Questão ${quizIndex + 1}/${currentQuiz.length}`;
+            document.getElementById('quizScore').textContent = `Acertos: ${quizScore}`;
+        }
+
+        function answerQuestion(answerIndex) {
+            const q = currentQuiz[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            
+            // Desabilitar todos os botões
+            options.forEach(btn => btn.disabled = true);
+            
+            // Mostrar resposta correta
+            const correctIndex = q.options.indexOf(q.options[q.correct]);
+            options[correctIndex].classList.add('correct');
+            
+            if(answerIndex === correctIndex) {
+                quizScore++;
+                showToast('Correto! +10 XP', 'success');
+            } else {
+                options[answerIndex].classList.add('wrong');
+                showToast('Incorreto. A resposta correta está destacada.', 'error');
+            }
+            
+            setTimeout(() => {
+                quizIndex++;
+                if(quizIndex < currentQuiz.length) {
+                    showQuestion();
+                } else {
+                    finishQuiz();
+                }
+            }, 1500);
+        }
+
+        function finishQuiz() {
+            const percentage = (quizScore / currentQuiz.length) * 100;
+            const lesson = currentCourse.data.lessons[currentLessonIndex];
+            
+            if(percentage >= 60) {
+                const xpGained = lesson.xp;
+                const pointsGained = Math.floor(xpGained / 2);
+                
+                showToast(`Aula completada! +${xpGained} XP, +${pointsGained} Pontos`, 'success');
+                
+                // Atualizar dados do usuário
+                userData.xp += xpGained;
+                userData.points += pointsGained;
+                userData.completedLessons.push(lesson.id);
+                
+                // Verificar level up
+                checkLevelUp();
+                
+                // Verificar conquistas
+                checkAchievements();
+                
+                updateHUD();
+                
+                // Próxima aula ou voltar
+                setTimeout(() => {
+                    if(currentLessonIndex < currentCourse.data.lessons.length - 1) {
+                        currentLessonIndex++;
+                        loadLesson(currentLessonIndex);
+                    } else {
+                        showToast('Curso completado! 🎉', 'success');
+                        showPage('courses');
+                    }
+                }, 2000);
+            } else {
+                showToast(`Precisa de 60% para passar. Você acertou ${percentage.toFixed(0)}%. Tente novamente!`, 'error');
+                setTimeout(() => {
+                    startQuiz();
+                }, 2000);
+            }
+        }
+
+        function checkLevelUp() {
+            const newLevel = Math.floor(userData.xp / 1000) + 1;
+            if(newLevel > userData.level) {
+                userData.level = newLevel;
+                showToast(`LEVEL UP! Você alcançou o nível ${newLevel}! 🎉`, 'success');
+                unlockAchievement('level_' + newLevel);
+            }
+        }
+
+        // ==================== PARTE 1: SISTEMA DE CONQUISTAS ====================
+
+        function renderAchievements() {
+            const grid = document.getElementById('achievementsGrid');
+            grid.innerHTML = '';
+            
+            achievements.forEach(ach => {
+                const unlocked = userData.achievements.includes(ach.id);
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.style.opacity = unlocked ? '1' : '0.5';
+                div.innerHTML = `
+                    <div style="font-size:3rem; margin-bottom:1rem;">${ach.icon}</div>
+                    <h4>${ach.name} ${ach.secret && !unlocked ? '🔒' : ''}</h4>
+                    <p style="color:var(--gray); font-size:0.9rem;">${unlocked || !ach.secret ? ach.desc : 'Conquista Secreta'}</p>
+                    ${unlocked ? '<span class="badge badge-gold"><i class="fas fa-check"></i> Desbloqueada</span>' : ''}
+                `;
+                grid.appendChild(div);
+            });
+            
+            updateAchievementProgress();
+        }
+
+        function checkAchievements() {
+            achievements.forEach(ach => {
+                if(!userData.achievements.includes(ach.id) && ach.condition(userData)) {
+                    unlockAchievement(ach.id);
+                }
+            });
+        }
+
+        function unlockAchievement(achId) {
+            if(userData.achievements.includes(achId)) return;
+            
+            const ach = achievements.find(a => a.id === achId);
+            if(!ach) return;
+            
+            userData.achievements.push(achId);
+            
+            // Mostrar animação
+            document.getElementById('achievementName').textContent = ach.name;
+            document.getElementById('achievementDesc').textContent = ach.desc;
+            document.querySelector('.achievement-icon').textContent = ach.icon;
+            document.getElementById('achievementUnlock').classList.add('show');
+            
+            // Bônus de pontos
+            userData.points += 100;
+            updateHUD();
+            renderAchievements();
+        }
+
+        function closeAchievement() {
+            document.getElementById('achievementUnlock').classList.remove('show');
+        }
+
+        function updateAchievementProgress() {
+            const total = achievements.length;
+            const unlocked = userData.achievements.length;
+            const percentage = (unlocked / total) * 100;
+            
+            document.getElementById('achievementProgressText').textContent = `${unlocked}/${total}`;
+            document.getElementById('achievementProgressBar').style.width = `${percentage}%`;
+            document.getElementById('profileAchievements').textContent = unlocked;
+        }
+
+        // ==================== PARTE 1: LOJA ====================
+
+        function renderShop() {
+            const grid = document.getElementById('shopGrid');
+            grid.innerHTML = '';
+            
+            shopItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `
+                    <div style="font-size:3rem; margin-bottom:1rem;">${item.icon}</div>
+                    <h3>${item.name}</h3>
+                    <p style="color:var(--gray); margin:0.5rem 0;">${item.desc}</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem;">
+                        <span style="font-size:1.5rem; font-weight:700; color:var(--warning);">
+                            <i class="fas fa-coins"></i> ${item.price}
+                        </span>
+                        <button class="btn btn-primary" onclick="buyItem('${item.id}')" ${userData.points < item.price ? 'disabled' : ''}>
+                            Comprar
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        function buyItem(itemId) {
+            const item = shopItems.find(i => i.id === itemId);
+            if(!item || userData.points < item.price) {
+                showToast('Pontos insuficientes!', 'error');
+                return;
+            }
+            
+            userData.points -= item.price;
+            updateHUD();
+            renderShop();
+            
+            // Aplicar efeito do item
+            if(item.id === 'vip_month' || item.id === 'vip_year') {
+                userData.vip = true;
+                document.getElementById('hudVIP').style.display = 'flex';
+                showToast('VIP ativado! 👑', 'success');
+            } else if(item.id === 'xp_boost') {
+                showToast('Boost de XP 2x ativado por 24h! ⚡', 'success');
+            } else {
+                showToast(`${item.name} comprado com sucesso!`, 'success');
+            }
+        }
+
+        // ==================== PARTE 1: AUTENTICAÇÃO ====================
+
+        function checkAuth() {
+            // Simulação - substituir por Firebase Auth
+            const savedUser = localStorage.getItem('neuro_user');
+            if(savedUser) {
+                currentUser = JSON.parse(savedUser);
+                loadUserData();
+            }
+        }
+
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if(!email || !password) {
+                showToast('Preencha todos os campos!', 'error');
+                return;
+            }
+            
+            // Simulação de login
+            currentUser = { email: email, uid: 'user_' + Date.now() };
+            loadUserData();
+            closeModal('authModal');
+            showToast('Login realizado com sucesso!', 'success');
+        }
+
+        function register() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const code = document.getElementById('regCode').value;
+            
+            if(!name || !email || !password) {
+                showToast('Preencha todos os campos obrigatórios!', 'error');
+                return;
+            }
+            
+            if(password.length < 6) {
+                showToast('A senha deve ter pelo menos 6 caracteres!', 'error');
+                return;
+            }
+            
+            // Verificar código de convite
+            if(code) {
+                processInviteCode(code);
+            }
+            
+            currentUser = { 
+                email: email, 
+                uid: 'user_' + Date.now(),
+                displayName: name
+            };
+            
+            userData.name = name;
+            userData.email = email;
+            
+            loadUserData();
+            closeModal('authModal');
+            showToast('Conta criada com sucesso!', 'success');
+        }
+
+        function logout() {
+            currentUser = null;
+            userData = {
+                uid: null, name: '', email: '', level: 1, xp: 0, points: 0, streak: 0,
+                vip: false, admin: false, teacher: false, completedLessons: [],
+                achievements: [], artStyle: '', guild: null
+            };
+            
+            localStorage.removeItem('neuro_user');
+            location.reload();
+        }
+
+        function loadUserData() {
+            // Atualizar interface
+            document.getElementById('authBtn').style.display = 'none';
+            document.getElementById('userMenu').style.display = 'block';
+            document.getElementById('hud').style.display = 'flex';
+            document.getElementById('userDisplayName').textContent = userData.name || currentUser.email;
+            
+            // Verificar se é admin
+            if(userData.admin) {
+                document.getElementById('adminLink').style.display = 'block';
+                document.getElementById('profileAdminBadge').style.display = 'inline-flex';
+            }
+            
+            // Verificar VIP
+            if(userData.vip) {
+                document.getElementById('hudVIP').style.display = 'flex';
+                document.getElementById('profileVIPBadge').style.display = 'inline-flex';
+                document.getElementById('profileAvatar').classList.add('vip');
+            }
+            
+            updateHUD();
+            updateProfile();
+        }
+
+        function updateHUD() {
+            document.getElementById('hudLevel').textContent = userData.level;
+            document.getElementById('hudXP').textContent = userData.xp;
+            document.getElementById('hudPoints').textContent = userData.points.toLocaleString();
+            document.getElementById('hudStreak').textContent = userData.streak;
+            document.getElementById('shopPoints').textContent = userData.points.toLocaleString();
+        }
+
+        function updateProfile() {
+            document.getElementById('profileName').textContent = userData.name || 'Usuário';
+            document.getElementById('profileEmail').textContent = userData.email;
+            document.getElementById('profileStreak').textContent = userData.streak;
+            document.getElementById('statLevel').textContent = userData.level;
+            document.getElementById('statXP').textContent = userData.xp.toLocaleString();
+            document.getElementById('statPoints').textContent = userData.points.toLocaleString();
+            document.getElementById('statLessons').textContent = userData.completedLessons.length;
+            document.getElementById('profileLevelBadge').textContent = `Nível ${userData.level}`;
+        }
+
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // ==================== PARTE 1: SISTEMA DE CÓDIGOS ====================
+
+        function moveCodeInput(input, index) {
+            if(input.value.length === 4) {
+                const inputs = document.querySelectorAll('.code-input input');
+                if(index < 2) {
+                    inputs[index + 1].focus();
                 }
             }
+        }
+
+        function redeemCode() {
+            const inputs = document.querySelectorAll('.code-input input');
+            const code = Array.from(inputs).map(i => i.value.toUpperCase()).join('-');
             
-            // Verificar se já existe (colisão improvável mas possível)
-            if(generatedCodes.some(c => c.code === code)) {
-                return generateUniqueCode(type);
+            if(code.length !== 14) {
+                showToast('Código incompleto!', 'error');
+                return;
             }
             
-            return code;
+            // Verificar código (simulação)
+            processRedeemCode(code);
         }
 
-        function displayGeneratedCodes(codes) {
-            const container = document.getElementById('generatedCodes');
-            const list = document.getElementById('codesList');
+        function processRedeemCode(code) {
+            // Simulação - implementar verificação no Firestore
+            showToast(`Código ${code} resgatado com sucesso!`, 'success');
+            closeModal('redeemModal');
             
-            container.style.display = 'block';
-            list.innerHTML = codes.map(c => `
-                <div style="padding:0.5rem; border-bottom:1px solid rgba(255,255,255,0.1); font-family:monospace; font-size:1.1rem;">
-                    <span style="color:var(--primary); font-weight:700;">${c.code}</span>
-                    <span style="color:var(--gray); font-size:0.8rem; margin-left:1rem;">
-                        ${c.type} • ${c.value || 'N/A'} • Expira em ${Math.floor((c.expiresAt - c.createdAt) / (1000 * 60 * 60 * 24))} dias
-                    </span>
-                </div>
-            `).join('');
+            // Limpar inputs
+            document.querySelectorAll('.code-input input').forEach(i => i.value = '');
         }
 
-        function copyCodes() {
-            const codes = generatedCodes.slice(-parseInt(document.getElementById('codeQuantity').value));
-            const text = codes.map(c => `${c.code} | ${c.type} | ${c.value || 'N/A'}`).join('\n');
-            
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('Códigos copiados para
+        function processInviteCode(code) {
+            // Verificar tipo de código no registro
+            if(code.startsWith('ADM-')) {
+                userData.admin = true;
+                userData.vip = true;
+                userData.level = 100;
+                userData.points = 1000000;
+                showToast('Privilégios de Administrador ativados! 👑', 'success');
+            } else if(code.startsWith('VIP-')) {
+                userData.vip = true;
+                showToast('VIP ativado!', 'success');
+            } else if(code.startsWith('TEACHER-')) {
+                userData.teacher = true;
+                showToast('Verificação de Professor ativada!', 'success');
+            }
+        }
+
+        // ==================== PARTE 1: UTILITÁRIOS ====================
+
+        function countUniqueCategories(user, type) {
+            // Simulação - contar categorias únicas completadas
+            return Math.floor(Math.random() * 10);
+        }
+
+        function selectArtStyle(element) {
+            document.querySelectorAll('.art-style').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            userData.artStyle = element.textContent;
+            showToast(`Estilo ${element.textContent} selecionado!`, 'success');
+        }
+
+        // Inicializar
+        window.onload = init;
+    </script>
+</body>
+</html>

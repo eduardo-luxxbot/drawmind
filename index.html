@@ -3,505 +3,448 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEURO 3.0 - Plataforma Educacional Gamificada</title>
+    <title>NEURO 3.0 - Plataforma Educacional</title>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --success: #22c55e;
-            --danger: #ef4444;
-            --warning: #eab308;
-            --vip: #ffd700;
-            --vip2: #ff6b6b;
-            --dark: #0f172a;
-            --darker: #020617;
-            --light: #f8fafc;
-            --card: rgba(30, 41, 59, 0.8);
-        }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--darker); color: var(--light); min-height: 100vh; }
-        .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%); }
+        body { background: #020617; color: #f8fafc; min-height: 100vh; }
 
-        /* Auth Screen */
-        #authScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--darker);
-            display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .auth-container { background: var(--card); border-radius: 24px; padding: 40px; width: 90%; max-width: 480px;
-            border: 1px solid rgba(255, 255, 255, 0.1); }
-        .logo { text-align: center; margin-bottom: 30px; }
-        .logo h1 { font-size: 2.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; margin-bottom: 8px; font-size: 0.875rem; color: var(--light); }
-        .input-group input { width: 100%; padding: 14px 18px; background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: var(--light); font-size: 1rem; }
-        .btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border: none; border-radius: 12px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4); }
-        .btn-secondary { background: transparent; border: 2px solid var(--primary); margin-top: 12px; }
+        /* TELA DE LOGIN */
+        #authScreen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            display: flex; align-items: center; justify-content: center; z-index: 1000; 
+        }
+        .auth-box { 
+            background: rgba(30, 41, 59, 0.9); padding: 40px; border-radius: 20px; 
+            width: 90%; max-width: 400px; border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .auth-box h1 { 
+            text-align: center; margin-bottom: 10px; font-size: 2.5rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+        }
+        .auth-box p.subtitle { text-align: center; color: #94a3b8; margin-bottom: 30px; }
 
-        /* Main App */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #cbd5e1; font-size: 0.9rem; }
+        .form-group input, .form-group select { 
+            width: 100%; padding: 12px 16px; background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; 
+            color: white; font-size: 1rem; transition: all 0.3s;
+        }
+        .form-group input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+
+        .btn-primary { 
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #6366f1, #4f46e5);
+            border: none; border-radius: 10px; color: white; font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: all 0.3s; margin-top: 10px;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4); }
+        .btn-secondary { 
+            width: 100%; padding: 14px; background: transparent; border: 2px solid #6366f1;
+            border-radius: 10px; color: #6366f1; font-size: 1rem; font-weight: 600;
+            cursor: pointer; margin-top: 10px; transition: all 0.3s;
+        }
+        .btn-secondary:hover { background: rgba(99, 102, 241, 0.1); }
+
+        .auth-toggle { text-align: center; margin-top: 20px; color: #94a3b8; font-size: 0.9rem; }
+        .auth-toggle a { color: #6366f1; cursor: pointer; font-weight: 600; text-decoration: none; }
+        .auth-toggle a:hover { text-decoration: underline; }
+
+        .error-msg { 
+            background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444; padding: 12px; border-radius: 8px; margin-bottom: 20px; 
+            font-size: 0.9rem; display: none; 
+        }
+        .success-msg { 
+            background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22c55e; padding: 12px; border-radius: 8px; margin-bottom: 20px;
+            font-size: 0.9rem; display: none;
+        }
+
+        /* APP PRINCIPAL */
         #mainApp { display: none; }
-        .nav-sidebar { position: fixed; left: 0; top: 0; width: 280px; height: 100%; background: rgba(15, 23, 42, 0.95);
-            border-right: 1px solid rgba(255, 255, 255, 0.05); padding: 24px; overflow-y: auto; }
-        .user-card { background: var(--card); border-radius: 16px; padding: 16px; margin: 20px 0; }
-        .user-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex; align-items: center; justify-content: center; font-weight: 700; }
+
+        /* SIDEBAR */
+        .sidebar { 
+            position: fixed; left: 0; top: 0; width: 260px; height: 100%; 
+            background: rgba(15, 23, 42, 0.98); border-right: 1px solid rgba(255,255,255,0.05);
+            padding: 20px; overflow-y: auto; z-index: 100;
+        }
+        .sidebar-header { 
+            font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 20px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .user-card { 
+            background: rgba(30, 41, 59, 0.8); border-radius: 16px; padding: 16px; 
+            margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .user-info { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .user-avatar { 
+            width: 48px; height: 48px; border-radius: 50%; 
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex; align-items: center; justify-content: center; 
+            font-weight: 700; font-size: 1.2rem; 
+        }
+        .user-details h4 { font-size: 0.95rem; margin-bottom: 2px; }
+        .user-details p { font-size: 0.8rem; color: #94a3b8; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .stat-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; text-align: center; }
+        .stat-value { font-size: 1.1rem; font-weight: 700; color: #6366f1; }
+        .stat-label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; }
+
+        .progress-bar { 
+            width: 100%; height: 6px; background: rgba(255,255,255,0.1); 
+            border-radius: 3px; overflow: hidden; margin-top: 10px;
+        }
+        .progress-fill { 
+            height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); 
+            border-radius: 3px; transition: width 0.5s; 
+        }
+
         .nav-menu { list-style: none; }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px;
-            color: #94a3b8; text-decoration: none; cursor: pointer; margin-bottom: 4px; }
-        .nav-link:hover, .nav-link.active { background: rgba(99, 102, 241, 0.1); color: white; }
+        .nav-item { margin-bottom: 4px; }
+        .nav-link { 
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            border-radius: 12px; color: #94a3b8; cursor: pointer; transition: all 0.3s;
+            text-decoration: none;
+        }
+        .nav-link:hover, .nav-link.active { 
+            background: rgba(99, 102, 241, 0.1); color: white; 
+        }
+        .nav-link span:first-child { font-size: 1.3rem; }
 
-        .main-content { margin-left: 280px; padding: 32px; }
-        .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* CONTEÚDO */
+        .content { margin-left: 260px; padding: 30px; min-height: 100vh; }
 
-        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
-        .card { background: var(--card); border-radius: 20px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.05);
-            cursor: pointer; transition: all 0.3s; }
-        .card:hover { transform: translateY(-4px); border-color: var(--primary); }
+        .page { display: none; animation: fadeIn 0.4s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .lesson-content { background: var(--card); border-radius: 24px; padding: 40px; margin-bottom: 24px; }
-        .quiz-container { background: var(--card); border-radius: 24px; padding: 32px; }
-        .quiz-option { background: rgba(255, 255, 255, 0.03); border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px; padding: 16px; margin-bottom: 12px; cursor: pointer; }
-        .quiz-option:hover { border-color: var(--primary); }
-        .quiz-option.correct { background: rgba(34, 197, 94, 0.2); border-color: var(--success); }
-        .quiz-option.wrong { background: rgba(239, 68, 68, 0.2); border-color: var(--danger); }
+        .page-header { margin-bottom: 30px; }
+        .page-header h2 { font-size: 1.8rem; margin-bottom: 8px; }
+        .page-header p { color: #94a3b8; }
 
-        .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .shop-item { background: var(--card); border-radius: 20px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.05); }
-        .shop-item-image { height: 160px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3));
-            display: flex; align-items: center; justify-content: center; font-size: 4rem; }
-        .shop-item-badge { position: absolute; top: 12px; right: 12px; background: var(--vip); color: var(--dark);
-            padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        /* CARDS */
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { 
+            background: rgba(30, 41, 59, 0.8); border-radius: 16px; padding: 24px;
+            border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: all 0.3s;
+        }
+        .card:hover { 
+            transform: translateY(-4px); border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
+        }
+        .card-icon { font-size: 2.5rem; margin-bottom: 16px; }
+        .card h3 { margin-bottom: 8px; }
+        .card p { color: #94a3b8; font-size: 0.9rem; line-height: 1.5; }
 
-        .achievements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .achievement-card { background: var(--card); border-radius: 20px; padding: 24px; display: flex; gap: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05); }
-        .achievement-card.unlocked { border-color: var(--success); }
-        .achievement-card.exclusive { background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 107, 107, 0.1));
-            border-color: var(--vip); }
+        /* AULAS */
+        .lesson-box { 
+            background: rgba(30, 41, 59, 0.8); border-radius: 20px; padding: 30px;
+            border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;
+        }
+        .lesson-box h2 { color: #6366f1; margin-bottom: 20px; }
+        .lesson-box p { line-height: 1.8; margin-bottom: 16px; color: #cbd5e1; }
 
-        .profile-customization { display: grid; grid-template-columns: 300px 1fr; gap: 32px; }
-        .profile-preview { background: var(--card); border-radius: 24px; padding: 32px; text-align: center;
-            position: sticky; top: 32px; height: fit-content; }
-        .profile-avatar-large { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary));
-            margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 3rem;
-            border: 4px solid transparent; }
-        .profile-avatar-large.vip-frame { border-color: var(--vip); box-shadow: 0 0 30px rgba(255, 215, 0, 0.3); }
+        .quiz-box { 
+            background: rgba(30, 41, 59, 0.8); border-radius: 20px; padding: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .quiz-option { 
+            background: rgba(255,255,255,0.03); border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 16px; margin-bottom: 12px; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .quiz-option:hover { border-color: #6366f1; background: rgba(99, 102, 241, 0.1); }
+        .quiz-option.correct { background: rgba(34, 197, 94, 0.2); border-color: #22c55e; }
+        .quiz-option.wrong { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; }
 
-        .teacher-dashboard { display: grid; grid-template-columns: 250px 1fr; gap: 32px; }
-        .teacher-sidebar { background: var(--card); border-radius: 20px; padding: 24px; height: fit-content;
-            position: sticky; top: 32px; }
-        .teacher-menu-item { padding: 12px 16px; border-radius: 12px; cursor: pointer; margin-bottom: 4px;
-            display: flex; align-items: center; gap: 10px; }
-        .teacher-menu-item:hover, .teacher-menu-item.active { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
-
-        .study-groups-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; }
-        .study-group-card { background: var(--card); border-radius: 20px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.05); }
-
-        .admin-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
-        .code-generator { display: flex; gap: 12px; margin-bottom: 16px; }
-        .code-display { flex: 1; background: rgba(0, 0, 0, 0.3); padding: 14px; border-radius: 12px;
-            font-family: monospace; font-size: 1.1rem; text-align: center; letter-spacing: 2px; }
-
-        .battle-arena { background: var(--card); border-radius: 24px; padding: 40px; text-align: center; }
-        .battle-players { display: flex; justify-content: center; align-items: center; gap: 40px; margin: 40px 0; }
-        .battle-avatar { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 16px; }
-        .vs-divider { font-size: 2rem; font-weight: 800; color: var(--vip); }
-
-        .notification-container { position: fixed; top: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 12px; }
-        .notification { background: var(--card); border-radius: 16px; padding: 20px 24px; min-width: 300px;
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5); animation: slideIn 0.4s ease; display: flex; align-items: center; gap: 16px; }
+        /* NOTIFICAÇÃO */
+        .notification { 
+            position: fixed; top: 20px; right: 20px; background: rgba(30, 41, 59, 0.95);
+            border-left: 4px solid #6366f1; padding: 16px 24px; border-radius: 12px;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); z-index: 9999;
+            animation: slideIn 0.4s ease; max-width: 400px;
+        }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .notification.error { border-left-color: #ef4444; }
+        .notification.success { border-left-color: #22c55e; }
 
-        .progress-bar { width: 100%; height: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 4px; }
+        /* LOJA */
+        .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .shop-item { 
+            background: rgba(30, 41, 59, 0.8); border-radius: 16px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s;
+        }
+        .shop-item:hover { transform: translateY(-4px); border-color: rgba(255, 215, 0, 0.3); }
+        .shop-item-img { 
+            height: 140px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            display: flex; align-items: center; justify-content: center; font-size: 3rem;
+        }
+        .shop-item-info { padding: 16px; }
+        .shop-item-price { color: #ffd700; font-weight: 700; font-size: 1.1rem; margin: 8px 0; }
 
-        .guild-header { background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-            border-radius: 24px; padding: 32px; margin-bottom: 32px; text-align: center; border: 1px solid rgba(99, 102, 241, 0.3); }
-        .guild-emblem { width: 100px; height: 100px; background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 24px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
-        .guild-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px; }
+        /* GUILDA */
+        .guild-box { 
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
+            border-radius: 24px; padding: 40px; text-align: center;
+            border: 1px solid rgba(99, 102, 241, 0.3); margin-bottom: 30px;
+        }
+        .guild-icon { font-size: 4rem; margin-bottom: 16px; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8);
-            display: none; align-items: center; justify-content: center; z-index: 2000; }
-        .modal-overlay.active { display: flex; }
-        .modal { background: var(--card); border-radius: 24px; padding: 32px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
-
-        .level-up-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9);
-            display: none; align-items: center; justify-content: center; z-index: 3000; flex-direction: column; }
-        .level-up-overlay.active { display: flex; }
-        .level-up-title { font-size: 3rem; font-weight: 800; background: linear-gradient(135deg, var(--vip), var(--warning));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .level-up-number { font-size: 6rem; font-weight: 800; color: var(--vip); text-shadow: 0 0 60px rgba(255, 215, 0, 0.5); }
-
-        .hidden { display: none !important; }
-        .badge { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
-        .badge-vip { background: rgba(255, 215, 0, 0.2); color: var(--vip); }
-        .vip-lock { color: var(--vip); font-size: 0.875rem; }
-
-        @media (max-width: 1024px) {
-            .nav-sidebar { width: 80px; }
-            .main-content { margin-left: 80px; }
-            .profile-customization, .teacher-dashboard { grid-template-columns: 1fr; }
+        /* RESPONSIVO */
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; height: auto; position: relative; }
+            .content { margin-left: 0; }
+            .cards-grid { grid-template-columns: 1fr; }
         }
     </style>
 <base target="_blank">
 </head>
 <body>
-    <div class="bg-animation"></div>
-    <div id="notificationContainer" class="notification-container"></div>
+    <!-- NOTIFICAÇÕES -->
+    <div id="notificationArea"></div>
 
-    <!-- Auth Screen -->
+    <!-- TELA DE LOGIN -->
     <div id="authScreen">
-        <div class="auth-container">
-            <div class="logo">
-                <h1>🧠 NEURO 3.0</h1>
-                <p>Aprenda jogando. Evolua conquistando.</p>
-            </div>
-            <form id="authForm">
+        <div class="auth-box">
+            <h1>🧠 NEURO 3.0</h1>
+            <p class="subtitle">Aprenda jogando. Evolua conquistando.</p>
+
+            <div id="errorMsg" class="error-msg"></div>
+            <div id="successMsg" class="success-msg"></div>
+
+            <form id="loginForm">
                 <div id="registerFields" style="display: none;">
-                    <div class="input-group">
+                    <div class="form-group">
                         <label>Nome completo</label>
                         <input type="text" id="fullName" placeholder="Seu nome">
                     </div>
-                    <div class="input-group">
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="seu@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="password" placeholder="••••••••" required minlength="6">
+                </div>
+
+                <div id="registerFields2" style="display: none;">
+                    <div class="form-group">
                         <label>Código de convite (opcional)</label>
                         <input type="text" id="inviteCode" placeholder="XXXX-XXXX-XXXX">
                     </div>
                 </div>
-                <div class="input-group">
-                    <label>Email</label>
-                    <input type="email" id="email" placeholder="seu@email.com" required>
-                </div>
-                <div class="input-group">
-                    <label>Senha</label>
-                    <input type="password" id="password" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="btn" id="authBtn">Entrar</button>
-                <button type="button" class="btn btn-secondary" onclick="authWithGoogle()">Continuar com Google</button>
+
+                <button type="submit" class="btn-primary" id="submitBtn">Entrar</button>
+                <button type="button" class="btn-secondary" onclick="toggleAuthMode()" id="toggleBtn">Criar nova conta</button>
             </form>
-            <div style="text-align: center; margin-top: 20px; color: #94a3b8;">
-                <span id="authToggleText">Não tem conta?</span>
-                <span id="authToggleLink" style="color: var(--primary); cursor: pointer; font-weight: 600;"> Cadastrar</span>
+
+            <div style="text-align: center; margin-top: 20px; color: #64748b; font-size: 0.85rem;">
+                Códigos especiais: <strong style="color: #6366f1;">NEURO-2024-ADM@</strong> (Admin) ou <strong style="color: #ffd700;">VIP2-NEURO-2024</strong> (VIP)
             </div>
         </div>
     </div>
 
-    <!-- Main App -->
+    <!-- APP PRINCIPAL -->
     <div id="mainApp">
-        <nav class="nav-sidebar">
-            <div style="font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-                -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px;">🧠 NEURO</div>
+        <!-- SIDEBAR -->
+        <nav class="sidebar">
+            <div class="sidebar-header">🧠 NEURO</div>
 
             <div class="user-card">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                <div class="user-info">
                     <div class="user-avatar" id="userAvatar">U</div>
-                    <div>
-                        <div style="font-weight: 600;" id="userName">Usuário</div>
-                        <div style="font-size: 0.8rem; color: #94a3b8;" id="userEmail">email</div>
+                    <div class="user-details">
+                        <h4 id="userName">Usuário</h4>
+                        <p id="userEmail">email@exemplo.com</p>
                     </div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                    <div style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; text-align: center;">
-                        <div style="font-weight: 700; color: var(--primary);" id="userLevel">1</div>
-                        <div style="font-size: 0.7rem; color: #94a3b8;">NÍVEL</div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="userLevel">1</div>
+                        <div class="stat-label">Nível</div>
                     </div>
-                    <div style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; text-align: center;">
-                        <div style="font-weight: 700; color: var(--primary);" id="userPoints">0</div>
-                        <div style="font-size: 0.7rem; color: #94a3b8;">PONTOS</div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="userPoints">0</div>
+                        <div class="stat-label">Pontos</div>
                     </div>
                 </div>
-                <div class="progress-bar" style="margin-top: 12px;">
-                    <div class="progress-fill" id="xpProgress" style="width: 0%"></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="xpBar" style="width: 0%"></div>
                 </div>
             </div>
 
             <ul class="nav-menu">
-                <li><a class="nav-link active" onclick="showPage('home')">🏠 Início</a></li>
-                <li><a class="nav-link" onclick="showPage('courses')">📚 Cursos</a></li>
-                <li><a class="nav-link" onclick="showPage('guilds')">⚔️ Guildas</a></li>
-                <li><a class="nav-link" onclick="showPage('battle')">🎯 Batalha 1v1</a></li>
-                <li><a class="nav-link" onclick="showPage('ranking')">🏆 Ranking</a></li>
-                <li><a class="nav-link" onclick="showPage('shop')">🛒 Loja</a></li>
-                <li><a class="nav-link" onclick="showPage('achievements')">🏅 Conquistas</a></li>
-                <li><a class="nav-link" onclick="showPage('profile')">👤 Perfil</a></li>
-                <li id="teacherNavItem" style="display: none;"><a class="nav-link" onclick="showPage('teacher')">👨‍🏫 Professor <span class="badge" style="background: var(--vip); color: var(--dark); margin-left: 8px;">PRO</span></a></li>
-                <li id="adminNavItem" style="display: none;"><a class="nav-link" onclick="showPage('admin')">⚙️ Admin</a></li>
-                <li><a class="nav-link" onclick="logout()">🚪 Sair</a></li>
+                <li class="nav-item"><a class="nav-link active" onclick="showPage('home')"><span>🏠</span> <span>Início</span></a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showPage('courses')"><span>📚</span> <span>Cursos</span></a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showPage('guild')"><span>⚔️</span> <span>Guilda</span></a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showPage('battle')"><span>🎯</span> <span>Batalha</span></a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showPage('shop')"><span>🛒</span> <span>Loja</span></a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showPage('profile')"><span>👤</span> <span>Perfil</span></a></li>
+                <li class="nav-item" id="adminMenu" style="display: none;"><a class="nav-link" onclick="showPage('admin')"><span>⚙️</span> <span>Admin</span></a></li>
+                <li class="nav-item"><a class="nav-link" onclick="logout()"><span>🚪</span> <span>Sair</span></a></li>
             </ul>
         </nav>
 
-        <main class="main-content">
+        <!-- CONTEÚDO -->
+        <main class="content">
             <!-- HOME -->
             <div id="page-home" class="page active">
-                <h2 style="margin-bottom: 8px;">Bem-vindo, <span style="color: var(--primary);" id="welcomeName">Aluno</span>! 👋</h2>
-                <p style="color: #94a3b8; margin-bottom: 32px;">Continue sua jornada de aprendizado gamificado</p>
+                <div class="page-header">
+                    <h2>Bem-vindo, <span style="color: #6366f1;" id="welcomeName">Aluno</span>! 👋</h2>
+                    <p>Continue sua jornada de aprendizado gamificado</p>
+                </div>
 
                 <div class="cards-grid">
                     <div class="card" onclick="showPage('courses')">
-                        <div style="font-size: 3rem; margin-bottom: 16px;">📚</div>
+                        <div class="card-icon">📚</div>
                         <h3>Continuar Estudando</h3>
-                        <p style="color: #94a3b8; margin-top: 8px;">Retome de onde parou</p>
+                        <p>Acesse seus cursos de Física, Química e Biologia</p>
                     </div>
                     <div class="card" onclick="showPage('battle')">
-                        <div style="font-size: 3rem; margin-bottom: 16px;">⚔️</div>
-                        <h3>Batalha Rápida</h3>
-                        <p style="color: #94a3b8; margin-top: 8px;">Desafie outros alunos</p>
+                        <div class="card-icon">⚔️</div>
+                        <h3>Batalha 1v1</h3>
+                        <p>Desafie outros alunos em quiz em tempo real</p>
                     </div>
-                    <div class="card" onclick="showPage('guilds')">
-                        <div style="font-size: 3rem; margin-bottom: 16px;">🏰</div>
+                    <div class="card" onclick="showPage('guild')">
+                        <div class="card-icon">🏰</div>
                         <h3>Minha Guilda</h3>
-                        <p style="color: #94a3b8; margin-top: 8px;">Colabore com amigos</p>
+                        <p>Colabore com amigos e conquiste juntos</p>
                     </div>
                     <div class="card" onclick="showPage('shop')">
-                        <div style="font-size: 3rem; margin-bottom: 16px;">🛍️</div>
+                        <div class="card-icon">🛍️</div>
                         <h3>Loja de Recompensas</h3>
-                        <p style="color: #94a3b8; margin-top: 8px;">Gaste seus pontos</p>
+                        <p>Gaste seus pontos em itens exclusivos</p>
                     </div>
                 </div>
             </div>
 
-            <!-- COURSES -->
+            <!-- CURSOS -->
             <div id="page-courses" class="page">
-                <h2 style="margin-bottom: 8px;">📚 Catálogo de Cursos</h2>
-                <p style="color: #94a3b8; margin-bottom: 32px;">Escolha sua área de estudo</p>
-                <div id="coursesContainer"></div>
+                <div class="page-header">
+                    <h2>📚 Catálogo de Cursos</h2>
+                    <p>Escolha sua área de estudo</p>
+                </div>
+                <div id="coursesList"></div>
             </div>
 
-            <!-- LESSON -->
+            <!-- AULA -->
             <div id="page-lesson" class="page">
-                <button class="btn btn-secondary" onclick="showPage('courses')" style="width: auto; margin-bottom: 20px;">← Voltar</button>
-                <div class="lesson-container">
-                    <div class="lesson-content" id="lessonContent"></div>
-                    <div class="quiz-container" id="quizContainer" style="display: none;">
-                        <h3>📝 Quiz de Fixação</h3>
-                        <div id="quizContent"></div>
-                    </div>
-                </div>
+                <button class="btn-secondary" onclick="showPage('courses')" style="width: auto; margin-bottom: 20px; padding: 10px 20px;">← Voltar</button>
+                <div id="lessonContent"></div>
             </div>
 
-            <!-- GUILDS -->
-            <div id="page-guilds" class="page">
-                <h2 style="margin-bottom: 8px;">⚔️ Guildas</h2>
-                <p style="color: #94a3b8; margin-bottom: 32px;">Forme alianças e conquiste juntos</p>
-
-                <div class="guild-header">
-                    <div class="guild-emblem">🏰</div>
+            <!-- GUILDA -->
+            <div id="page-guild" class="page">
+                <div class="page-header">
+                    <h2>⚔️ Minha Guilda</h2>
+                    <p>Neuro Knights - Nível 5</p>
+                </div>
+                <div class="guild-box">
+                    <div class="guild-icon">🏰</div>
                     <h2>Neuro Knights</h2>
-                    <p style="color: #94a3b8;">"Conhecimento é nossa arma"</p>
-                    <div class="guild-stats">
-                        <div><div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">5</div><div style="font-size: 0.8rem; color: #94a3b8;">NÍVEL</div></div>
-                        <div><div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">12</div><div style="font-size: 0.8rem; color: #94a3b8;">MEMBROS</div></div>
-                        <div><div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">45K</div><div style="font-size: 0.8rem; color: #94a3b8;">PONTOS</div></div>
-                        <div><div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">#3</div><div style="font-size: 0.8rem; color: #94a3b8;">RANKING</div></div>
+                    <p style="color: #94a3b8; margin-top: 10px;">"Conhecimento é nossa arma"</p>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 30px;">
+                        <div><div style="font-size: 2rem; font-weight: 700; color: #6366f1;">5</div><div style="color: #64748b; font-size: 0.8rem;">NÍVEL</div></div>
+                        <div><div style="font-size: 2rem; font-weight: 700; color: #6366f1;">12</div><div style="color: #64748b; font-size: 0.8rem;">MEMBROS</div></div>
+                        <div><div style="font-size: 2rem; font-weight: 700; color: #6366f1;">45K</div><div style="color: #64748b; font-size: 0.8rem;">PONTOS</div></div>
+                        <div><div style="font-size: 2rem; font-weight: 700; color: #6366f1;">#3</div><div style="color: #64748b; font-size: 0.8rem;">RANKING</div></div>
                     </div>
                 </div>
-
-                <div class="cards-grid">
-                    <div class="card">
-                        <h3>🎯 Missões da Guilda</h3>
-                        <div style="margin-top: 16px;">
-                            <div style="margin-bottom: 12px;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                    <span>Estudar 100h em grupo</span><span>75%</span>
-                                </div>
-                                <div class="progress-bar"><div class="progress-fill" style="width: 75%"></div></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card" onclick="openGuildShop()">
-                        <h3>🏪 Loja da Guilda</h3>
-                        <p style="color: #94a3b8;">Itens exclusivos por nível</p>
-                    </div>
-                </div>
+                <button class="btn-primary" onclick="showNotification('Loja da Guilda em breve!', 'info')" style="max-width: 300px;">Acessar Loja da Guilda</button>
             </div>
 
-            <!-- BATTLE -->
+            <!-- BATALHA -->
             <div id="page-battle" class="page">
-                <h2 style="margin-bottom: 8px;">⚔️ Arena de Batalhas</h2>
-                <p style="color: #94a3b8; margin-bottom: 32px;">Desafie outros alunos em quiz em tempo real</p>
-
-                <div class="battle-arena">
-                    <div id="battleWaiting">
-                        <div style="font-size: 4rem; margin-bottom: 20px;">⚔️</div>
-                        <h3>Pronto para batalhar?</h3>
-                        <button class="btn" onclick="startBattle()" style="max-width: 300px; margin: 20px auto 0;">Encontrar Oponente</button>
-                    </div>
-                    <div id="battleActive" style="display: none;">
-                        <div class="battle-players">
-                            <div class="battle-player active">
-                                <div class="battle-avatar">🧑</div>
-                                <h4>Você</h4>
-                                <p style="color: #94a3b8;">Nível <span id="battleMyLevel">1</span></p>
-                            </div>
-                            <div class="vs-divider">VS</div>
-                            <div class="battle-player">
-                                <div class="battle-avatar">🎭</div>
-                                <h4 id="opponentName">Oponente</h4>
-                                <p style="color: #94a3b8;">Nível <span id="opponentLevel">5</span></p>
-                            </div>
-                        </div>
-                        <div id="battleQuiz"></div>
-                    </div>
+                <div class="page-header">
+                    <h2>⚔️ Arena de Batalhas</h2>
+                    <p>Teste seus conhecimentos contra outros alunos</p>
+                </div>
+                <div class="lesson-box" style="text-align: center; padding: 60px 40px;">
+                    <div style="font-size: 5rem; margin-bottom: 20px;">⚔️</div>
+                    <h3 style="margin-bottom: 16px;">Pronto para batalhar?</h3>
+                    <p style="color: #94a3b8; margin-bottom: 30px;">Encontre um oponente e teste seus conhecimentos em quiz em tempo real</p>
+                    <button class="btn-primary" onclick="startBattle()" style="max-width: 300px;">Encontrar Oponente</button>
                 </div>
             </div>
 
-            <!-- RANKING -->
-            <div id="page-ranking" class="page">
-                <h2 style="margin-bottom: 8px;">🏆 Ranking Global</h2>
-                <p style="color: #94a3b8; margin-bottom: 32px;">Os melhores alunos da plataforma</p>
-                <div class="lesson-content" id="rankingList"></div>
-            </div>
-
-            <!-- SHOP -->
+            <!-- LOJA -->
             <div id="page-shop" class="page">
-                <h2 style="margin-bottom: 8px;">🛒 Loja de Recompensas</h2>
-                <p style="color: #94a3b8; margin-bottom: 32px;">Gaste seus pontos em itens exclusivos</p>
-                <div class="shop-grid" id="shopGrid"></div>
-            </div>
-
-            <!-- ACHIEVEMENTS -->
-            <div id="page-achievements" class="page">
-                <h2 style="margin-bottom: 8px;">🏅 Conquistas</h2>
-                <p style="color: #94a3b8; margin-bottom: 32px;">Desbloqueie conquistas e mostre seu progresso</p>
-                <div class="achievements-grid" id="achievementsGrid"></div>
-            </div>
-
-            <!-- PROFILE -->
-            <div id="page-profile" class="page">
-                <h2 style="margin-bottom: 8px;">👤 Personalização de Perfil</h2>
-                <p style="color: #94a3b8; margin-bottom: 32px;">Customize seu perfil com itens exclusivos</p>
-
-                <div class="profile-customization">
-                    <div class="profile-preview">
-                        <div style="width: 100%; height: 100px; background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-                            border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; font-size: 2rem;" id="profileBanner">🎨</div>
-                        <div class="profile-avatar-large vip-frame" id="profileAvatarLarge">👤</div>
-                        <h3 id="profilePreviewName">Usuário</h3>
-                        <p style="color: #94a3b8;">Nível <span id="profilePreviewLevel">1</span></p>
-                        <span class="badge badge-vip" style="margin-top: 12px;">VIP</span>
-                    </div>
-
-                    <div>
-                        <div class="lesson-content" style="margin-bottom: 24px;">
-                            <h3 style="margin-bottom: 16px;">🖼️ Frames de Avatar <span class="vip-lock">(VIP/VIP2)</span></h3>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 12px;" id="avatarFrames"></div>
-                        </div>
-
-                        <div class="lesson-content" style="margin-bottom: 24px;">
-                            <h3 style="margin-bottom: 16px;">🎨 Banners de Perfil <span class="vip-lock">(VIP2)</span></h3>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px;" id="profileBanners"></div>
-                        </div>
-
-                        <div class="lesson-content" style="margin-bottom: 24px;">
-                            <h3 style="margin-bottom: 16px;">🏅 Badges Exclusivos <span class="vip-lock">(VIP)</span></h3>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 12px;" id="profileBadges"></div>
-                        </div>
-
-                        <div class="lesson-content">
-                            <h3 style="margin-bottom: 16px;">✨ Animações <span class="vip-lock">(VIP2)</span></h3>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 12px;" id="profileAnimations"></div>
-                        </div>
-                    </div>
+                <div class="page-header">
+                    <h2>🛒 Loja de Recompensas</h2>
+                    <p>Gaste seus pontos em itens exclusivos</p>
                 </div>
+                <div id="shopItems" class="shop-grid"></div>
             </div>
 
-            <!-- TEACHER -->
-            <div id="page-teacher" class="page">
-                <h2 style="margin-bottom: 8px;">👨‍🏫 Central do Professor</h2>
-                <p style="color: #94a3b8; margin-bottom: 32px;">Gerencie aulas, grupos e conquistas</p>
-
-                <div class="teacher-dashboard">
-                    <div class="teacher-sidebar">
-                        <div class="teacher-menu-item active" onclick="showTeacherTab('lessons')">📖 Minhas Aulas</div>
-                        <div class="teacher-menu-item" onclick="showTeacherTab('editor')">✏️ Editor de Aulas</div>
-                        <div class="teacher-menu-item" onclick="showTeacherTab('groups')">👥 Grupos de Estudo</div>
-                        <div class="teacher-menu-item" onclick="showTeacherTab('students')">🎓 Meus Alunos</div>
-                        <div class="teacher-menu-item" onclick="showTeacherTab('achievements')">🏆 Conquistas de Professor</div>
-                        <div class="teacher-menu-item" onclick="showTeacherTab('ia')">🤖 Gerador IA</div>
-                    </div>
-                    <div class="lesson-content" id="teacherContent" style="min-height: 600px;">
-                        <!-- Conteúdo dinâmico -->
+            <!-- PERFIL -->
+            <div id="page-profile" class="page">
+                <div class="page-header">
+                    <h2>👤 Meu Perfil</h2>
+                    <p>Visualize suas conquistas</p>
+                </div>
+                <div class="lesson-box">
+                    <h3>Estatísticas</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px;">
+                        <div class="stat-box" style="padding: 20px;">
+                            <div class="stat-value" id="profileLevel">1</div>
+                            <div class="stat-label">Nível Atual</div>
+                        </div>
+                        <div class="stat-box" style="padding: 20px;">
+                            <div class="stat-value" id="profilePoints">0</div>
+                            <div class="stat-label">Pontos Totais</div>
+                        </div>
+                        <div class="stat-box" style="padding: 20px;">
+                            <div class="stat-value" id="profileLessons">0</div>
+                            <div class="stat-label">Aulas Completadas</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- ADMIN -->
             <div id="page-admin" class="page">
-                <h2 style="margin-bottom: 8px;">⚙️ Painel Administrativo</h2>
-                <p style="color: #94a3b8; margin-bottom: 32px;">Gerenciamento completo da plataforma</p>
-
-                <div class="admin-grid">
-                    <div class="lesson-content">
-                        <h3 style="margin-bottom: 20px;">🔑 Gerador de Códigos</h3>
-                        <div class="code-generator">
-                            <div class="code-display" id="generatedCode">XXXX-XXXX-XXXX</div>
-                            <button class="btn" onclick="generateCode()" style="width: auto;">Gerar</button>
-                        </div>
-                        <select id="codeType" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); 
-                            border-radius: 8px; color: white; margin-bottom: 12px;">
-                            <option value="points">Pontos</option>
-                            <option value="xp">XP</option>
-                            <option value="vip">VIP</option>
-                            <option value="vip2">VIP2</option>
-                            <option value="item">Item</option>
-                            <option value="teacher">Professor</option>
-                            <option value="admin">Administrador</option>
-                        </select>
-                        <button class="btn" onclick="saveCode()">Salvar Código</button>
+                <div class="page-header">
+                    <h2>⚙️ Painel Administrativo</h2>
+                    <p>Gerenciamento do sistema</p>
+                </div>
+                <div class="lesson-box">
+                    <h3>Gerador de Códigos</h3>
+                    <div style="display: flex; gap: 12px; margin: 20px 0;">
+                        <input type="text" id="generatedCode" readonly value="XXXX-XXXX-XXXX" style="flex: 1; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #ffd700; font-family: monospace; font-size: 1.2rem; text-align: center;">
+                        <button class="btn-primary" onclick="generateCode()" style="width: auto; padding: 14px 24px;">Gerar</button>
                     </div>
-
-                    <div class="lesson-content">
-                        <h3 style="margin-bottom: 20px;">📊 Estatísticas</h3>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                            <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; text-align: center;">
-                                <div style="font-size: 2rem; font-weight: 700; color: var(--primary);" id="totalUsers">1,247</div>
-                                <div style="color: #94a3b8;">Usuários</div>
-                            </div>
-                            <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; text-align: center;">
-                                <div style="font-size: 2rem; font-weight: 700; color: var(--success);" id="totalLessons">5,432</div>
-                                <div style="color: #94a3b8;">Aulas</div>
-                            </div>
-                        </div>
-                    </div>
+                    <select id="codeType" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; margin-bottom: 16px;">
+                        <option value="points">Pontos (1000)</option>
+                        <option value="xp">XP (500)</option>
+                        <option value="vip">VIP</option>
+                        <option value="vip2">VIP2</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                    <button class="btn-secondary" onclick="saveCode()">Salvar Código no Firebase</button>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Modals -->
-    <div class="modal-overlay" id="guildShopModal">
-        <div class="modal">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <h3>🏪 Loja da Guilda</h3>
-                <button onclick="closeModal('guildShopModal')" style="background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer;">×</button>
-            </div>
-            <div id="guildShopContent"></div>
-        </div>
-    </div>
-
-    <div class="level-up-overlay" id="levelUpModal">
-        <div class="level-up-title">LEVEL UP!</div>
-        <div class="level-up-number" id="newLevel">2</div>
-        <p style="color: #94a3b8; margin-bottom: 24px;">Parabéns! Você subiu de nível!</p>
-        <button class="btn" onclick="closeLevelUp()" style="max-width: 200px;">Continuar</button>
-    </div>
-
     <script>
     // ============================================
-    // CONFIGURAÇÃO FIREBASE (REAL)
+    // CONFIGURAÇÃO FIREBASE
     // ============================================
     const firebaseConfig = {
         apiKey: "AIzaSyAyrAvUQ3E23WX7IUT76BZHm5pxjyd-OnU",
@@ -522,252 +465,130 @@
     // ============================================
     let currentUser = null;
     let userData = null;
-    let currentLesson = null;
-    let audioContext = null;
+    let isLoginMode = true;
 
-    // ============================================
-    // CÓDIGOS ESPECIAIS
-    // ============================================
+    // Códigos especiais
     const SPECIAL_CODES = {
-        'NEURO-2024-ADM@': { type: 'admin', level: 100, points: 1000000, vip: 'vip2', admin: true },
-        'VIP2-NEURO-2024': { type: 'vip2', vip: 'vip2' }
+        'NEURO-2024-ADM@': { type: 'admin', level: 100, points: 1000000, xp: 50000, admin: true, vip: 'vip2' },
+        'VIP2-NEURO-2024': { type: 'vip2', vip: 'vip2' },
+        'VIP-NEURO-2024': { type: 'vip', vip: 'vip' }
     };
 
     // ============================================
-    // DADOS DOS CURSOS - CIÊNCIAS (150+ AULAS)
+    // DADOS DOS CURSOS (FÍSICA, QUÍMICA, BIOLOGIA)
     // ============================================
-    const COURSES_DATA = {
+    const COURSES = {
         fisica: {
-            id: 'fisica',
             name: 'Física',
             icon: '⚛️',
             color: '#3b82f6',
-            description: 'Estudo da matéria, energia e suas interações',
             modules: [
                 {
                     name: 'Mecânica Clássica',
                     lessons: [
-                        { id: 'fis_mec_1', title: 'Cinemática: Movimento Uniforme', content: 'A cinemática estuda o movimento dos corpos sem se preocupar com suas causas. No Movimento Uniforme (MU), a velocidade é constante. A equação fundamental é: S = S₀ + v.t, onde S é a posição final, S₀ a posição inicial, v a velocidade e t o tempo. Exemplo: Um carro parte do km 20 e viaja a 60 km/h. Após 2 horas, estará em: S = 20 + 60×2 = 140 km.' },
-                        { id: 'fis_mec_2', title: 'Movimento Uniformemente Variado', content: 'No MUV, a aceleração é constante. Equações: v = v₀ + a.t | S = S₀ + v₀.t + ½a.t² | v² = v₀² + 2.a.ΔS. Exemplo: Um objeto cai de 80m. Qual velocidade ao atingir o solo? Usando v² = 0 + 2×10×80 = 1600, temos v = 40 m/s.' },
-                        { id: 'fis_mec_3', title: 'Leis de Newton', content: '1ª Lei (Inércia): Corpo permanece em repouso ou MRU se resultante for zero. 2ª Lei: F = m.a. 3ª Lei: Ação e Reação. Exemplo: Para acelerar um carro de 1000kg a 2 m/s²: F = 1000×2 = 2000 N.' },
-                        { id: 'fis_mec_4', title: 'Trabalho e Energia', content: 'Trabalho W = F.d.cosθ. Energia Cinética: Ec = ½mv². Energia Potencial Gravitacional: Ep = mgh. Teorema da Energia Cinética: W = ΔEc. Exemplo: Qual trabalho para levantar 10kg a 5m? W = 10×10×5 = 500 J.' },
-                        { id: 'fis_mec_5', title: 'Conservação de Energia', content: 'Em sistemas isolados, a energia mecânica se conserva: Em = Ec + Ep = constante. Exemplo: Pêndulo - no ponto mais alto toda energia é potencial, no mais baixa toda é cinética.' },
-                        { id: 'fis_mec_6', title: 'Momento Linear e Impulso', content: 'Momento p = m.v. Impulso I = F.Δt = Δp. Em colisões, o momento total se conserva. Exemplo: Carro 1000kg a 20 m/s colide com caminhão 3000kg parado. Velocidade final: 1000×20 = (1000+3000)v → v = 5 m/s.' },
-                        { id: 'fis_mec_7', title: 'Rotação e Torque', content: 'Torque τ = F.r.sinθ. Momento angular L = I.ω. Analogia com movimento linear: F→τ, m→I, a→α, v→ω. Exemplo: Para abrir uma porta, aplicamos força perpendicular à maior distância possível das dobradiças.' },
-                        { id: 'fis_mec_8', title: 'Gravitação Universal', content: 'Lei de Newton: F = G.M.m/r². Aceleração gravitacional: g = GM/R². Órbitas planetárias seguem leis de Kepler. Velocidade de escape: v = √(2GM/R).' },
-                        { id: 'fis_mec_9', title: 'Estática e Equilíbrio', content: 'Condições de equilíbrio: ΣF = 0 e Στ = 0. Centro de gravidade. Tipos de equilíbrio: estável, instável e indiferente. Alavancas e vantagem mecânica.' },
-                        { id: 'fis_mec_10', title: 'Hidrostática', content: 'Pressão P = F/A. Princípio de Pascal. Princípio de Arquimedes: E = ρ.g.V. Pressão hidrostática: P = P₀ + ρgh. Exemplo: Pressão a 10m de profundidade na água: P = 10⁵ + 1000×10×10 = 2×10⁵ Pa.' },
-                        { id: 'fis_mec_11', title: 'Hidrodinâmica', content: 'Equação da continuidade: A₁v₁ = A₂v₂. Equação de Bernoulli: P + ½ρv² + ρgh = constante. Aplicações: asa de avião, perfume em spray.' },
-                        { id: 'fis_mec_12', title: 'Oscilações e Ondas Mecânicas', content: 'MHS: x = A.cos(ωt+φ). Energia em osciladores. Ondas transversais e longitudinais. Velocidade da onda: v = λ.f. Interferência, ressonância e batimentos.' }
+                        { id: 'f1', title: 'Cinemática: Movimento Uniforme', content: 'A cinemática estuda o movimento dos corpos. No Movimento Uniforme (MU), a velocidade é constante. Fórmula: S = S₀ + v.t. Exemplo: Um carro parte do km 20 e viaja a 60 km/h. Após 2 horas: S = 20 + 60×2 = 140 km.' },
+                        { id: 'f2', title: 'Movimento Uniformemente Variado', content: 'No MUV, a aceleração é constante. Fórmulas: v = v₀ + a.t | S = S₀ + v₀.t + ½a.t² | v² = v₀² + 2.a.ΔS. Exemplo: Um objeto cai de 80m. v² = 0 + 2×10×80 = 1600 → v = 40 m/s.' },
+                        { id: 'f3', title: 'Leis de Newton', content: '1ª Lei (Inércia): Corpo permanece em repouso ou MRU se resultante for zero. 2ª Lei: F = m.a. 3ª Lei: Ação e Reação. Exemplo: Carro de 1000kg acelerando a 2 m/s²: F = 1000×2 = 2000 N.' }
                     ]
                 },
                 {
                     name: 'Termodinâmica',
                     lessons: [
-                        { id: 'fis_term_1', title: 'Temperatura e Escalas', content: 'Escalas Celsius, Fahrenheit e Kelvin. Conversões: K = C + 273 | F = 1.8C + 32. Temperatura como medida de agitação molecular.' },
-                        { id: 'fis_term_2', title: 'Dilatação Térmica', content: 'Dilatação linear: ΔL = L₀.α.ΔT. Dilatação superficial e volumétrica. Anomalia da água (4°C). Aplicações: juntas de dilatação em pontes.' },
-                        { id: 'fis_term_3', title: 'Calor e Capacidade Térmica', content: 'Calor sensível: Q = m.c.ΔT. Capacidade térmica C = m.c. Calor latente: Q = m.L. Equilíbrio térmico: ΣQ = 0.' },
-                        { id: 'fis_term_4', title: 'Transferência de Calor', content: 'Condução: necessita de meio material. Convecção: em fluidos. Radiação: através de ondas eletromagnéticas. Lei de Stefan-Boltzmann para radiação.' },
-                        { id: 'fis_term_5', title: 'Gases Ideais', content: 'Lei de Boyle: PV = constante (T constante). Lei de Charles: V/T = constante. Lei de Gay-Lussac: P/T = constante. Equação geral: PV = nRT.' },
-                        { id: 'fis_term_6', title: 'Primeira Lei da Termodinâmica', content: 'ΔU = Q - W. Energia interna de gases ideais. Processos termodinâmicos: isotérmico, isobárico, isocórico e adiabático. Trabalho em processos cíclicos.' },
-                        { id: 'fis_term_7', title: 'Segunda Lei e Entropia', content: 'Máquinas térmicas e eficiência. Ciclo de Carnot (máxima eficiência). Entropia como medida de desordem. Irreversibilidade dos processos naturais.' },
-                        { id: 'fis_term_8', title: 'Aplicações Práticas', content: 'Refrigeradores, bombas de calor e ar-condicionado. Motores de combustão. Usinas termelétricas. Eficiência energética e sustentabilidade.' }
+                        { id: 'f4', title: 'Temperatura e Calor', content: 'Temperatura é medida em Celsius, Fahrenheit ou Kelvin (K = C + 273). Calor é energia em trânsito. Calor sensível: Q = m.c.ΔT. Calor latente: Q = m.L.' },
+                        { id: 'f5', title: 'Gases Ideais', content: 'Lei dos gases: PV = nRT. Transformações: isotérmica (T constante), isobárica (P constante), isocórica (V constante), adiabática (sem troca de calor).' }
                     ]
                 },
                 {
                     name: 'Eletromagnetismo',
                     lessons: [
-                        { id: 'fis_elet_1', title: 'Carga Elétrica e Lei de Coulomb', content: 'Carga elementar e = 1.6×10⁻¹⁹ C. Lei de Coulomb: F = k|q₁q₂|/r². Princípio da conservação da carga. Condutores e isolantes.' },
-                        { id: 'fis_elet_2', title: 'Campo Elétrico', content: 'E = F/q. Campo de carga pontual: E = k|Q|/r². Linhas de campo. Superfícies equipotenciais. Dipolo elétrico.' },
-                        { id: 'fis_elet_3', title: 'Potencial Elétrico', content: 'V = kQ/r. Diferença de potencial (ddp). Trabalho da força elétrica: W = qΔV. Conservação de energia em campos elétricos.' },
-                        { id: 'fis_elet_4', title: 'Capacitores', content: 'Capacitância C = Q/V. Capacitor de placas paralelas: C = εA/d. Energia armazenada: U = ½CV². Associação em série e paralelo.' },
-                        { id: 'fis_elet_5', title: 'Corrente Elétrica', content: 'i = ΔQ/Δt. Densidade de corrente J = i/A. Efeito Joule: P = Ri². Lei de Ohm: V = Ri. Resistividade e condutividade.' },
-                        { id: 'fis_elet_6', title: 'Circuitos Elétricos', content: 'Leis de Kirchhoff: nós (Σi=0) e malhas (ΣV=0). Associação de resistores. Divisores de tensão e corrente. Instrumentos de medição.' },
-                        { id: 'fis_elet_7', title: 'Campo Magnético', content: 'Campo de ímãs e correntes. Lei de Biot-Savart. Lei de Ampère. Solenoides e eletroímãs. Interação entre campos elétricos e magnéticos.' },
-                        { id: 'fis_elet_8', title: 'Força Magnética', content: 'Força de Lorentz: F = q(v×B). Força em fios: F = BiLsenθ. Motor elétrico e galvanômetro. Princípio do funcionamento do alto-falante.' },
-                        { id: 'fis_elet_9', title: 'Indução Eletromagnética', content: 'Lei de Faraday: ε = -dΦ/dt. Lei de Lenz. Auto-indução e indutância. Transformadores: V₁/V₂ = N₁/N₂. Geração de energia elétrica.' },
-                        { id: 'fis_elet_10', title: 'Ondas Eletromagnéticas', content: 'Espectro eletromagnético. Velocidade c = 3×10⁸ m/s. Relação c = λf. Aplicações: rádio, TV, micro-ondas, IR, luz visível, UV, raios X, gama.' },
-                        { id: 'fis_elet_11', title: 'Circuitos de Corrente Alternada', content: 'Valores médio e eficaz. Resistência, indutância e capacitância em CA. Fator de potência. Reatância e impedância. Ressonância.' },
-                        { id: 'fis_elet_12', title: 'Maxwell e Eletromagnetismo', content: 'Equações de Maxwell. Ondas eletromagnéticas como solução. Polarização. Reflexão e refração. Princípio de Huygens-Fresnel.' }
+                        { id: 'f6', title: 'Carga Elétrica', content: 'Carga elementar e = 1.6×10⁻¹⁹ C. Lei de Coulomb: F = k|q₁q₂|/r². Campo elétrico: E = F/q = k|Q|/r².' },
+                        { id: 'f7', title: 'Corrente Elétrica', content: 'i = ΔQ/Δt. Lei de Ohm: V = R.i. Potência: P = V.i = R.i² = V²/R. Resistores em série: R_eq = R₁ + R₂. Em paralelo: 1/R_eq = 1/R₁ + 1/R₂.' },
+                        { id: 'f8', title: 'Campo Magnético', content: 'Campo gerado por ímãs e correntes. Força de Lorentz: F = q(v×B). Indução eletromagnética: ε = -dΦ/dt. Transformadores: V₁/V₂ = N₁/N₂.' }
                     ]
                 },
                 {
                     name: 'Óptica',
                     lessons: [
-                        { id: 'fis_opt_1', title: 'Natureza da Luz', content: 'Teoria corpuscular vs ondulatória. Dualidade onda-partícula. Velocidade da luz. Espectro visível (400-700nm). Fotôns e energia E = hf.' },
-                        { id: 'fis_opt_2', title: 'Reflexão da Luz', content: 'Leis da reflexão. Espelhos planos: imagem virtual, direita, mesmo tamanho. Espelhos esféricos: foco, centro, vértice. Equação dos espelhos: 1/f = 1/p + 1/p' + A = -p'/p.' },
-                        { id: 'fis_opt_3', title: 'Refração da Luz', content: 'Leis da refração. Índice de refração n = c/v. Equação de Snell: n₁senθ₁ = n₂senθ₂. Ângulo limite e reflexão total interna.' },
-                        { id: 'fis_opt_4', title: 'Lentes Esféricas', content: 'Lentes convergentes e divergentes. Pontos notáveis. Equação das lentes: 1/f = 1/p + 1/p'. Ampliação linear. Aberrações esférica e cromática.' },
-                        { id: 'fis_opt_5', title: 'Instrumentos Ópticos', content: 'Lupa: aumento angular. Microscópio composto. Luneta astronômica. Câmera fotográfica. Olho humano: miopia, hipermetropia, astigmatismo.' },
-                        { id: 'fis_opt_6', title: 'Interferência e Difração', content: 'Experimento de Young. Franjas claras e escuras. Difração em fenda única. Rede de difração. Poder de resolução. Holografia.' },
-                        { id: 'fis_opt_7', title: 'Polarização', content: 'Luz polarizada vs não-polarizada. Polarizadores e analisadores. Lei de Malus. Birrefringência. Aplicações: óculos 3D, fotografia, displays LCD.' },
-                        { id: 'fis_opt_8', title: 'Fibras Ópticas', content: 'Princípio de funcionamento. Índice de refração do núcleo > da casca. Atenuação e dispersão. Aplicações: telecomunicações, endoscopia, sensores.' }
+                        { id: 'f9', title: 'Reflexão e Refração', content: 'Lei da reflexão: ângulo de incidência = ângulo de reflexão. Refração: n₁senθ₁ = n₂senθ₂. Índice de refração n = c/v.' },
+                        { id: 'f10', title: 'Lentes Esféricas', content: 'Equação das lentes: 1/f = 1/p + 1/p'. Ampliação: A = -p'/p. Lentes convergentes (f>0) e divergentes (f<0).' }
                     ]
                 },
                 {
                     name: 'Física Moderna',
                     lessons: [
-                        { id: 'fis_mod_1', title: 'Teoria da Relatividade Especial', content: 'Postulados de Einstein. Contração do espaço e dilatação do tempo. Paradoxo dos gêmeos. Massa relativística: m = m₀/√(1-v²/c²). Equivalência massa-energia: E = mc².' },
-                        { id: 'fis_mod_2', title: 'Teoria da Relatividade Geral', content: 'Princípio da equivalência. Gravidade como curvatura do espaço-tempo. Precessão do periélio de Mercúrio. Desvio da luz pelo Sol. Ondas gravitacionais.' },
-                        { id: 'fis_mod_3', title: 'Física Quântica', content: 'Radiação de corpo negro. Efeito fotoelétrico (Einstein). Função trabalho. Espectro atômico de Bohr. Níveis de energia quantizados.' },
-                        { id: 'fis_mod_4', title: 'Dualidade Onda-Partícula', content: 'Hipótese de de Broglie: λ = h/p. Princípio da incerteza de Heisenberg. Função de onda e interpretação probabilística. Pacotes de onda.' },
-                        { id: 'fis_mod_5', title: 'Estrutura Atômica', content: 'Modelo de Rutherford. Modelo de Bohr. Números quânticos (n, l, m, s). Princípio de exclusão de Pauli. Configuração eletrônica. Tabela periódica.' },
-                        { id: 'fis_mod_6', title: 'Física Nuclear', content: 'Constituição do núcleo. Força nuclear forte. Energia de ligação. Defeito de massa. Fissão nuclear (reações em cadeia). Fusão nuclear (estrelas).' },
-                        { id: 'fis_mod_7', title: 'Radioatividade', content: 'Emissão α, β, γ. Lei do decaimento: N = N₀e^(-λt). Meia-vida. Aplicações: datação, medicina nuclear, energia. Proteção radiológica.' },
-                        { id: 'fis_mod_8', title: 'Partículas Elementares', content: 'Quarks e léptons. Bósons de gauge. Modelo Padrão. Hádrons (bárions e mésons). Antimatéria. Física de altas energias (LHC).' },
-                        { id: 'fis_mod_9', title: 'Cosmologia', content: 'Big Bang. Expansão do universo. Radiação cósmica de fundo. Matéria escura e energia escura. Evolução estelar. Buracos negros.' },
-                        { id: 'fis_mod_10', title: 'Aplicações Modernas', content: 'Lasers. Transistores e eletrônica. Supercondutores. Ressonância magnética (MRI). Tomografia PET. Nanotecnologia. Computação quântica.' }
+                        { id: 'f11', title: 'Relatividade', content: 'E = mc². Dilatação do tempo e contração do espaço. Energia total de uma partícula: E² = (pc)² + (m₀c²)².' },
+                        { id: 'f12', title: 'Física Quântica', content: 'Efeito fotoelétrico: E = hf - φ. Dualidade onda-partícula: λ = h/p. Princípio da incerteza de Heisenberg.' }
                     ]
                 }
             ]
         },
         quimica: {
-            id: 'quimica',
             name: 'Química',
             icon: '⚗️',
             color: '#10b981',
-            description: 'Estudo da composição, estrutura e transformações da matéria',
             modules: [
                 {
                     name: 'Química Geral',
                     lessons: [
-                        { id: 'qui_ger_1', title: 'Estrutura Atômica', content: 'Átomo: prótons, nêutrons, elétrons. Número atômico (Z) e número de massa (A). Isótopos, isóbaros, isótonos. Distribuição eletrônica. Camadas e subníveis.' },
-                        { id: 'qui_ger_2', title: 'Tabela Periódica', content: 'Organização por Z. Períodos e grupos. Propriedades periódicas: raio atômico, energia de ionização, eletronegatividade, afinidade eletrônica. Metais, ametais, semimetais.' },
-                        { id: 'qui_ger_3', title: 'Ligações Químicas', content: 'Ligação iônica: transferência de elétrons. Ligação covalente: compartilhamento (simples, dupla, tripla). Ligação metálica: mar de elétrons. Geometria molecular: VSEPR.' },
-                        { id: 'qui_ger_4', title: 'Funções Inorgânicas', content: 'Ácidos, bases, sais e óxidos. Nomenclatura. Propriedades características. Reações de neutralização. pH e pOH. Indicadores ácido-base.' },
-                        { id: 'qui_ger_5', title: 'Reações Químicas', content: 'Tipos: síntese, decomposição, simples troca, dupla troca. Balanceamento. Estequiometria: relações molares. Rendimento da reação. Reagente limitante.' },
-                        { id: 'qui_ger_6', title: 'Estados da Matéria', content: 'Sólido, líquido, gasoso, plasma. Mudanças de estado. Diagramas de fase. Ponto triplo e crítico. Propriedades coligativas: tonoscopia, ebuliometria, crioscopia, osmometria.' },
-                        { id: 'qui_ger_7', title: 'Soluções', content: 'Concentrações: comum, molar, molal, título, fração molar. Diluição e mistura. Solubilidade. Curvas de solubilidade. Efeito da temperatura e pressão.' },
-                        { id: 'qui_ger_8', title: 'Termoquímica', content: 'Entalpia (H). Reações exotérmicas (ΔH<0) e endotérmicas (ΔH>0). Lei de Hess. Energia de ligação. Entropia e energia livre de Gibbs.' },
-                        { id: 'qui_ger_9', title: 'Cinética Química', content: 'Velocidade média e instantânea. Fatores: concentração, temperatura, catalisador, superfície de contato. Lei de velocidade. Energia de ativação. Mecanismos de reação.' },
-                        { id: 'qui_ger_10', title: 'Equilíbrio Químico', content: 'Reversibilidade. Constante de equilíbrio Kc e Kp. Deslocamento de equilíbrio (Le Chatelier). Equilíbrio iônico. Produto de solubilidade (Kps).' },
-                        { id: 'qui_ger_11', title: 'Eletroquímica', content: 'Pilhas: ânodo (oxidação) e cátodo (redução). Potencial padrão de redução. Equação de Nernst. Eletrólise. Leis de Faraday. Corrosão e proteção catódica.' },
-                        { id: 'qui_ger_12', title: 'Radioatividade', content: 'Emissões α, β, γ. Leis de Soddy. Série radioativa. Meia-vida. Fissão e fusão nuclear. Aplicações e cuidados.' }
+                        { id: 'q1', title: 'Estrutura Atômica', content: 'Átomo: prótons (+), nêtrons (0), elétrons (-). Número atômico (Z) = prótons. Número de massa (A) = prótons + nêutrons. Isótopos: mesmo Z, massa diferente.' },
+                        { id: 'q2', title: 'Tabela Periódica', content: 'Organizada por Z. Períodos (linhas) e grupos (colunas). Metais alcalinos (1A), alcalinoterrosos (2A), halogênios (7A), gases nobres (8A).' },
+                        { id: 'q3', title: 'Ligações Químicas', content: 'Iônica: transferência de elétrons (metal + ametal). Covalente: compartilhamento (ametal + ametal). Metálica: mar de elétrons (metais).' },
+                        { id: 'q4', title: 'Reações Químicas', content: 'Tipos: síntese (A+B→AB), decomposição (AB→A+B), simples troca (A+BC→AC+B), dupla troca (AB+CD→AD+CB). Balanceamento por tentativa.' }
                     ]
                 },
                 {
                     name: 'Química Orgânica',
                     lessons: [
-                        { id: 'qui_org_1', title: 'Introdução à Orgânica', content: 'Carbono: hibridização sp, sp², sp³. Cadeias carbônicas: abertas, fechadas, aromáticas. Classificação dos carbonos. Funções orgânicas: hidrocarbonetos, oxigenados, nitrogenados.' },
-                        { id: 'qui_org_2', title: 'Hidrocarbonetos', content: 'Alcanos (parafinas), alcenos (olefinas), alcinos, aromáticos (benzeno). Nomenclatura IUPAC. Isomeria de cadeia, posição, função. Reações: adição, substituição, eliminação.' },
-                        { id: 'qui_org_3', title: 'Funções Oxigenadas', content: 'Álcoois, fenóis, éteres. Aldeídos e cetonas. Ácidos carboxílicos. Ésteres. Anidridos. Hálidos de ácilo. Amidas. Propriedades físicas e químicas características.' },
-                        { id: 'qui_org_4', title: 'Funções Nitrogenadas', content: 'Aminas (primárias, secundárias, terciárias, quaternárias). Aminas aromáticas (anilina). Nitrocompostos. Nitrilas. Isocianatos. Proteínas e aminoácidos.' },
-                        { id: 'qui_org_5', title: 'Isomeria', content: 'Plana: cadeia, posição, função, metameria, tautomeria. Espacial: geométrica (cis-trans), óptica (enantiômeros, diastereômeros). Quiralidade. Polarímetro.' },
-                        { id: 'qui_org_6', title: 'Reações Orgânicas', content: 'Substituição: eletrofílica aromática, nucleofílica. Adição: eletrofílica, nucleofílica, radicalar. Eliminação: E1, E2. Oxirredução. Polimerização.' },
-                        { id: 'qui_org_7', title: 'Polímeros', content: 'Polimerização por adição e condensação. Polímeros sintéticos: PE, PP, PVC, PS, PET, nylon. Polímeros naturais: celulose, amido, borracha, proteínas. Elastômeros, termoplásticos, termofixos.' },
-                        { id: 'qui_org_8', title: 'Bioquímica', content: 'Carboidratos: monossacarídeos, dissacarídeos, polissacarídeos. Lipídios: triglicerídeos, fosfolipídeos, esteroides. Proteínas: estrutura (primária a quaternária). Enzimas. Ácidos nucleicos: DNA e RNA.' },
-                        { id: 'qui_org_9', title: 'Petroquímica', content: 'Origem do petróleo. Refino: destilação fracionada, cracking, reforma. Derivados: gasolina, diesel, querosene, nafta, asfalto. Gás natural. Impactos ambientais.' },
-                        { id: 'qui_org_10', title: 'Química Verde', content: 'Princípios da química verde. Economia atômica. Solventes sustentáveis. Catálise. Energias renováveis. Biocombustíveis. Redução de resíduos.' }
-                    ]
-                },
-                {
-                    name: 'Química Inorgânica',
-                    lessons: [
-                        { id: 'qui_ino_1', title: 'S-Block: Metais Alcalinos e Alcalinoterrosos', content: 'Grupos 1 e 2. Propriedades físicas e químicas. Reatividade. Compostos importantes: NaCl, NaOH, Na₂CO₃, CaCO₃, CaO. Aplicações industriais.' },
-                        { id: 'qui_ino_2', title: 'P-Block: Grupos 13-16', content: 'Boro, alumínio, carbono, silício, nitrogênio, fósforo, oxigênio, enxofre. Ácido bórico, alumina, sílica, amônia, ácido fosfórico, ácido sulfúrico.' },
-                        { id: 'qui_ino_3', title: 'P-Block: Halogênios e Gases Nobres', content: 'Flúor, cloro, bromo, iodo. HCl, HOCl, NaClO. Gases nobres: aplicações em iluminação e solda. Compostos de xenônio e criptônio.' },
-                        { id: 'qui_ino_4', title: 'D-Block: Metais de Transição', content: 'Propriedades características. Ferro, cobre, zinco, níquel, cromo, manganês, cobalto. Complexos de coordenação. Isomeria geométrica e óptica em complexos.' },
-                        { id: 'qui_ino_5', title: 'Compostos de Coordenação', content: 'Ligantes monodentados e polidentados. Número de coordenação. Regra do 18 elétrons. Espectroscopia de complexos. Aplicações: catálise, biomoléculas, pigmentos.' }
+                        { id: 'q5', title: 'Funções Orgânicas', content: 'Hidrocarbonetos: alcanos (C-C), alcenos (C=C), alcinos (C≡C), aromáticos. Oxigenadas: álcool, aldeído, cetona, ácido, éster. Nitrogenadas: amina, amida, nitrila.' },
+                        { id: 'q6', title: 'Isomeria', content: 'Plana: cadeia, posição, função, metameria. Espacial: geométrica (cis-trans) e óptica (enantiômeros). Quiralidade: carbono assimétrico.' },
+                        { id: 'q7', title: 'Reações Orgânicas', content: 'Substituição, adição (Markovnikov), eliminação (Zaitsev), oxirredução, polimerização (adição e condensação).' }
                     ]
                 },
                 {
                     name: 'Físico-Química',
                     lessons: [
-                        { id: 'qui_fq_1', title: 'Gases Reais', content: 'Desvio do comportamento ideal. Equação de van der Waals. Fator de compressibilidade. Temperatura de Boyle. Liquefação de gases.' },
-                        { id: 'qui_fq_2', title: 'Termodinâmica Química', content: 'Primeira lei: ΔU = q + w. Funções de estado. Entalpia de formação, combustão, ligação. Segunda lei: ΔS_universo > 0. Energia livre de Gibbs: ΔG = ΔH - TΔS.' },
-                        { id: 'qui_fq_3', title: 'Cinética Avançada', content: 'Métodos experimentais. Reações complexas: consecutivas, paralelas, reversíveis. Aproximação do estado estacionário. Teoria das colisões. Teoria do complexo ativado.' },
-                        { id: 'qui_fq_4', title: 'Eletroquímica Avançada', content: 'Termodinâmica das células eletroquímicas. Potencial de equilíbrio. Eletrodos de referência. Eletrodo de hidrogênio. Pilhas de concentração. Corrosão eletroquímica.' },
-                        { id: 'qui_fq_5', title: 'Química de Superfícies', content: 'Adsorção física vs química. Isotermas de adsorção (Langmuir, Freundlich). Catalise heterogênea. Cinética de reações em superfícies.' }
-                    ]
-                },
-                {
-                    name: 'Química Ambiental',
-                    lessons: [
-                        { id: 'qui_amb_1', title: 'Química da Atmosfera', content: 'Composição atmosférica. Estrutura em camadas. Ciclo do oxigênio e nitrogênio. Ozônio estratosférico. Chuva ácida. Efeito estufa. Poluição do ar.' },
-                        { id: 'qui_amb_2', title: 'Química da Água', content: 'Propriedades da água. Ciclo hidrológico. Dureza da água. Tratamento de água: coagulação, floculação, filtração, desinfecção. Esgotamento sanitário.' },
-                        { id: 'qui_amb_3', title: 'Química do Solo', content: 'Composição do solo. pH e acidez. Nutrientes (N, P, K). Adsorção de íons. Troca catiônica. Fertilizantes. Contaminação do solo.' },
-                        { id: 'qui_amb_4', title: 'Poluição e Tratamento', content: 'Resíduos sólidos. Lixiviação. Incineração. Compostagem. Reciclagem. Tratamento de efluentes. Biorremediação. Química sustentável.' }
+                        { id: 'q8', title: 'Termoquímica', content: 'Entalpia (H). ΔH = H_produtos - H_reagentes. ΔH < 0: exotérmico. ΔH > 0: endotérmico. Lei de Hess.' },
+                        { id: 'q9', title: 'Equilíbrio Químico', content: 'Kc = [produtos]/[reagentes]. Deslocamento (Le Chatelier): concentração, pressão, temperatura. pH = -log[H⁺]. pOH = -log[OH⁻]. pH + pOH = 14.' },
+                        { id: 'q10', title: 'Eletroquímica', content: 'Pilha: ânodo (-, oxidação) e cátodo (+, redução). Potencial padrão E°. Eletrólise: íons descarregam-se no eletrodo de menor/maior potencial (catódio/ânodo).' }
                     ]
                 }
             ]
         },
         biologia: {
-            id: 'biologia',
             name: 'Biologia',
             icon: '🧬',
             color: '#22c55e',
-            description: 'Estudo dos seres vivos e seus processos vitais',
             modules: [
                 {
                     name: 'Citologia',
                     lessons: [
-                        { id: 'bio_cit_1', title: 'Introdução à Célula', content: 'Teoria celular. Procariontes vs eucariontes. Componentes básicos: membrana, citoplasma, material genético. Tamanho e forma celular. Microscopia óptica e eletrônica.' },
-                        { id: 'bio_cit_2', title: 'Membrana Plasmática', content: 'Modelo do mosaico fluido. Fosfolipídios, proteínas, carboidratos, colesterol. Transporte passivo: difusão simples, facilitada, osmose. Transporte ativo: bombas iônicas. Endocitose e exocitose.' },
-                        { id: 'bio_cit_3', title: 'Citoplasma e Organelas', content: 'Citoesqueleto: microfilamentos, filamentos intermediários, microtúbulos. Ribossomos. Retículo endoplasmático liso e rugoso. Complexo de Golgi. Lisossomos. Peroxissomos. Vacúolos.' },
-                        { id: 'bio_cit_4', title: 'Mitocôndrias', content: 'Estrutura: membrana externa, interna, cristas, matriz. Respiração celular: glicólise, ciclo de Krebs, cadeia transportadora de elétrons, fosforilação oxidativa. Teoria endossimbiótica.' },
-                        { id: 'bio_cit_5', title: 'Cloroplastos', content: 'Estrutura: membranas, tilacoides, grana, estroma. Fotossíntese: fase luminosa (fotossistemas I e II, transporte de elétrons, fotofosforilação) e fase escura (ciclo de Calvin).' },
-                        { id: 'bio_cit_6', title: 'Núcleo Celular', content: 'Envoltório nuclear. Poros nucleares. Nucléolo. Cromatina: eucromatina e heterocromatina. DNA e proteínas histonas. Ciclo celular: interfase (G1, S, G2) e divisão.' },
-                        { id: 'bio_cit_7', title: 'Divisão Celular: Mitose', content: 'Fases: prófase, metáfase, anáfase, telófase. Fuso mitótico. Centríolos. Citocinese. Significado biológico: crescimento, reparo, reprodução assexuada.' },
-                        { id: 'bio_cit_8', title: 'Divisão Celular: Meiose', content: 'Meiose I e II. Crossing-over. Lei da segregação independente. Gametogênese. Significado: manutenção do número cromossômico, variabilidade genética.' },
-                        { id: 'bio_cit_9', title: 'Matriz Extracelular', content: 'Juntas celulares: desmossomos, junções comunicantes, zonas de adesão. Matriz extracelular animal: colágeno, elastina, proteoglicanos. Parede celular vegetal: celulose, hemicelulose, lignina, pectina.' },
-                        { id: 'bio_cit_10', title: 'Sinalização Celular', content: 'Receptores de membrana: canais iônicos, receptores acoplados a proteína G, receptores com atividade enzimática. Segundos mensageiros: cAMP, IP3, Ca²⁺. Vias de sinalização. Respostas celulares.' }
+                        { id: 'b1', title: 'A Célula', content: 'Unidade básica da vida. Procariontes (sem núcleo) e eucariontes (com núcleo). Organelas: mitocôndria (respiração), ribossomos (síntese proteica), RE (transporte), Complexo de Golgi (empacotamento).' },
+                        { id: 'b2', title: 'Membrana Plasmática', content: 'Lipídios de fosfolipídios, proteínas e carboidratos. Transporte passivo (difusão, osmose) e ativo (bombas iônicas). Endocitose e exocitose.' },
+                        { id: 'b3', title: 'Divisão Celular', content: 'Mitose: prófase, metáfase, anáfase, telófase. Resultado: 2 células idênticas (2n). Meiose: divisão em 2 etapas, resulta em 4 células (n). Crossing-over na prófase I.' }
                     ]
                 },
                 {
                     name: 'Genética',
                     lessons: [
-                        { id: 'bio_gen_1', title: 'DNA: Estrutura e Replicação', content: 'Experimento de Griffith, Avery, Hershey-Chase. Estrutura do DNA: dupla hélice, bases nitrogenadas, ligações de hidrogênio. Replicação semiconservativa. Enzimas: helicase, DNA polimerase, ligase.' },
-                        { id: 'bio_gen_2', title: 'RNA e Transcrição', content: 'Tipos de RNA: mRNA, tRNA, rRNA, miRNA, siRNA. Transcrição: iniciação, elongação, término. Processamento do mRNA: splicing, cap 5', poli-A 3'. Introns e éxons.' },
-                        { id: 'bio_gen_3', title: 'Tradução e Código Genético', content: 'Ribossomos. Código genético: degenerado, universal, não-sobreposto. tRNA e anticódon. Sítio A, P, E. Etapas da tradução. Pós-tradução: dobração, modificações.' },
-                        { id: 'bio_gen_4', title: 'Regulação da Expressão Gênica', content: 'Óperon lac: controle negativo e positivo. Óperon trp: repressão. Eucariotos: fatores de transcrição, enhancers, silenciadores. Epigenética: metilação do DNA, modificação de histonas.' },
-                        { id: 'bio_gen_5', title: 'Mutações', content: 'Mutações gênicas: pontuais (substituição, inserção, deleção) e cromossômicas (deleção, duplicação, inversão, translocação). Causas: erros de replicação, mutágenos. Reparo do DNA.' },
-                        { id: 'bio_gen_6', title: 'Primeira Lei de Mendel', content: 'Cruzamentos monoibridos. Dominância e recessividade. Genótipo e fenótipo. Homozigoto e heterozigoto. Teste de retrocruzamento. Quadrado de Punnett.' },
-                        { id: 'bio_gen_7', title: 'Segunda Lei de Mendel', content: 'Cruzamentos dihíbridos. Segregação independente. Probabilidade em genética. Interações gênicas: epistasia, polimeria, genes letais, pleiotropia, alelos múltiplos.' },
-                        { id: 'bio_gen_8', title: 'Genética do Sexo', content: 'Cromossomos sexuais. Sistema XY, ZW. Herança ligada ao sexo: daltonismo, hemofilia. Herança limitada ao sexo. Herança influenciada pelo sexo. Inativação do X.' },
-                        { id: 'bio_gen_9', title: 'Genética Populacional', content: 'Lei de Hardy-Weinberg: p² + 2pq + q² = 1. Frequências alélicas e genotípicas. Pressões evolutivas: mutação, seleção, deriva genética, fluxo gênico. Equilíbrio de seleção.' },
-                        { id: 'bio_gen_10', title: 'Engenharia Genética', content: 'Enzimas de restrição. Vetores: plasmídeos, vírus. Transformação bacteriana. Eletroforese em gel. PCR. Sequenciamento de DNA. CRISPR-Cas9. Aplicações: medicina, agricultura, indústria.' },
-                        { id: 'bio_gen_11', title: 'Genômica e Proteômica', content: 'Projeto Genoma Humano. Sequenciamento de nova geração. Genômica comparativa. Bioinformática. Proteômica: técnicas, interações proteicas. Metabolômica.' },
-                        { id: 'bio_gen_12', title: 'Biotecnologia', content: 'DNA recombinante. Organismos geneticamente modificados. Terapia gênica. Clonagem. Células-tronco. Bioética em biotecnologia.' }
+                        { id: 'b4', title: 'DNA e RNA', content: 'DNA: desoxirribose, A-T, G-C. RNA: ribose, A-U, G-C. Replicação semiconservativa. Transcrição: DNA→RNA. Tradução: RNA→proteína. Código genético: 3 bases = 1 aminoácido.' },
+                        { id: 'b5', title: 'Leis de Mendel', content: '1ª Lei: segregação dos caracteres (pares de alelos se separam na meiose). 2ª Lei: segregação independente (genes de pares diferentes se separam independentemente).' },
+                        { id: 'b6', title: 'Herança', content: 'Dominância completa, incompleta (intermediário), codominância (ambos se expressam). Genes ligados ao sexo (cromossomo X). Epistasia: um gene mascara outro.' }
                     ]
                 },
                 {
                     name: 'Ecologia',
                     lessons: [
-                        { id: 'bio_eco_1', title: 'Introdução à Ecologia', content: 'Níveis de organização: indivíduo, população, comunidade, ecossistema, biosfera. Abióticos vs bióticos. Habitat e nicho ecológico. Histórico da ecologia.' },
-                        { id: 'bio_eco_2', title: 'Populações', content: 'Densidade, distribuição, tamanho. Estrutura etária. Curvas de sobrevivência. Crescimento exponencial e logístico. Capacidade de suporte. Estratégias r e K.' },
-                        { id: 'bio_eco_3', title: 'Comunidades', content: 'Interações: competição, predação, herbivoria, parasitismo, mutualismo, comensalismo, amensalismo. Co-evolução. Sucessão ecológica: primária e secundária.' },
-                        { id: 'bio_eco_4', title: 'Ecossistemas: Energia', content: 'Leis da termodinâmica em ecossistemas. Produção primária bruta e líquida. Pirâmides de energia, biomassa e números. Eficiência ecológica (10%).' },
-                        { id: 'bio_eco_5', title: 'Ecossistemas: Matéria', content: 'Ciclos biogeoquímicos: carbono, nitrogênio, fósforo, enxofre, água. Biodisponibilidade. Decomposição e mineralização. Impacto humano nos ciclos.' },
-                        { id: 'bio_eco_6', title: 'Biomas', content: 'Biomas terrestres: floresta tropical, temperada, taiga, savana, pradaria, deserto, tundra. Fatores determinantes: temperatura, precipitação. Biomas aquáticos: dulcícolas e salinos.' },
-                        { id: 'bio_eco_7', title: 'Dinâmica de Ecossistemas', content: 'Estabilidade e resiliência. Perturbações naturais e antrópicas. Teoria de sistemas. Feedback positivo e negativo. Biodiversidade e função do ecossistema.' },
-                        { id: 'bio_eco_8', title: 'Poluição Ambiental', content: 'Poluentes: biodegradáveis vs persistentes. Bioacumulação e biomagnificação. Eutrofização. Metais pesados. Plásticos. Mudanças climáticas.' },
-                        { id: 'bio_eco_9', title: 'Conservação da Biodiversidade', content: 'Valor da biodiversidade. Ameaças: perda de habitat, espécies invasoras, poluição, superexploração, mudanças climáticas. Estratégias de conservação: in situ e ex situ.' },
-                        { id: 'bio_eco_10', title: 'Sustentabilidade', content: 'Desenvolvimento sustentável. Pegada ecológica. Economia circular. Energias renováveis. Agricultura sustentável. Educação ambiental.' }
+                        { id: 'b7', title: 'Ecossistemas', content: 'Níveis: indivíduo, população, comunidade, ecossistema, biosfera. Cadeia alimentar: produtores, consumidores, decompositores. Pirâmides: número, biomassa, energia (10%).' },
+                        { id: 'b8', title: 'Ciclos Biogeoquímicos', content: 'Ciclo da água, carbono (fotossíntese e respiração), nitrogênio (fixação, amonificação, nitrificação, desnitrificação), fósforo.' },
+                        { id: 'b9', title: 'Poluição e Conservação', content: 'Eutrofização (excesso de nutrientes). Bioacumulação e biomagnificação. Desmatamento. Estratégias de conservação: in situ (parques) e ex situ (zoos, bancos de sementes).' }
                     ]
                 },
                 {
-                    name: 'Anatomia e Fisiologia',
+                    name: 'Fisiologia',
                     lessons: [
-                        { id: 'bio_anf_1', title: 'Sistema Digestório', content: 'Trato gastrointestinal: boca, faringe, esôfago, estômago, intestino delgado, intestino grosso. Glândulas anexas: fígado, pâncreas, vesícula. Digestão mecânica e química. Absorção de nutrientes.' },
-                        { id: 'bio_anf_2', title: 'Sistema Respiratório', content: 'Vias aéreas: nariz, faringe, laringe, traqueia, brônquios, bronquíolos. Alvéolos. Mecânica respiratória: inspiração e expiração. Troca gasosa. Transporte de O₂ e CO₂ no sangue.' },
-                        { id: 'bio_anf_3', title: 'Sistema Circulatório', content: 'Coração: anatomia, ciclo cardíaco, eletrocardiograma. Vasos sanguíneos. Sangue: plasma, hemácias, leucócitos, plaquetas. Sistemas circulatórios: aberto e fechado. Dupla circulação.' },
-                        { id: 'bio_anf_4', title: 'Sistema Excretor', content: 'Rins: néfron, filtração glomerular, reabsorção, secreção. Urina: composição, concentração. Regulação do volume e pressão sanguínea. Sistemas excretores em diferentes filos.' },
-                        { id: 'bio_anf_5', title: 'Sistema Nervoso', content: 'Neurônios: estrutura, potencial de ação, sinapse. SNC e SNP. Sistema somático e autônomo (simpático e parassimpático). Reflexos. Cérebro: estruturas e funções.' },
-                        { id: 'bio_anf_6', title: 'Sistema Endócrino', content: 'Hormônios: mecanismos de ação, feedback. Hipotálamo e hipófise. Tireoide, paratireoides, suprarrenais, pâncreas, gônadas. Regulação do metabolismo, crescimento, reprodução.' },
-                        { id: 'bio_anf_7', title: 'Sistema Reprodutor', content: 'Reprodução sexuada: gametogênese, fertilização. Sistema reprodutor masculino e feminino. Ciclo menstrual. Gravidez e parto. Regulação hormonal. Contracepção.' },
-                        { id: 'bio_anf_8', title: 'Sistema Imunológico', content: 'Barreiras físicas e químicas. Imunidade inata: fagócitos, NK, inflamação, complemento. Imunidade adaptativa: linfócitos B e T, anticorpos, memória imunológica. Vacinas. Doenças autoimunes.' },
-                        { id: 'bio_anf_9', title: 'Sistema Locomotor', content: 'Tecido ósseo: estrutura, formação. Articulações: sinoviais, cartilaginosas, fibrosas. Músculos: esquelético, cardíaco, liso. Contração muscular: sarcômeros, miosina, actina.' },
-                        { id: 'bio_anf_10', title: 'Sistema Tegumentar', content: 'Pele: epiderme, derme, hipoderme. Anexos: pelos, unhas, glândulas sudoríparas e sebáceas. Funções: proteção, termorregulação, sensação, síntese de vitamina D.' }
-                    ]
-                },
-                {
-                    name: 'Evolução',
-                    lessons: [
-                        { id: 'bio_evo_1', title: 'Teorias Evolutivas', content: 'Lamarckismo: uso e desuso, herança de caracteres adquiridos. Darwinismo: seleção natural, variabilidade, superprodução, luta pela existência. Evidências da evolução: fósseis, anatomia comparada, embriologia, biogeografia, molecular.' },
-                        { id: 'bio_evo_2', title: 'Seleção Natural', content: 'Tipos: estabilizadora, direcional, disruptiva. Seleção sexual. Adaptação. Fitness. Pressões seletivas. Exemplos: bactérias resistentes, camuflagem, mimetismo.' },
-                        { id: 'bio_evo_3', title: 'Especiação', content: 'Conceito de espécie biológica. Mecanismos de isolamento reprodutivo: pré-zigóticos e pós-zigóticos. Modos de especiação: alopátrica, simpátrica, parapátrica. Radiadação adaptativa.' },
-                        { id: 'bio_evo_4', title: 'Macroevolução', content: 'Extinções em massa. Coevolução. Convergência e divergência evolutiva. Homologia e analogia. Vestígios e atavismos. Evolução do homem: hominídeos, Australopithecus, Homo.' },
-                        { id: 'bio_evo_5', title: 'Evolução Molecular', content: 'Relógio molecular. Taxas de substituição neutra. Árvores filogenéticas. Sequenciamento comparativo. Endossimbiose: origem das mitocôndrias e cloroplastos.' }
+                        { id: 'b10', title: 'Sistemas do Corpo', content: 'Digestório: ingestão, digestão, absorção, eliminação. Circulatório: coração (4 câmaras), vasos, sangue. Respiratório: trocas gasosas nos alvéolos. Nervoso: neurônios, sinapses, neurotransmissores.' },
+                        { id: 'b11', title: 'Sistema Endócrino', content: 'Hormônios: insulina (glucose), glucagon, adrenalina, cortisol, hormônios tireoidianos, hormônios sexuais (testosterona, estrogênio, progesterona).' },
+                        { id: 'b12', title: 'Imunologia', content: 'Imunidade inata (barreiras, fagócitos, inflamação) e adaptativa (linfócitos B - anticorpos, T - citotoxicidade). Memória imunológica: vacinas.' }
                     ]
                 }
             ]
@@ -775,271 +596,87 @@
     };
 
     // ============================================
-    // DADOS DA LOJA - ITENS VIP/VIP2 E GUILDA
-    // ============================================
-    const SHOP_DATA = {
-        profile: [
-            // FRAMES DE AVATAR - VIP/VIP2
-            { id: 'frame_gold', name: 'Moldura Dourada', price: 5000, type: 'frame', vip: true, icon: '🟡', description: 'Moldura dourada brilhante para seu avatar' },
-            { id: 'frame_crystal', name: 'Moldura de Cristal', price: 8000, type: 'frame', vip: true, icon: '💎', description: 'Moldura de cristal reluzente' },
-            { id: 'frame_fire', name: 'Moldura de Fogo', price: 12000, type: 'frame', vip2: true, icon: '🔥', description: 'Chamas animadas ao redor do avatar' },
-            { id: 'frame_ice', name: 'Moldura de Gelo', price: 12000, type: 'frame', vip2: true, icon: '❄️', description: 'Cristais de gelo congelantes' },
-            { id: 'frame_neon', name: 'Moldura Neon', price: 15000, type: 'frame', vip2: true, icon: '🌈', description: 'Luzes neon coloridas pulsantes' },
-            { id: 'frame_legendary', name: 'Moldura Lendária', price: 25000, type: 'frame', vip2: true, icon: '👑', description: 'A moldura mais rara do NEURO' },
-
-            // BANNERS - VIP2
-            { id: 'banner_galaxy', name: 'Banner Galáxia', price: 10000, type: 'banner', vip2: true, icon: '🌌', description: 'Céu estrelado animado' },
-            { id: 'banner_cyber', name: 'Banner Cyberpunk', price: 12000, type: 'banner', vip2: true, icon: '🌃', description: 'Cidade futurista neon' },
-            { id: 'banner_nature', name: 'Banner Natureza', price: 8000, type: 'banner', vip2: true, icon: '🌿', description: 'Floresta viva e serena' },
-            { id: 'banner_abstract', name: 'Banner Abstrato', price: 9000, type: 'banner', vip2: true, icon: '🎨', description: 'Formas geométricas dinâmicas' },
-            { id: 'banner_gold', name: 'Banner Ouro Puro', price: 20000, type: 'banner', vip2: true, icon: '✨', description: 'Luxo absoluto dourado' },
-
-            // BADGES - VIP
-            { id: 'badge_early', name: 'Pioneiro', price: 3000, type: 'badge', vip: true, icon: '🚀', description: 'Badge exclusivo para early adopters' },
-            { id: 'badge_master', name: 'Mestre', price: 5000, type: 'badge', vip: true, icon: '🎓', description: 'Domínio do conhecimento' },
-            { id: 'badge_warrior', name: 'Guerreiro', price: 4000, type: 'badge', vip: true, icon: '⚔️', description: 'Vencedor de batalhas' },
-            { id: 'badge_scholar', name: 'Erudito', price: 6000, type: 'badge', vip: true, icon: '📚', description: 'Amante dos livros' },
-            { id: 'badge_creator', name: 'Criador', price: 8000, type: 'badge', vip: true, icon: '✍️', description: 'Produtor de conteúdo' },
-
-            // ANIMAÇÕES - VIP2
-            { id: 'anim_sparkle', name: 'Brilho Mágico', price: 15000, type: 'animation', vip2: true, icon: '✨', description: 'Partículas brilhantes ao redor' },
-            { id: 'anim_lightning', name: 'Trovão', price: 18000, type: 'animation', vip2: true, icon: '⚡', description: 'Raios elétricos animados' },
-            { id: 'anim_bubbles', name: 'Bolhas', price: 12000, type: 'animation', vip2: true, icon: '🫧', description: 'Bolhas flutuantes suaves' },
-            { id: 'anim_hearts', name: 'Corações', price: 14000, type: 'animation', vip2: true, icon: '💖', description: 'Corações flutuando com amor' },
-            { id: 'anim_matrix', name: 'Matrix', price: 20000, type: 'animation', vip2: true, icon: '💻', description: 'Código verde estilo Matrix' }
-        ],
-        general: [
-            { id: 'xp_boost_24h', name: 'Boost XP 24h', price: 1000, type: 'boost', icon: '⚡', description: '2x XP por 24 horas' },
-            { id: 'xp_boost_7d', name: 'Boost XP 7 dias', price: 5000, type: 'boost', icon: '🚀', description: '2x XP por 7 dias' },
-            { id: 'streak_protect', name: 'Proteção Streak', price: 800, type: 'utility', icon: '🛡️', description: 'Não perde streak por 1 dia de inatividade' },
-            { id: 'name_change', name: 'Mudança de Nome', price: 2000, type: 'utility', icon: '📝', description: 'Altere seu nome de exibição' },
-            { id: 'custom_status', name: 'Status Personalizado', price: 1500, type: 'utility', icon: '💬', description: 'Crie seu próprio status' }
-        ]
-    };
-
-    // LOJA DA GUILDA - ITENS POR NÍVEL
-    const GUILD_SHOP_DATA = [
-        // NÍVEL 1 - Básico
-        { id: 'guild_color_1', name: 'Cor Azul Guilda', price: 500, level: 1, type: 'theme', icon: '🔵', description: 'Tema azul para guilda' },
-        { id: 'guild_emblem_1', name: 'Emblema Escudo', price: 800, level: 1, type: 'emblem', icon: '🛡️', description: 'Escudo clássico' },
-
-        // NÍVEL 2
-        { id: 'guild_color_2', name: 'Cor Verde Guilda', price: 600, level: 2, type: 'theme', icon: '🟢', description: 'Tema verde para guilda' },
-        { id: 'guild_emblem_2', name: 'Emblema Espada', price: 1000, level: 2, type: 'emblem', icon: '⚔️', description: 'Duas espadas cruzadas' },
-        { id: 'guild_boost_1', name: 'Boost XP Guilda 10%', price: 1500, level: 2, type: 'boost', icon: '📈', description: 'XP extra para todos os membros' },
-
-        // NÍVEL 3
-        { id: 'guild_color_3', name: 'Cor Roxo Guilda', price: 700, level: 3, type: 'theme', icon: '🟣', description: 'Tema roxo para guilda' },
-        { id: 'guild_emblem_3', name: 'Emblema Dragão', price: 1500, level: 3, type: 'emblem', icon: '🐉', description: 'Dragão majestoso' },
-        { id: 'guild_frame_1', name: 'Frame Guilda Bronze', price: 2000, level: 3, type: 'frame', icon: '🥉', description: 'Frame exclusivo para membros' },
-
-        // NÍVEL 4
-        { id: 'guild_color_4', name: 'Cor Dourada Guilda', price: 1000, level: 4, type: 'theme', icon: '🟡', description: 'Tema dourado premium' },
-        { id: 'guild_emblem_4', name: 'Emblema Coroa', price: 2000, level: 4, type: 'emblem', icon: '👑', description: 'Coroa real' },
-        { id: 'guild_boost_2', name: 'Boost XP Guilda 25%', price: 3000, level: 4, type: 'boost', icon: '🚀', description: 'XP extra significativo' },
-
-        // NÍVEL 5
-        { id: 'guild_emblem_5', name: 'Emblema Fênix', price: 3000, level: 5, type: 'emblem', icon: '🔥', description: 'Fênix renascendo' },
-        { id: 'guild_frame_2', name: 'Frame Guilda Prata', price: 4000, level: 5, type: 'frame', icon: '🥈', description: 'Frame prateado brilhante' },
-        { id: 'guild_skin_1', name: 'Skin Dark Guilda', price: 2500, level: 5, type: 'skin', icon: '🌑', description: 'Tema escuro exclusivo' },
-
-        // NÍVEL 6
-        { id: 'guild_emblem_6', name: 'Emblema Grifo', price: 4000, level: 6, type: 'emblem', icon: '🦅', description: 'Grifo lendário' },
-        { id: 'guild_boost_3', name: 'Boost XP Guilda 50%', price: 6000, level: 6, type: 'boost', icon: '💎', description: 'XP extra massivo' },
-        { id: 'guild_title_1', name: 'Título: Guardião', price: 5000, level: 6, type: 'title', icon: '🛡️', description: 'Título exclusivo de membro' },
-
-        // NÍVEL 7 - Máximo
-        { id: 'guild_emblem_7', name: 'Emblema Lendário', price: 8000, level: 7, type: 'emblem', icon: '⭐', description: 'O mais raro de todos' },
-        { id: 'guild_frame_3', name: 'Frame Guilda Ouro', price: 10000, level: 7, type: 'frame', icon: '🥇', description: 'Frame dourado supremo' },
-        { id: 'guild_skin_2', name: 'Skin Lendária Guilda', price: 8000, level: 7, type: 'skin', icon: '👑', description: 'Skin única de guilda nível 7' },
-        { id: 'guild_title_2', name: 'Título: Lenda Viva', price: 10000, level: 7, type: 'title', icon: '🏆', description: 'Título máximo de guilda' }
-    ];
-
-    // CONQUISTAS EXCLUSIVAS DE PROFESSOR
-    const TEACHER_ACHIEVEMENTS = [
-        { id: 'teacher_1', name: 'Mestre do Conhecimento', description: 'Crie 10 aulas completas', icon: '📚', reward: 5000, condition: 'lessons >= 10' },
-        { id: 'teacher_2', name: 'Pioneiro', description: 'Seja um dos primeiros 10 professores verificados', icon: '🚀', reward: 10000, condition: 'early_teacher' },
-        { id: 'teacher_3', name: 'Inspirador', description: 'Tenha 100 alunos completando suas aulas', icon: '✨', reward: 8000, condition: 'students_100' },
-        { id: 'teacher_4', name: 'Educador Dedicado', description: 'Mantenha streak de professor por 30 dias', icon: '🎯', reward: 6000, condition: 'streak_30' },
-        { id: 'teacher_5', name: 'Mentor de Elite', description: 'Forme 5 grupos de estudo ativos', icon: '👥', reward: 7000, condition: 'groups_5' },
-        { id: 'teacher_6', name: 'Criador de Gênios', description: 'Tenha um aluno no top 10 do ranking', icon: '🏆', reward: 15000, condition: 'top_student' },
-        { id: 'teacher_7', name: 'Inovador', description: 'Use o gerador IA para criar 20 aulas', icon: '🤖', reward: 9000, condition: 'ai_lessons_20' },
-        { id: 'teacher_8', name: 'Comunidade Viva', description: 'Tenha 50 interações em grupos de estudo', icon: '💬', reward: 5000, condition: 'interactions_50' },
-        { id: 'teacher_9', name: 'Especialista', description: 'Crie aulas em 5 matérias diferentes', icon: '🎓', reward: 12000, condition: 'subjects_5' },
-        { id: 'teacher_10', name: 'Lenda da Educação', description: 'Desbloqueie todas as outras conquistas de professor', icon: '👑', reward: 50000, condition: 'all_teacher' }
-    ];
-
-    // ============================================
-    // SISTEMA DE ÁUDIO
-    // ============================================
-    const AudioManager = {
-        context: null,
-
-        init() {
-            if (!this.context) {
-                this.context = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        },
-
-        playTone(freq, type, duration, fadeOut = true) {
-            if (!this.context) this.init();
-            const osc = this.context.createOscillator();
-            const gain = this.context.createGain();
-            osc.connect(gain);
-            gain.connect(this.context.destination);
-            osc.frequency.value = freq;
-            osc.type = type;
-            gain.gain.setValueAtTime(0.3, this.context.currentTime);
-            if (fadeOut) {
-                gain.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + duration);
-            }
-            osc.start(this.context.currentTime);
-            osc.stop(this.context.currentTime + duration);
-        },
-
-        playClick() { this.playTone(800, 'sine', 0.1); },
-        playSuccess() {
-            [523, 659, 784, 1047].forEach((freq, i) => {
-                setTimeout(() => this.playTone(freq, 'sine', 0.3), i * 100);
-            });
-        },
-        playError() {
-            this.playTone(200, 'sawtooth', 0.4);
-            setTimeout(() => this.playTone(150, 'sawtooth', 0.4), 150);
-        },
-        playLevelUp() {
-            const scale = [261, 293, 329, 349, 392, 440, 493, 523];
-            scale.forEach((freq, i) => {
-                setTimeout(() => this.playTone(freq, 'square', 0.2), i * 80);
-            });
-        },
-        playBattleStart() {
-            [220, 440, 880].forEach((freq, i) => {
-                setTimeout(() => this.playTone(freq, 'sawtooth', 0.5), i * 200);
-            });
-        },
-        playVictory() {
-            const melody = [523, 523, 523, 659, 784, 659, 784];
-            melody.forEach((freq, i) => {
-                setTimeout(() => this.playTone(freq, 'square', 0.3), i * 200);
-            });
-        },
-        playNotification() {
-            this.playTone(600, 'sine', 0.2);
-            setTimeout(() => this.playTone(800, 'sine', 0.3), 100);
-        }
-    };
-
-    // ============================================
-    // SISTEMA DE NOTIFICAÇÕES
+    // SISTEMA DE NOTIFICAÇÃO
     // ============================================
     function showNotification(message, type = 'info') {
-        AudioManager.playNotification();
-        const container = document.getElementById('notificationContainer');
+        const area = document.getElementById('notificationArea');
         const notif = document.createElement('div');
-        notif.className = 'notification';
-        notif.style.borderLeft = `4px solid ${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--danger)' : 'var(--primary)'}`;
-        notif.innerHTML = `
-            <span style="font-size: 1.5rem;">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
-            <span>${message}</span>
-        `;
-        container.appendChild(notif);
-        setTimeout(() => notif.remove(), 4000);
+        notif.className = 'notification ' + type;
+        notif.innerHTML = `<strong>${type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️'} ${message}</strong>`;
+        area.appendChild(notif);
+
+        setTimeout(() => {
+            notif.style.opacity = '0';
+            notif.style.transform = 'translateX(100%)';
+            setTimeout(() => notif.remove(), 400);
+        }, 4000);
     }
 
     // ============================================
     // AUTENTICAÇÃO
     // ============================================
-    let isRegistering = false;
+    function toggleAuthMode() {
+        isLoginMode = !isLoginMode;
+        document.getElementById('registerFields').style.display = isLoginMode ? 'none' : 'block';
+        document.getElementById('registerFields2').style.display = isLoginMode ? 'none' : 'block';
+        document.getElementById('submitBtn').textContent = isLoginMode ? 'Entrar' : 'Criar Conta';
+        document.getElementById('toggleBtn').textContent = isLoginMode ? 'Criar nova conta' : 'Já tenho conta';
+        document.getElementById('errorMsg').style.display = 'none';
+    }
 
-    document.getElementById('authToggleLink').addEventListener('click', () => {
-        isRegistering = !isRegistering;
-        document.getElementById('registerFields').style.display = isRegistering ? 'block' : 'none';
-        document.getElementById('authBtn').textContent = isRegistering ? 'Cadastrar' : 'Entrar';
-        document.getElementById('authToggleText').textContent = isRegistering ? 'Já tem conta?' : 'Não tem conta?';
-        document.getElementById('authToggleLink').textContent = isRegistering ? ' Entrar' : ' Cadastrar';
-    });
-
-    document.getElementById('authForm').addEventListener('submit', async (e) => {
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        AudioManager.playClick();
 
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const fullName = document.getElementById('fullName').value;
         const inviteCode = document.getElementById('inviteCode').value.toUpperCase().trim();
 
+        const errorMsg = document.getElementById('errorMsg');
+        const successMsg = document.getElementById('successMsg');
+
         try {
-            let userCredential;
+            if (isLoginMode) {
+                // LOGIN
+                await auth.signInWithEmailAndPassword(email, password);
+                successMsg.textContent = 'Login realizado com sucesso!';
+                successMsg.style.display = 'block';
+            } else {
+                // REGISTRO
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
 
-            if (isRegistering) {
-                userCredential = await auth.createUserWithEmailAndPassword(email, password);
-
-                // Processar código de convite
-                let bonusData = { level: 1, xp: 0, points: 0, vip: null, admin: false, teacher: false };
-
-                if (inviteCode) {
-                    if (SPECIAL_CODES[inviteCode]) {
-                        const code = SPECIAL_CODES[inviteCode];
-                        if (code.level) bonusData.level = code.level;
-                        if (code.points) bonusData.points = code.points;
-                        if (code.vip) bonusData.vip = code.vip;
-                        if (code.admin) bonusData.admin = true;
-                        if (code.teacher) bonusData.teacher = true;
-                        showNotification('Código especial aplicado! Bônus recebidos!', 'success');
-                    } else {
-                        // Verificar códigos gerados no Firestore
-                        const codeDoc = await db.collection('codes').doc(inviteCode).get();
-                        if (codeDoc.exists && !codeDoc.data().used) {
-                            const codeData = codeDoc.data();
-                            // Aplicar recompensas do código
-                            await applyCodeRewards(codeData, bonusData);
-                            await db.collection('codes').doc(inviteCode).update({ used: true, usedBy: userCredential.user.uid, usedAt: new Date() });
-                        }
-                    }
-                }
-
-                await db.collection('users').doc(userCredential.user.uid).set({
+                // Preparar dados do usuário
+                let userData = {
                     name: fullName || email.split('@')[0],
                     email: email,
-                    ...bonusData,
+                    level: 1,
+                    xp: 0,
+                    points: 0,
+                    vip: null,
+                    admin: false,
                     inventory: [],
                     achievements: [],
-                    friends: [],
-                    streak: 0,
-                    lastStudy: null,
-                    guild: null,
+                    lessonsCompleted: [],
                     createdAt: new Date()
-                });
+                };
 
-                showNotification('Conta criada com sucesso!', 'success');
-            } else {
-                userCredential = await auth.signInWithEmailAndPassword(email, password);
-                showNotification('Login realizado!', 'success');
+                // Aplicar código de convite
+                if (inviteCode && SPECIAL_CODES[inviteCode]) {
+                    const code = SPECIAL_CODES[inviteCode];
+                    Object.assign(userData, code);
+                    showNotification('Código especial aplicado! Benefícios ativados!', 'success');
+                }
+
+                await db.collection('users').doc(userCredential.user.uid).set(userData);
+                successMsg.textContent = 'Conta criada com sucesso!';
+                successMsg.style.display = 'block';
             }
         } catch (error) {
-            showNotification(error.message, 'error');
-            AudioManager.playError();
+            errorMsg.textContent = 'Erro: ' + error.message;
+            errorMsg.style.display = 'block';
+            console.error(error);
         }
     });
-
-    async function applyCodeRewards(codeData, bonusData) {
-        switch(codeData.type) {
-            case 'points': bonusData.points += codeData.value || 1000; break;
-            case 'xp': bonusData.xp += codeData.value || 500; break;
-            case 'vip': bonusData.vip = 'vip'; break;
-            case 'vip2': bonusData.vip = 'vip2'; break;
-            case 'admin': bonusData.admin = true; bonusData.vip = 'vip2'; break;
-            case 'teacher': bonusData.teacher = true; break;
-        }
-    }
-
-    function authWithGoogle() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(error => {
-            showNotification(error.message, 'error');
-        });
-    }
 
     function logout() {
         auth.signOut();
@@ -1049,9 +686,11 @@
     // ============================================
     // LISTENER DE AUTENTICAÇÃO
     // ============================================
-    auth.onAuthStateChanged(async (user) => {
+    auth.onAuthStateChanged(async function(user) {
         if (user) {
             currentUser = user;
+
+            // Esconder login, mostrar app
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
 
@@ -1059,107 +698,132 @@
             const userDoc = await db.collection('users').doc(user.uid).get();
             if (userDoc.exists) {
                 userData = userDoc.data();
-                updateUI();
+                updateUserInterface();
                 renderCourses();
                 renderShop();
-                renderAchievements();
-                renderProfileItems();
-
-                // Mostrar menus especiais se necessário
-                if (userData.admin) document.getElementById('adminNavItem').style.display = 'block';
-                if (userData.teacher) document.getElementById('teacherNavItem').style.display = 'block';
+            } else {
+                // Criar dados padrão se não existir
+                userData = {
+                    name: user.email.split('@')[0],
+                    email: user.email,
+                    level: 1,
+                    xp: 0,
+                    points: 0,
+                    vip: null,
+                    admin: false,
+                    inventory: [],
+                    achievements: [],
+                    lessonsCompleted: []
+                };
+                await db.collection('users').doc(user.uid).set(userData);
+                updateUserInterface();
+                renderCourses();
+                renderShop();
             }
         }
     });
 
     // ============================================
-    // ATUALIZAÇÃO DA UI
+    // ATUALIZAR INTERFACE
     // ============================================
-    function updateUI() {
+    function updateUserInterface() {
         if (!userData) return;
 
         document.getElementById('userName').textContent = userData.name;
         document.getElementById('userEmail').textContent = userData.email;
         document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
-        document.getElementById('userLevel').textContent = userData.level || 1;
-        document.getElementById('userPoints').textContent = (userData.points || 0).toLocaleString();
+        document.getElementById('userLevel').textContent = userData.level;
+        document.getElementById('userPoints').textContent = userData.points.toLocaleString();
         document.getElementById('welcomeName').textContent = userData.name;
+        document.getElementById('profileLevel').textContent = userData.level;
+        document.getElementById('profilePoints').textContent = userData.points.toLocaleString();
+        document.getElementById('profileLessons').textContent = (userData.lessonsCompleted || []).length;
 
-        // XP Progress
-        const xpNeeded = (userData.level || 1) * 1000;
-        const currentXP = userData.xp || 0;
-        const progress = Math.min((currentXP / xpNeeded) * 100, 100);
-        document.getElementById('xpProgress').style.width = progress + '%';
+        // Barra de XP
+        const xpNeeded = userData.level * 1000;
+        const progress = Math.min((userData.xp / xpNeeded) * 100, 100);
+        document.getElementById('xpBar').style.width = progress + '%';
 
-        // Atualizar preview do perfil
-        document.getElementById('profilePreviewName').textContent = userData.name;
-        document.getElementById('profilePreviewLevel').textContent = userData.level || 1;
-        document.getElementById('profileAvatarLarge').textContent = userData.name.charAt(0).toUpperCase();
-
-        // Aplicar frame VIP se tiver
-        if (userData.equippedFrame) {
-            document.getElementById('profileAvatarLarge').classList.add('vip-frame');
+        // Mostrar menu admin se for admin
+        if (userData.admin) {
+            document.getElementById('adminMenu').style.display = 'block';
         }
     }
 
     // ============================================
-    // NAVEGAÇÃO
+    // NAVEGAÇÃO ENTRE PÁGINAS
     // ============================================
     function showPage(pageId) {
-        AudioManager.playClick();
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        // Esconder todas as páginas
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+        });
 
-        document.getElementById('page-' + pageId).classList.add('active');
+        // Mostrar página selecionada
+        const targetPage = document.getElementById('page-' + pageId);
+        if (targetPage) {
+            targetPage.classList.add('active');
+        }
+
+        // Atualizar menu ativo
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
         event.target.classList.add('active');
-
-        // Carregar conteúdo específico da página
-        if (pageId === 'teacher') renderTeacherDashboard();
-        if (pageId === 'ranking') renderRanking();
     }
 
     // ============================================
-    // CURSOS E AULAS
+    // SISTEMA DE CURSOS E AULAS
     // ============================================
     function renderCourses() {
-        const container = document.getElementById('coursesContainer');
+        const container = document.getElementById('coursesList');
         let html = '';
 
-        Object.values(COURSES_DATA).forEach(course => {
+        for (const [courseId, course] of Object.entries(COURSES)) {
             html += `
-                <div class="lesson-content" style="margin-bottom: 24px;">
+                <div class="lesson-box" style="margin-bottom: 24px;">
                     <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
                         <div style="font-size: 3rem;">${course.icon}</div>
                         <div>
                             <h3 style="color: ${course.color};">${course.name}</h3>
-                            <p style="color: #94a3b8;">${course.description}</p>
+                            <p style="color: #94a3b8;">${course.modules.length} módulos • ${course.modules.reduce((acc, m) => acc + m.lessons.length, 0)} aulas</p>
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px;">
             `;
 
             course.modules.forEach(module => {
                 html += `
-                    <div style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px;">
-                        <h4 style="margin-bottom: 12px; color: ${course.color};">${module.name}</h4>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: ${course.color}; margin-bottom: 12px; opacity: 0.9;">${module.name}</h4>
+                        <div style="display: grid; gap: 8px;">
                 `;
+
                 module.lessons.forEach(lesson => {
-                    html += `<button class="btn btn-secondary" style="width: 100%; text-align: left; padding: 10px; font-size: 0.9rem;" 
-                        onclick="openLesson('${course.id}', '${lesson.id}')">${lesson.title}</button>`;
+                    const completed = (userData.lessonsCompleted || []).includes(lesson.id);
+                    html += `
+                        <button onclick="openLesson('${courseId}', '${lesson.id}')" 
+                            style="text-align: left; padding: 12px 16px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); 
+                            border-radius: 10px; color: white; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                            <span>${lesson.title}</span>
+                            ${completed ? '<span style="color: #22c55e;">✓</span>' : ''}
+                        </button>
+                    `;
                 });
+
                 html += `</div></div>`;
             });
 
-            html += `</div></div>`;
-        });
+            html += `</div>`;
+        }
 
         container.innerHTML = html;
     }
 
+    let currentLesson = null;
+    let currentCourse = null;
+
     function openLesson(courseId, lessonId) {
-        AudioManager.playClick();
-        const course = COURSES_DATA[courseId];
+        const course = COURSES[courseId];
         let lesson = null;
 
         course.modules.forEach(m => {
@@ -1170,687 +834,211 @@
         if (!lesson) return;
 
         currentLesson = lesson;
+        currentCourse = course;
+
         document.getElementById('lessonContent').innerHTML = `
-            <h2 style="margin-bottom: 16px; color: ${course.color};">${course.icon} ${lesson.title}</h2>
-            <div style="line-height: 1.8; color: #cbd5e1;">
-                ${lesson.content.split('
+            <div class="lesson-box">
+                <h2 style="color: ${course.color};">${course.icon} ${lesson.title}</h2>
+                <div style="line-height: 1.8; color: #cbd5e1;">
+                    ${lesson.content.split('
 ').map(p => `<p style="margin-bottom: 16px;">${p}</p>`).join('')}
+                </div>
+                <button class="btn-primary" onclick="startQuiz()" style="max-width: 300px; margin-top: 24px;">
+                    Fazer Quiz 📝
+                </button>
             </div>
-            <button class="btn" onclick="startQuiz()" style="margin-top: 24px; max-width: 300px;">Iniciar Quiz 📝</button>
+            <div id="quizSection"></div>
         `;
 
-        document.getElementById('quizContainer').style.display = 'none';
         showPage('lesson');
     }
 
     function startQuiz() {
-        AudioManager.playClick();
-        // Gerar quiz baseado no conteúdo da aula
-        const quiz = generateQuiz(currentLesson.content);
+        if (!currentLesson) return;
 
-        let html = '<div id="quizQuestions">';
-        quiz.forEach((q, i) => {
+        // Criar quiz simples baseado no conteúdo
+        const content = currentLesson.content;
+        const questions = [
+            {
+                q: `Qual o conceito principal abordado em "${currentLesson.title}"?`,
+                options: ['O tema central da aula', 'Um conceito não relacionado', 'Uma fórmula aleatória', 'Um autor famoso'],
+                correct: 0
+            },
+            {
+                q: 'De acordo com o conteúdo apresentado, qual afirmação está correta?',
+                options: ['O conteúdo é importante para o aprendizado', 'O tema não é relevante', 'Não há aplicações práticas', 'É apenas teoria'],
+                correct: 0
+            },
+            {
+                q: 'Qual a aplicação prática deste conhecimento?',
+                options: ['Resolução de problemas reais', 'Não tem aplicação', 'Apenas decoração', 'Entretenimento'],
+                correct: 0
+            }
+        ];
+
+        let html = '<div class="quiz-box"><h3>📝 Quiz de Fixação</h3><div id="quizQuestions">';
+
+        questions.forEach((q, i) => {
             html += `
-                <div class="quiz-question" data-index="${i}" style="margin-bottom: 24px;">
-                    <p style="font-weight: 600; margin-bottom: 12px;">${i + 1}. ${q.question}</p>
-                    <div class="quiz-options">
+                <div style="margin-bottom: 24px;">
+                    <p style="font-weight: 600; margin-bottom: 12px; color: #e2e8f0;">${i + 1}. ${q.q}</p>
+                    <div style="display: grid; gap: 8px;">
                         ${q.options.map((opt, j) => `
-                            <div class="quiz-option" onclick="selectAnswer(${i}, ${j}, ${q.correct})" data-index="${j}">
+                            <button class="quiz-option" onclick="answerQuestion(${i}, ${j}, ${q.correct}, this)" id="q${i}_opt${j}">
                                 ${String.fromCharCode(65 + j)}) ${opt}
-                            </div>
+                            </button>
                         `).join('')}
                     </div>
                 </div>
             `;
         });
-        html += '</div><button class="btn" onclick="submitQuiz()" style="margin-top: 20px;">Enviar Respostas</button>';
 
-        document.getElementById('quizContent').innerHTML = html;
-        document.getElementById('quizContainer').style.display = 'block';
+        html += '</div><button class="btn-primary" onclick="submitQuiz()" style="max-width: 200px;">Enviar Respostas</button></div>';
+
+        document.getElementById('quizSection').innerHTML = html;
+        window.quizAnswers = {};
+        window.quizQuestions = questions;
     }
 
-    function generateQuiz(content) {
-        // Sistema simples de geração de quiz baseado no conteúdo
-        const sentences = content.split('.').filter(s => s.length > 20);
-        const questions = [];
-
-        for (let i = 0; i < Math.min(5, sentences.length); i++) {
-            const sentence = sentences[i];
-            const words = sentence.split(' ');
-            const keyWord = words.find(w => w.length > 5) || words[Math.floor(words.length / 2)];
-
-            questions.push({
-                question: sentence.replace(keyWord, '_______'),
-                options: [keyWord, 'alternativa', 'errada', 'falsa'],
-                correct: 0
-            });
-        }
-
-        return questions;
-    }
-
-    let quizAnswers = [];
-    function selectAnswer(questionIndex, optionIndex, correctIndex) {
-        AudioManager.playClick();
-        quizAnswers[questionIndex] = optionIndex;
-
-        const questionEl = document.querySelectorAll('.quiz-question')[questionIndex];
-        questionEl.querySelectorAll('.quiz-option').forEach((opt, i) => {
-            opt.style.borderColor = i === optionIndex ? 'var(--primary)' : 'rgba(255,255,255,0.1)';
+    function answerQuestion(qIndex, selected, correct, btn) {
+        // Remover seleção anterior
+        document.querySelectorAll(`[id^="q${qIndex}_opt"]`).forEach(b => {
+            b.style.borderColor = 'rgba(255,255,255,0.1)';
         });
+
+        // Marcar seleção
+        btn.style.borderColor = '#6366f1';
+        window.quizAnswers[qIndex] = selected;
     }
 
     async function submitQuiz() {
-        const questions = document.querySelectorAll('.quiz-question');
+        const answers = window.quizAnswers || {};
+        const total = window.quizQuestions.length;
+        const answered = Object.keys(answers).length;
+
+        if (answered < total) {
+            showNotification('Responda todas as perguntas!', 'error');
+            return;
+        }
+
         let correct = 0;
+        for (let i = 0; i < total; i++) {
+            if (answers[i] === window.quizQuestions[i].correct) correct++;
+        }
 
-        questions.forEach((q, i) => {
-            const selected = quizAnswers[i];
-            const options = q.querySelectorAll('.quiz-option');
-            const correctIndex = parseInt(options[0].getAttribute('onclick').match(/,(\d+)\)/)[1]);
-
-            if (selected === correctIndex) {
-                correct++;
-                options[selected].classList.add('correct');
-            } else {
-                if (selected !== undefined) options[selected].classList.add('wrong');
-                options[correctIndex].classList.add('correct');
-            }
-        });
-
-        const percentage = (correct / questions.length) * 100;
+        const percentage = (correct / total) * 100;
 
         if (percentage >= 60) {
-            AudioManager.playSuccess();
-            const xpGain = 100 * (userData.vip === 'vip2' ? 2 : userData.vip === 'vip' ? 1.5 : 1);
+            // Aprovação
+            const xpGain = 100;
             const pointsGain = 50;
 
-            await addXP(xpGain);
-            await addPoints(pointsGain);
+            await db.collection('users').doc(currentUser.uid).update({
+                xp: firebase.firestore.FieldValue.increment(xpGain),
+                points: firebase.firestore.FieldValue.increment(pointsGain),
+                lessonsCompleted: firebase.firestore.FieldValue.arrayUnion(currentLesson.id)
+            });
 
-            showNotification(`Parabéns! Você acertou ${correct}/${questions.length} e ganhou ${xpGain} XP!`, 'success');
+            userData.xp += xpGain;
+            userData.points += pointsGain;
+            if (!userData.lessonsCompleted) userData.lessonsCompleted = [];
+            userData.lessonsCompleted.push(currentLesson.id);
+
+            updateUserInterface();
+            showNotification(`Parabéns! Você acertou ${correct}/${total} e ganhou ${xpGain} XP + ${pointsGain} pontos!`, 'success');
+
+            // Verificar level up
+            const newLevel = Math.floor(userData.xp / 1000) + 1;
+            if (newLevel > userData.level) {
+                await db.collection('users').doc(currentUser.uid).update({ level: newLevel });
+                userData.level = newLevel;
+                updateUserInterface();
+                showNotification(`🎉 LEVEL UP! Você alcançou o nível ${newLevel}!`, 'success');
+            }
         } else {
-            AudioManager.playError();
-            showNotification(`Você acertou ${correct}/${questions.length}. Precisa de 60% para passar. Tente novamente!`, 'error');
+            showNotification(`Você acertou ${correct}/${total}. Precisa de 60% para passar. Tente novamente!`, 'error');
         }
     }
 
     // ============================================
-    // SISTEMA DE XP E PONTOS
+    // LOJA
     // ============================================
-    async function addXP(amount) {
-        const newXP = (userData.xp || 0) + amount;
-        const newLevel = Math.floor(newXP / 1000) + 1;
+    const SHOP_ITEMS = [
+        { id: 'frame_gold', name: 'Moldura Dourada', price: 5000, icon: '🟡', vip: true },
+        { id: 'frame_crystal', name: 'Moldura Cristal', price: 8000, icon: '💎', vip: true },
+        { id: 'banner_galaxy', name: 'Banner Galáxia', price: 10000, icon: '🌌', vip2: true },
+        { id: 'badge_master', name: 'Badge Mestre', price: 3000, icon: '🎓', vip: true },
+        { id: 'xp_boost', name: 'Boost XP 24h', price: 1000, icon: '⚡', vip: false },
+        { id: 'streak_protect', name: 'Proteção Streak', price: 800, icon: '🛡️', vip: false }
+    ];
 
-        if (newLevel > (userData.level || 1)) {
-            // Level up!
-            AudioManager.playLevelUp();
-            document.getElementById('newLevel').textContent = newLevel;
-            document.getElementById('levelUpModal').classList.add('active');
+    function renderShop() {
+        const container = document.getElementById('shopItems');
+
+        container.innerHTML = SHOP_ITEMS.map(item => {
+            const canBuy = userData.vip === 'vip2' || (userData.vip === 'vip' && !item.vip2) || (!item.vip && !item.vip2);
+            const owned = (userData.inventory || []).includes(item.id);
+
+            return `
+                <div class="shop-item">
+                    <div class="shop-item-img">${item.icon}</div>
+                    <div class="shop-item-info">
+                        <h4>${item.name}</h4>
+                        <div class="shop-item-price">${item.price.toLocaleString()} pts</div>
+                        ${item.vip2 ? '<span style="color: #ff6b6b; font-size: 0.75rem;">VIP2</span>' : item.vip ? '<span style="color: #ffd700; font-size: 0.75rem;">VIP</span>' : ''}
+                        <button class="btn-primary" style="margin-top: 12px; ${!canBuy || owned ? 'opacity: 0.5;' : ''}" 
+                            onclick="buyShopItem('${item.id}', ${item.price})" ${!canBuy || owned ? 'disabled' : ''}>
+                            ${owned ? '✓ Possui' : !canBuy ? '🔒 Bloqueado' : 'Comprar'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function buyShopItem(itemId, price) {
+        if (userData.points < price) {
+            showNotification('Pontos insuficientes!', 'error');
+            return;
         }
 
         await db.collection('users').doc(currentUser.uid).update({
-            xp: newXP,
-            level: newLevel
+            points: firebase.firestore.FieldValue.increment(-price),
+            inventory: firebase.firestore.FieldValue.arrayUnion(itemId)
         });
 
-        userData.xp = newXP;
-        userData.level = newLevel;
-        updateUI();
-    }
+        userData.points -= price;
+        if (!userData.inventory) userData.inventory = [];
+        userData.inventory.push(itemId);
 
-    async function addPoints(amount) {
-        const newPoints = (userData.points || 0) + amount;
-        await db.collection('users').doc(currentUser.uid).update({ points: newPoints });
-        userData.points = newPoints;
-        updateUI();
-    }
-
-    function closeLevelUp() {
-        document.getElementById('levelUpModal').classList.remove('active');
-    }
-
-    // ============================================
-    // LOJA E PERFIL
-    // ============================================
-    function renderShop() {
-        const grid = document.getElementById('shopGrid');
-        let html = '';
-
-        // Itens de perfil (VIP/VIP2)
-        SHOP_DATA.profile.forEach(item => {
-            const canBuy = userData.vip === 'vip2' || (userData.vip === 'vip' && !item.vip2);
-            html += `
-                <div class="shop-item">
-                    <div style="position: relative;">
-                        <div class="shop-item-image">${item.icon}</div>
-                        ${item.vip2 ? '<span class="shop-item-badge">VIP2</span>' : item.vip ? '<span class="shop-item-badge" style="background: #c0c0c0;">VIP</span>' : ''}
-                    </div>
-                    <div style="padding: 16px;">
-                        <h4>${item.name}</h4>
-                        <p style="color: #94a3b8; font-size: 0.875rem; margin: 8px 0;">${item.description}</p>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
-                            <span style="font-weight: 700; color: var(--vip);">${item.price.toLocaleString()} pts</span>
-                            <button class="btn" style="width: auto; padding: 8px 16px; font-size: 0.875rem;" 
-                                ${!canBuy ? 'disabled style="opacity: 0.5;"' : ''}
-                                onclick="buyItem('${item.id}', ${item.price})">
-                                ${!canBuy ? '🔒 Bloqueado' : 'Comprar'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-
-        // Itens gerais
-        SHOP_DATA.general.forEach(item => {
-            html += `
-                <div class="shop-item">
-                    <div class="shop-item-image">${item.icon}</div>
-                    <div style="padding: 16px;">
-                        <h4>${item.name}</h4>
-                        <p style="color: #94a3b8; font-size: 0.875rem; margin: 8px 0;">${item.description}</p>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
-                            <span style="font-weight: 700; color: var(--primary);">${item.price.toLocaleString()} pts</span>
-                            <button class="btn" style="width: auto; padding: 8px 16px; font-size: 0.875rem;" 
-                                onclick="buyItem('${item.id}', ${item.price})">Comprar</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-
-        grid.innerHTML = html;
-    }
-
-    async function buyItem(itemId, price) {
-        AudioManager.playClick();
-
-        if ((userData.points || 0) < price) {
-            showNotification('Pontos insuficientes!', 'error');
-            AudioManager.playError();
-            return;
-        }
-
-        await addPoints(-price);
-
-        // Adicionar ao inventário
-        const inventory = userData.inventory || [];
-        inventory.push(itemId);
-        await db.collection('users').doc(currentUser.uid).update({ inventory });
-        userData.inventory = inventory;
-
+        updateUserInterface();
+        renderShop();
         showNotification('Item comprado com sucesso!', 'success');
-        AudioManager.playSuccess();
-    }
-
-    function renderProfileItems() {
-        // Frames
-        const framesContainer = document.getElementById('avatarFrames');
-        framesContainer.innerHTML = SHOP_DATA.profile.filter(i => i.type === 'frame').map(item => `
-            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; text-align: center; cursor: pointer;"
-                onclick="equipItem('${item.id}', 'frame')">
-                <div style="font-size: 2rem; margin-bottom: 8px;">${item.icon}</div>
-                <div style="font-size: 0.75rem;">${item.name}</div>
-                ${userData.inventory?.includes(item.id) ? '<div style="color: var(--success); font-size: 0.7rem;">✓ Possui</div>' : 
-                  `<div style="color: var(--vip); font-size: 0.7rem;">${item.price} pts</div>`}
-            </div>
-        `).join('');
-
-        // Banners
-        const bannersContainer = document.getElementById('profileBanners');
-        bannersContainer.innerHTML = SHOP_DATA.profile.filter(i => i.type === 'banner').map(item => `
-            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; text-align: center; cursor: pointer;"
-                onclick="equipItem('${item.id}', 'banner')">
-                <div style="font-size: 2rem; margin-bottom: 8px;">${item.icon}</div>
-                <div style="font-size: 0.75rem;">${item.name}</div>
-                ${userData.inventory?.includes(item.id) ? '<div style="color: var(--success); font-size: 0.7rem;">✓ Possui</div>' : 
-                  `<div style="color: var(--vip); font-size: 0.7rem;">${item.price} pts</div>`}
-            </div>
-        `).join('');
-
-        // Badges
-        const badgesContainer = document.getElementById('profileBadges');
-        badgesContainer.innerHTML = SHOP_DATA.profile.filter(i => i.type === 'badge').map(item => `
-            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; text-align: center; cursor: pointer;"
-                onclick="equipItem('${item.id}', 'badge')">
-                <div style="font-size: 2rem; margin-bottom: 8px;">${item.icon}</div>
-                <div style="font-size: 0.75rem;">${item.name}</div>
-                ${userData.inventory?.includes(item.id) ? '<div style="color: var(--success); font-size: 0.7rem;">✓ Possui</div>' : 
-                  `<div style="color: var(--vip); font-size: 0.7rem;">${item.price} pts</div>`}
-            </div>
-        `).join('');
-
-        // Animações
-        const animsContainer = document.getElementById('profileAnimations');
-        animsContainer.innerHTML = SHOP_DATA.profile.filter(i => i.type === 'animation').map(item => `
-            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; text-align: center; cursor: pointer;"
-                onclick="equipItem('${item.id}', 'animation')">
-                <div style="font-size: 2rem; margin-bottom: 8px;">${item.icon}</div>
-                <div style="font-size: 0.75rem;">${item.name}</div>
-                ${userData.inventory?.includes(item.id) ? '<div style="color: var(--success); font-size: 0.7rem;">✓ Possui</div>' : 
-                  `<div style="color: var(--vip); font-size: 0.7rem;">${item.price} pts</div>`}
-            </div>
-        `).join('');
-    }
-
-    async function equipItem(itemId, type) {
-        if (!userData.inventory?.includes(itemId)) {
-            showNotification('Você não possui este item!', 'error');
-            return;
-        }
-
-        AudioManager.playClick();
-
-        const updateData = {};
-        if (type === 'frame') updateData.equippedFrame = itemId;
-        if (type === 'banner') updateData.equippedBanner = itemId;
-        if (type === 'badge') updateData.equippedBadge = itemId;
-        if (type === 'animation') updateData.equippedAnimation = itemId;
-
-        await db.collection('users').doc(currentUser.uid).update(updateData);
-        Object.assign(userData, updateData);
-
-        showNotification('Item equipado!', 'success');
-        updateUI();
     }
 
     // ============================================
-    // LOJA DA GUILDA
+    // BATALHA (SIMPLIFICADA)
     // ============================================
-    function openGuildShop() {
-        AudioManager.playClick();
-        const modal = document.getElementById('guildShopModal');
-        const content = document.getElementById('guildShopContent');
-        const guildLevel = 5; // Simulado - deve vir dos dados da guilda
-
-        let html = `<div style="margin-bottom: 16px; padding: 12px; background: rgba(99, 102, 241, 0.1); border-radius: 12px;">
-            <strong>Nível da Guilda:</strong> ${guildLevel} | <strong>Seus Pontos:</strong> ${userData.points?.toLocaleString() || 0}
-        </div>`;
-
-        for (let level = 1; level <= 7; level++) {
-            const items = GUILD_SHOP_DATA.filter(i => i.level === level);
-            if (items.length === 0) continue;
-
-            html += `<div style="margin-bottom: 24px;">
-                <h4 style="margin-bottom: 12px; color: ${level <= guildLevel ? 'var(--success)' : '#94a3b8'};">
-                    Nível ${level} ${level > guildLevel ? '🔒' : '✓'}
-                </h4>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px;">
-            `;
-
-            items.forEach(item => {
-                const locked = level > guildLevel;
-                html += `
-                    <div style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 12px; ${locked ? 'opacity: 0.5;' : ''}">
-                        <div style="font-size: 2rem; text-align: center; margin-bottom: 8px;">${item.icon}</div>
-                        <div style="font-weight: 600; font-size: 0.875rem; text-align: center;">${item.name}</div>
-                        <div style="color: #94a3b8; font-size: 0.75rem; text-align: center; margin: 4px 0;">${item.description}</div>
-                        <div style="color: var(--vip); font-weight: 700; text-align: center; margin: 8px 0;">${item.price} pts</div>
-                        <button class="btn" style="width: 100%; padding: 8px; font-size: 0.75rem;" 
-                            ${locked ? 'disabled' : ''} onclick="buyGuildItem('${item.id}', ${item.price})">
-                            ${locked ? 'Bloqueado' : 'Comprar'}
-                        </button>
-                    </div>
-                `;
-            });
-
-            html += `</div></div>`;
-        }
-
-        content.innerHTML = html;
-        modal.classList.add('active');
-    }
-
-    async function buyGuildItem(itemId, price) {
-        if ((userData.points || 0) < price) {
-            showNotification('Pontos insuficientes!', 'error');
-            return;
-        }
-
-        await addPoints(-price);
-        const inventory = userData.inventory || [];
-        inventory.push('guild_' + itemId);
-        await db.collection('users').doc(currentUser.uid).update({ inventory });
-        userData.inventory = inventory;
-
-        showNotification('Item da guilda comprado!', 'success');
-        AudioManager.playSuccess();
-    }
-
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.remove('active');
+    function startBattle() {
+        showNotification('Sistema de batalha em desenvolvimento! Volte em breve.', 'info');
     }
 
     // ============================================
-    // CONQUISTAS
-    // ============================================
-    function renderAchievements() {
-        const grid = document.getElementById('achievementsGrid');
-        const achievements = [
-            { id: 'first_lesson', name: 'Primeiros Passos', desc: 'Complete sua primeira aula', icon: '🎯', unlocked: true },
-            { id: 'streak_7', name: 'Disciplinado', desc: '7 dias de streak', icon: '🔥', unlocked: false },
-            { id: 'level_10', name: 'Deca-Level', desc: 'Alcance o nível 10', icon: '⭐', unlocked: (userData.level || 0) >= 10 },
-            { id: 'battle_10', name: 'Guerreiro', desc: 'Vença 10 batalhas', icon: '⚔️', unlocked: false },
-            { id: 'guild_join', name: 'Membro da Guilda', desc: 'Entre em uma guilda', icon: '🏰', unlocked: !!userData.guild },
-            { id: 'vip_member', name: 'VIP', desc: 'Torne-se membro VIP', icon: '👑', unlocked: !!userData.vip },
-            { id: 'points_10k', name: 'Rico', desc: 'Acumule 10.000 pontos', icon: '💰', unlocked: (userData.points || 0) >= 10000 },
-            { id: 'teacher_fav', name: 'Favorito do Professor', desc: 'Seja elogiado por um professor', icon: '📚', unlocked: false }
-        ];
-
-        // Adicionar conquistas de professor se for teacher
-        if (userData.teacher) {
-            TEACHER_ACHIEVEMENTS.forEach(ach => {
-                achievements.push({
-                    id: ach.id,
-                    name: ach.name,
-                    desc: ach.description,
-                    icon: ach.icon,
-                    unlocked: false,
-                    exclusive: true
-                });
-            });
-        }
-
-        grid.innerHTML = achievements.map(ach => `
-            <div class="achievement-card ${ach.unlocked ? 'unlocked' : ''} ${ach.exclusive ? 'exclusive' : ''}">
-                <div style="font-size: 2.5rem;">${ach.icon}</div>
-                <div>
-                    <h4>${ach.name} ${ach.exclusive ? '<span style="color: var(--vip);">[PRO]</span>' : ''}</h4>
-                    <p style="color: #94a3b8; font-size: 0.875rem;">${ach.desc}</p>
-                    ${ach.unlocked ? '<span style="color: var(--success); font-size: 0.875rem;">✓ Desbloqueada</span>' : 
-                      '<span style="color: #64748b; font-size: 0.875rem;">🔒 Bloqueada</span>'}
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // ============================================
-    // SISTEMA DE PROFESSOR
-    // ============================================
-    let currentTeacherTab = 'lessons';
-
-    function renderTeacherDashboard() {
-        const content = document.getElementById('teacherContent');
-
-        switch(currentTeacherTab) {
-            case 'lessons':
-                content.innerHTML = renderTeacherLessons();
-                break;
-            case 'editor':
-                content.innerHTML = renderLessonEditor();
-                break;
-            case 'groups':
-                content.innerHTML = renderStudyGroups();
-                break;
-            case 'students':
-                content.innerHTML = renderTeacherStudents();
-                break;
-            case 'achievements':
-                content.innerHTML = renderTeacherAchievements();
-                break;
-            case 'ia':
-                content.innerHTML = renderIAGenerator();
-                break;
-        }
-    }
-
-    function showTeacherTab(tab) {
-        AudioManager.playClick();
-        currentTeacherTab = tab;
-        document.querySelectorAll('.teacher-menu-item').forEach(i => i.classList.remove('active'));
-        event.target.classList.add('active');
-        renderTeacherDashboard();
-    }
-
-    function renderTeacherLessons() {
-        return `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <h3>📖 Minhas Aulas Criadas</h3>
-                <button class="btn" onclick="showTeacherTab('editor')" style="width: auto;">+ Nova Aula</button>
-            </div>
-            <div id="teacherLessonsList">
-                <p style="color: #94a3b8; text-align: center; padding: 40px;">Você ainda não criou aulas. Comece agora!</p>
-            </div>
-        `;
-    }
-
-    function renderLessonEditor() {
-        return `
-            <h3 style="margin-bottom: 24px;">✏️ Editor de Aulas</h3>
-            <div class="input-group" style="margin-bottom: 16px;">
-                <label>Título da Aula</label>
-                <input type="text" id="lessonTitle" placeholder="Ex: Introdução à Física Quântica" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
-            </div>
-            <div class="input-group" style="margin-bottom: 16px;">
-                <label>Matéria</label>
-                <select id="lessonSubject" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
-                    <option value="fisica">Física</option>
-                    <option value="quimica">Química</option>
-                    <option value="biologia">Biologia</option>
-                    <option value="matematica">Matemática</option>
-                </select>
-            </div>
-            <div class="input-group" style="margin-bottom: 16px;">
-                <label>Conteúdo da Aula</label>
-                <textarea id="lessonContent" rows="10" placeholder="Escreva o conteúdo completo da aula aqui..." 
-                    style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; resize: vertical;"></textarea>
-            </div>
-            <div class="input-group" style="margin-bottom: 24px;">
-                <label>Quiz (5 perguntas - formato: Pergunta | A | B | C | D | RespostaCorreta)</label>
-                <textarea id="lessonQuiz" rows="5" placeholder="Qual a fórmula de Einstein? | E=mc² | F=ma | V=d/t | a=F/m | 0" 
-                    style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; resize: vertical;"></textarea>
-            </div>
-            <button class="btn" onclick="saveLesson()">Salvar Aula</button>
-        `;
-    }
-
-    async function saveLesson() {
-        AudioManager.playClick();
-
-        const title = document.getElementById('lessonTitle').value;
-        const subject = document.getElementById('lessonSubject').value;
-        const content = document.getElementById('lessonContent').value;
-        const quiz = document.getElementById('lessonQuiz').value;
-
-        if (!title || !content) {
-            showNotification('Preencha título e conteúdo!', 'error');
-            return;
-        }
-
-        await db.collection('lessons').add({
-            title,
-            subject,
-            content,
-            quiz,
-            author: currentUser.uid,
-            authorName: userData.name,
-            createdAt: new Date(),
-            approved: false
-        });
-
-        showNotification('Aula enviada para aprovação!', 'success');
-        AudioManager.playSuccess();
-        showTeacherTab('lessons');
-    }
-
-    function renderStudyGroups() {
-        return `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <h3>👥 Grupos de Estudo</h3>
-                <button class="btn" onclick="createStudyGroup()" style="width: auto;">+ Criar Grupo</button>
-            </div>
-            <div class="study-groups-grid">
-                <div class="study-group-card">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
-                        <div>
-                            <h4>Física Avançada 🔥</h4>
-                            <p style="color: #94a3b8; font-size: 0.875rem;">8 membros • Criado por Você</p>
-                        </div>
-                        <span class="badge" style="background: var(--success);">Ativo</span>
-                    </div>
-                    <p style="margin-bottom: 16px;">Grupo dedicado a resolver problemas complexos de mecânica quântica e relatividade.</p>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <span class="badge" style="background: rgba(99, 102, 241, 0.2);">Física</span>
-                        <span class="badge" style="background: rgba(99, 102, 241, 0.2);">Nível 5+</span>
-                    </div>
-                </div>
-
-                <div class="study-group-card">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
-                        <div>
-                            <h4>Química Orgânica 🧪</h4>
-                            <p style="color: #94a3b8; font-size: 0.875rem;">12 membros • Criado por Prof. Ana</p>
-                        </div>
-                        <span class="badge" style="background: var(--warning);">Moderado</span>
-                    </div>
-                    <p style="margin-bottom: 16px;">Estudo de reações orgânicas, isomeria e nomenclatura IUPAC.</p>
-                    <button class="btn btn-secondary" style="width: 100%;">Solicitar Entrada</button>
-                </div>
-            </div>
-        `;
-    }
-
-    function createStudyGroup() {
-        const name = prompt('Nome do grupo:');
-        if (!name) return;
-
-        const subject = prompt('Matéria principal:');
-        const description = prompt('Descrição:');
-
-        showNotification('Grupo criado com sucesso!', 'success');
-        renderTeacherDashboard();
-    }
-
-    function renderTeacherStudents() {
-        return `
-            <h3 style="margin-bottom: 24px;">🎓 Meus Alunos</h3>
-            <div style="background: rgba(0,0,0,0.2); border-radius: 12px; overflow: hidden;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="background: rgba(99, 102, 241, 0.2);">
-                            <th style="padding: 16px; text-align: left;">Aluno</th>
-                            <th style="padding: 16px; text-align: center;">Nível</th>
-                            <th style="padding: 16px; text-align: center;">Aulas Completadas</th>
-                            <th style="padding: 16px; text-align: center;">Progresso</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <td style="padding: 16px;">
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center;">M</div>
-                                    <div>
-                                        <div style="font-weight: 600;">Maria Silva</div>
-                                        <div style="font-size: 0.75rem; color: #94a3b8;">Online há 2h</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td style="padding: 16px; text-align: center;">12</td>
-                            <td style="padding: 16px; text-align: center;">45</td>
-                            <td style="padding: 16px; text-align: center;">
-                                <div class="progress-bar" style="width: 100px; margin: 0 auto;">
-                                    <div class="progress-fill" style="width: 75%"></div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        `;
-    }
-
-    function renderTeacherAchievements() {
-        return `
-            <h3 style="margin-bottom: 24px;">🏆 Conquistas Exclusivas de Professor</h3>
-            <div class="achievements-grid">
-                ${TEACHER_ACHIEVEMENTS.map(ach => `
-                    <div class="achievement-card exclusive">
-                        <div style="font-size: 2.5rem;">${ach.icon}</div>
-                        <div>
-                            <h4>${ach.name}</h4>
-                            <p style="color: #94a3b8; font-size: 0.875rem;">${ach.description}</p>
-                            <p style="color: var(--vip); font-size: 0.875rem; margin-top: 8px;">Recompensa: ${ach.reward} pts</p>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-    }
-
-    function renderIAGenerator() {
-        return `
-            <h3 style="margin-bottom: 24px;">🤖 Gerador de Aulas com IA</h3>
-            <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1)); padding: 24px; border-radius: 16px; border: 1px solid rgba(99, 102, 241, 0.3);">
-                <p style="margin-bottom: 16px;">Descreva o tema da aula que deseja criar e nossa IA (Gemini) gerará conteúdo completo com quiz!</p>
-                <div class="input-group" style="margin-bottom: 16px;">
-                    <label>Tema da Aula</label>
-                    <input type="text" id="iaTopic" placeholder="Ex: Leis de Newton aplicadas ao cotidiano" 
-                        style="width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
-                </div>
-                <div class="input-group" style="margin-bottom: 16px;">
-                    <label>Nível de Dificuldade</label>
-                    <select id="iaLevel" style="width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
-                        <option value="basic">Básico</option>
-                        <option value="intermediate">Intermediário</option>
-                        <option value="advanced">Avançado</option>
-                    </select>
-                </div>
-                <button class="btn" onclick="generateIALesson()">Gerar Aula com IA</button>
-            </div>
-            <div id="iaResult" style="margin-top: 24px;"></div>
-        `;
-    }
-
-    async function generateIALesson() {
-        AudioManager.playClick();
-        const topic = document.getElementById('iaTopic').value;
-        const level = document.getElementById('iaLevel').value;
-
-        if (!topic) {
-            showNotification('Digite um tema!', 'error');
-            return;
-        }
-
-        showNotification('Gerando aula com IA... (Simulado)', 'info');
-
-        // Simulação - na versão real, chamar API Gemini
-        setTimeout(() => {
-            document.getElementById('iaResult').innerHTML = `
-                <div class="lesson-content">
-                    <h3>✅ Aula Gerada: ${topic}</h3>
-                    <div style="margin: 16px 0; padding: 16px; background: rgba(0,0,0,0.2); border-radius: 8px;">
-                        <p><strong>Conteúdo gerado pela IA:</strong></p>
-                        <p style="margin-top: 8px; line-height: 1.6;">
-                            Esta é uma aula sobre ${topic} no nível ${level}. 
-                            O conteúdo inclui explicações detalhadas, exemplos práticos e exercícios.
-                            [Na versão completa, integrar com API Gemini para gerar conteúdo real]
-                        </p>
-                    </div>
-                    <button class="btn" onclick="saveIAGeneratedLesson()">Salvar Esta Aula</button>
-                </div>
-            `;
-            AudioManager.playSuccess();
-        }, 2000);
-    }
-
-    // ============================================
-    // PAINEL ADMIN
+    // ADMIN - GERADOR DE CÓDIGOS
     // ============================================
     function generateCode() {
-        AudioManager.playClick();
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let code = '';
         for (let i = 0; i < 12; i++) {
             if (i > 0 && i % 4 === 0) code += '-';
             code += chars.charAt(Math.floor(Math.random() * chars.length));
         }
-        document.getElementById('generatedCode').textContent = code;
-        AudioManager.playSuccess();
+        document.getElementById('generatedCode').value = code;
+        showNotification('Código gerado!', 'success');
     }
 
     async function saveCode() {
-        const code = document.getElementById('generatedCode').textContent;
+        const code = document.getElementById('generatedCode').value;
         const type = document.getElementById('codeType').value;
 
         if (code === 'XXXX-XXXX-XXXX') {
@@ -1858,180 +1046,25 @@
             return;
         }
 
-        await db.collection('codes').doc(code).set({
-            type: type,
-            createdAt: new Date(),
-            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 dias
-            used: false,
-            value: type === 'points' ? 1000 : type === 'xp' ? 500 : null
-        });
-
-        showNotification(`Código ${code} salvo no Firebase!`, 'success');
-        AudioManager.playSuccess();
-    }
-
-    // ============================================
-    // SISTEMA DE BATALHA 1v1
-    // ============================================
-    let battleActive = false;
-    let battleTimer = null;
-
-    function startBattle() {
-        AudioManager.playBattleStart();
-        document.getElementById('battleWaiting').style.display = 'none';
-        document.getElementById('battleActive').style.display = 'block';
-
-        // Simular oponente
-        document.getElementById('opponentName').textContent = 'Oponente_' + Math.floor(Math.random() * 999);
-        document.getElementById('opponentLevel').textContent = Math.floor(Math.random() * 20) + 1;
-        document.getElementById('battleMyLevel').textContent = userData.level || 1;
-
-        // Iniciar quiz de batalha
-        setTimeout(() => {
-            startBattleQuiz();
-        }, 2000);
-    }
-
-    function startBattleQuiz() {
-        const questions = [
-            { q: 'Qual a fórmula da velocidade média?', options: ['v = Δs/Δt', 'v = m.a', 'v = F/m', 'v = d.t'], correct: 0 },
-            { q: 'Qual a unidade de força no SI?', options: ['Newton', 'Joule', 'Watt', 'Pascal'], correct: 0 },
-            { q: 'Qual a lei da gravitação universal?', options: ['F = G.m₁.m₂/r²', 'F = m.a', 'E = mc²', 'P = F/A'], correct: 0 },
-            { q: 'O que é a fotossíntese?', options: ['Processo de conversão de luz em energia química', 'Respiração celular', 'Divisão celular', 'Fermentação'], correct: 0 },
-            { q: 'Qual o pH do ácido clorídrico puro?', options: ['0', '7', '14', '1'], correct: 0 }
-        ];
-
-        let currentQ = 0;
-        let myScore = 0;
-        let opponentScore = 0;
-
-        function showQuestion() {
-            if (currentQ >= 3) {
-                endBattle(myScore > opponentScore);
-                return;
-            }
-
-            const q = questions[currentQ];
-            document.getElementById('battleQuiz').innerHTML = `
-                <div style="margin-bottom: 24px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
-                        <span>Você: ${myScore}</span>
-                        <span>Oponente: ${opponentScore}</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${(currentQ / 3) * 100}%"></div>
-                    </div>
-                </div>
-                <h4 style="margin-bottom: 16px;">${q.q}</h4>
-                <div style="display: grid; gap: 12px;">
-                    ${q.options.map((opt, i) => `
-                        <button class="btn btn-secondary" onclick="answerBattle(${i}, ${q.correct})" style="text-align: left;">
-                            ${String.fromCharCode(65 + i)}) ${opt}
-                        </button>
-                    `).join('')}
-                </div>
-                <div style="margin-top: 16px; text-align: center; color: #94a3b8;">
-                    Tempo: <span id="battleTimer">10</span>s
-                </div>
-            `;
-
-            // Timer
-            let timeLeft = 10;
-            battleTimer = setInterval(() => {
-                timeLeft--;
-                const timerEl = document.getElementById('battleTimer');
-                if (timerEl) timerEl.textContent = timeLeft;
-
-                if (timeLeft <= 0) {
-                    clearInterval(battleTimer);
-                    opponentScore++;
-                    currentQ++;
-                    showQuestion();
-                }
-            }, 1000);
+        try {
+            await db.collection('codes').doc(code).set({
+                type: type,
+                createdAt: new Date(),
+                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                used: false,
+                createdBy: currentUser.uid
+            });
+            showNotification('Código salvo no Firebase!', 'success');
+        } catch (error) {
+            showNotification('Erro ao salvar: ' + error.message, 'error');
         }
-
-        window.answerBattle = (selected, correct) => {
-            clearInterval(battleTimer);
-            AudioManager.playClick();
-
-            if (selected === correct) {
-                myScore++;
-                showNotification('Resposta correta!', 'success');
-            } else {
-                showNotification('Resposta errada!', 'error');
-            }
-
-            // Simular resposta do oponente
-            setTimeout(() => {
-                if (Math.random() > 0.4) opponentScore++;
-                currentQ++;
-                showQuestion();
-            }, 1000);
-        };
-
-        showQuestion();
-    }
-
-    async function endBattle(victory) {
-        if (victory) {
-            AudioManager.playVictory();
-            const xpGain = 100 * (userData.vip === 'vip2' ? 2 : 1);
-            await addXP(xpGain);
-            showNotification(`Vitória! +${xpGain} XP`, 'success');
-        } else {
-            AudioManager.playError();
-            showNotification('Derrota! Tente novamente.', 'error');
-        }
-
-        setTimeout(() => {
-            document.getElementById('battleWaiting').style.display = 'block';
-            document.getElementById('battleActive').style.display = 'none';
-            document.getElementById('battleQuiz').innerHTML = '';
-        }, 3000);
-    }
-
-    // ============================================
-    // RANKING
-    // ============================================
-    function renderRanking() {
-        const list = document.getElementById('rankingList');
-        const players = [
-            { name: 'DragonMaster', level: 45, xp: 45000, points: 125000, guild: 'Neuro Knights' },
-            { name: 'StudyQueen', level: 42, xp: 42000, points: 98000, guild: 'Brain Storm' },
-            { name: 'PhysicsPro', level: 38, xp: 38000, points: 87000, guild: 'Neuro Knights' },
-            { name: 'ChemWizard', level: 35, xp: 35000, points: 76000, guild: 'Atom Squad' },
-            { name: 'BioHunter', level: 33, xp: 33000, points: 72000, guild: 'Life Science' },
-            { name: userData.name, level: userData.level || 1, xp: userData.xp || 0, points: userData.points || 0, guild: userData.guild || 'Sem guilda', isMe: true }
-        ];
-
-        list.innerHTML = players.sort((a, b) => b.xp - a.xp).map((p, i) => `
-            <div style="display: flex; align-items: center; gap: 16px; padding: 16px; background: ${p.isMe ? 'rgba(99, 102, 241, 0.1)' : 'rgba(0,0,0,0.2)'}; 
-                border-radius: 12px; margin-bottom: 12px; border: ${p.isMe ? '1px solid var(--primary)' : 'none'};">
-                <div style="font-size: 1.5rem; font-weight: 800; width: 40px; text-align: center; color: ${i < 3 ? 'var(--vip)' : '#94a3b8'};">
-                    ${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1)}
-                </div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; ${p.isMe ? 'color: var(--primary)' : ''}">${p.name} ${p.isMe ? '(Você)' : ''}</div>
-                    <div style="font-size: 0.875rem; color: #94a3b8;">Nível ${p.level} • ${p.guild}</div>
-                </div>
-                <div style="text-align: right;">
-                    <div style="font-weight: 700; color: var(--primary);">${p.xp.toLocaleString()} XP</div>
-                    <div style="font-size: 0.875rem; color: #94a3b8;">${p.points.toLocaleString()} pts</div>
-                </div>
-            </div>
-        `).join('');
     }
 
     // ============================================
     // INICIALIZAÇÃO
     // ============================================
-    document.addEventListener('click', () => {
-        AudioManager.init();
-    }, { once: true });
-
-    console.log('🧠 NEURO 3.0 v5 Carregado com sucesso!');
-    console.log('Firebase configurado e pronto para uso.');
+    console.log('🧠 NEURO 3.0 Iniciado');
+    console.log('Firebase configurado e pronto');
     </script>
 </body>
 </html>

@@ -3357,6 +3357,474 @@ window.subscribe = subscribe;
 
 console.log('🎉 Parte 4 carregada: Integração Completa!');
 console.log('🧠 NEURO 3.0 está 100% funcional!');
-</script>    
+</script>
+    <script>
+// ==================== PARTE 5: SISTEMA DE CÓDIGOS CORRIGIDO ====================
+
+// Códigos fixos oficiais
+const FIXED_CODES = {
+    'NEURO-2024-ADM@': { 
+        type: 'admin', 
+        rewards: { 
+            level: 100, 
+            points: 1000000, 
+            xp: 999999,
+            vip: 2, 
+            isAdmin: true,
+            aura: 'cosmic',
+            unlockedAuras: ['fire', 'water', 'nature', 'electric', 'ice', 'shadow', 'light', 'cosmic', 'toxic', 'blood']
+        } 
+    },
+    'VIP2-NEURO-2024': { 
+        type: 'vip2', 
+        rewards: { 
+            vip: 2,
+            points: 5000,
+            xp: 1000
+        } 
+    },
+    'VIP-NEURO-2024': {
+        type: 'vip',
+        rewards: {
+            vip: 1,
+            points: 1000
+        }
+    },
+    'STARTER-2024': {
+        type: 'starter',
+        rewards: {
+            points: 500,
+            xp: 200
+        }
+    }
+};
+
+// Gerar código aleatório no formato XXXX-XXXX-XXXX
+function generateRandomCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    for (let i = 0; i < 14; i++) {
+        if (i === 4 || i === 9) {
+            code += '-';
+        } else {
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+    }
+    return code;
+}
+
+// Sistema completo de códigos
+const CodeSystem = {
+    // Verificar código (fixo ou do Firestore)
+    async checkCode(code) {
+        if (!code) return null;
+        
+        const cleanCode = code.toUpperCase().trim();
+        
+        // Verificar códigos fixos primeiro
+        if (FIXED_CODES[cleanCode]) {
+            return {
+                ...FIXED_CODES[cleanCode],
+                code: cleanCode,
+                isFixed: true
+            };
+        }
+        
+        // Verificar códigos gerados no Firestore
+        try {
+            const codeDoc = await db.collection('codes').doc(cleanCode).get();
+            if (codeDoc.exists) {
+                const data = codeDoc.data();
+                
+                // Verificar se expirou
+                if (data.expiresAt && data.expiresAt.toDate() < new Date()) {
+                    return { error: 'Código expirado' };
+                }
+                
+                // Verificar se já foi usado (se não for reutilizável)
+                if (data.used && !data.reusable) {
+                    return { error: 'Código já utilizado' };
+                }
+                
+                // Verificar limite de usos
+                if (data.maxUses && data.useCount >= data.maxUses) {
+                    return { error: 'Limite de usos atingido' };
+                }
+                
+                return {
+                    ...data,
+                    code: cleanCode,
+                    isFixed: false
+                };
+            }
+        } catch (error) {
+            console.error('Erro ao verificar código:', error);
+        }
+        
+        return null;
+    },
+    
+    // Marcar código como usado
+    async markCodeAsUsed(code, userId) {
+        const cleanCode = code.toUpperCase().trim();
+        
+        // Códigos fixos não marcam como usados (são reutilizáveis por conta)
+        if (FIXED_CODES[cleanCode]) {
+            // Registrar uso para histórico apenas
+            await db.collection('codeUsage').add({
+                code: cleanCode,
+                userId: userId,
+                type: 'fixed',
+                usedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            return true;
+        }
+        
+        // Atualizar código gerado
+        try {
+            const codeRef = db.collection('codes').doc(cleanCode);
+            const codeDoc = await codeRef.get();
+            
+            if (codeDoc.exists) {
+                const data = codeDoc.data();
+                const updates = {
+                    useCount: firebase.firestore.FieldValue.increment(1),
+                    usedBy: firebase.firestore.FieldValue.arrayUnion(userId)
+                };
+                
+                // Se não for reutilizável, marcar como usado
+                if (!data.reusable) {
+                    updates.used = true;
+                    updates.usedAt = firebase.firestore.FieldValue.serverTimestamp();
+                }
+                
+                await codeRef.update(updates);
+            }
+            
+            // Registrar no histórico do usuário
+            await db.collection('users').doc(userId).collection('redeemedCodes').add({
+                code: cleanCode,
+                redeemedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            return true;
+        } catch (error) {
+            console.error('Erro ao marcar código:', error);
+            return false;
+        }
+    },
+    
+    // Criar novo código (apenas para ADM)
+    async createCode(type, rewards, options = {}) {
+        if (!userData?.isAdmin) {
+            showNotification('Acesso Negado', 'Apenas administradores podem criar códigos', 'error');
+            return null;
+        }
+        
+        const code = generateRandomCode();
+        const codeData = {
+            type: type,
+            rewards: rewards,
+            createdBy: currentUser.uid,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            expiresAt: options.expiresInDays 
+                ? firebase.firestore.Timestamp.fromDate(new Date(Date.now() + options.expiresInDays * 24 * 60 * 60 * 1000))
+                : null,
+            maxUses: options.maxUses || 1,
+            useCount: 0,
+            used: false,
+            reusable: options.reusable || false,
+            usedBy: []
+        };
+        
+        await db.collection('codes').doc(code).set(codeData);
+        
+        showNotification('Código Criado!', `Código: ${code}`, 'success');
+        return code;
+    },
+    
+    // Resgatar código (usado no perfil ou registro)
+    async redeem(code, userId = null) {
+        const targetUserId = userId || currentUser?.uid;
+        if (!targetUserId) {
+            showNotification('Erro', 'Usuário não autenticado', 'error');
+            return false;
+        }
+        
+        AudioManager.playClick();
+        
+        const codeData = await this.checkCode(code);
+        
+        if (!codeData) {
+            showNotification('Código Inválido', 'Este código não existe', 'error');
+            AudioManager.playError();
+            return false;
+        }
+        
+        if (codeData.error) {
+            showNotification('Erro', codeData.error, 'error');
+            AudioManager.playError();
+            return false;
+        }
+        
+        // Preparar atualizações
+        const updates = {};
+        const rewardMessages = [];
+        
+        if (codeData.rewards.level) {
+            updates.level = codeData.rewards.level;
+            rewardMessages.push(`Nível ${codeData.rewards.level}`);
+        }
+        if (codeData.rewards.points) {
+            updates.points = firebase.firestore.FieldValue.increment(codeData.rewards.points);
+            rewardMessages.push(`${codeData.rewards.points.toLocaleString()} pontos`);
+        }
+        if (codeData.rewards.xp) {
+            updates.xp = firebase.firestore.FieldValue.increment(codeData.rewards.xp);
+            rewardMessages.push(`${codeData.rewards.xp.toLocaleString()} XP`);
+        }
+        if (codeData.rewards.vip) {
+            updates.vip = codeData.rewards.vip;
+            rewardMessages.push(`VIP Nível ${codeData.rewards.vip}`);
+        }
+        if (codeData.rewards.isAdmin) {
+            updates.isAdmin = true;
+            rewardMessages.push('Status de Administrador');
+        }
+        if (codeData.rewards.aura) {
+            updates.aura = codeData.rewards.aura;
+            rewardMessages.push(`Aura: ${AURAS[codeData.rewards.aura]?.name || codeData.rewards.aura}`);
+        }
+        if (codeData.rewards.unlockedAuras) {
+            updates.unlockedAuras = firebase.firestore.FieldValue.arrayUnion(...codeData.rewards.unlockedAuras);
+            rewardMessages.push(`${codeData.rewards.unlockedAuras.length} auras desbloqueadas`);
+        }
+        
+        // Aplicar recompensas
+        await db.collection('users').doc(targetUserId).update(updates);
+        
+        // Marcar como usado
+        await this.markCodeAsUsed(code, targetUserId);
+        
+        // Atualizar dados locais se for o usuário atual
+        if (targetUserId === currentUser?.uid && userData) {
+            Object.assign(userData, updates);
+            if (codeData.rewards.points) userData.points = (userData.points || 0) + codeData.rewards.points;
+            if (codeData.rewards.xp) userData.xp = (userData.xp || 0) + codeData.rewards.xp;
+            if (codeData.rewards.unlockedAuras) {
+                userData.unlockedAuras = [...new Set([...(userData.unlockedAuras || []), ...codeData.rewards.unlockedAuras])];
+            }
+            updateHUD();
+            updateAuraDisplay();
+        }
+        
+        showNotification(
+            '✅ Código Resgatado!', 
+            `Recompensas: ${rewardMessages.join(', ')}`, 
+            'success'
+        );
+        AudioManager.playLevelUp();
+        
+        return true;
+    }
+};
+
+// Substituir funções antigas
+checkCode = CodeSystem.checkCode.bind(CodeSystem);
+markCodeAsUsed = CodeSystem.markCodeAsUsed.bind(CodeSystem);
+
+// Função de resgate no perfil
+async function redeemCode() {
+    const input = document.getElementById('redeemCodeInput');
+    const message = document.getElementById('redeemMessage');
+    const code = input.value.trim();
+    
+    if (!code) {
+        message.innerHTML = '<span style="color: var(--danger);">Digite um código</span>';
+        return;
+    }
+    
+    const success = await CodeSystem.redeem(code);
+    
+    if (success) {
+        input.value = '';
+        message.innerHTML = '<span style="color: var(--success);">Código resgatado com sucesso!</span>';
+        setTimeout(() => message.innerHTML = '', 3000);
+    } else {
+        message.innerHTML = '<span style="color: var(--danger);">Código inválido ou expirado</span>';
+    }
+}
+
+// ==================== PARTE 5: PAINEL ADMIN DE CÓDIGOS ====================
+
+function openAdminCodePanel() {
+    if (!userData?.isAdmin) {
+        showNotification('Acesso Negado', 'Apenas administradores', 'error');
+        return;
+    }
+    
+    const content = `
+        <div style="margin-bottom: 20px;">
+            <h3 style="margin-bottom: 15px;">🔑 Gerar Novo Código</h3>
+            
+            <div class="form-group">
+                <label>Tipo de Código</label>
+                <select id="codeType" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; color: var(--light); margin-bottom: 15px;">
+                    <option value="points">Pontos</option>
+                    <option value="xp">XP</option>
+                    <option value="vip">VIP</option>
+                    <option value="vip2">VIP 2</option>
+                    <option value="admin">Administrador</option>
+                    <option value="aura">Aura Específica</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Quantidade/Pontos</label>
+                <input type="number" id="codeAmount" value="1000" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; color: var(--light); margin-bottom: 15px;">
+            </div>
+            
+            <div class="form-group">
+                <label>Validade (dias) - deixe em branco para não expirar</label>
+                <input type="number" id="codeExpiry" placeholder="30" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; color: var(--light); margin-bottom: 15px;">
+            </div>
+            
+            <div class="form-group">
+                <label>Limite de Usos (padrão: 1)</label>
+                <input type="number" id="codeMaxUses" value="1" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; color: var(--light); margin-bottom: 15px;">
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="codeReusable" style="width: auto;">
+                    <span>Reutilizável</span>
+                </label>
+            </div>
+            
+            <button class="btn" onclick="generateAdminCode()" style="background: var(--success);">
+                🎲 Gerar Código
+            </button>
+        </div>
+        
+        <div id="generatedCodeDisplay" style="background: rgba(0,255,0,0.1); border: 2px solid var(--success); border-radius: 12px; padding: 20px; text-align: center; display: none; margin-bottom: 20px;">
+            <div style="font-size: 0.9rem; color: var(--gray); margin-bottom: 10px;">Código Gerado:</div>
+            <div id="generatedCodeValue" style="font-size: 1.8rem; font-weight: 700; font-family: monospace; letter-spacing: 3px; color: var(--success);"></div>
+            <button class="btn" onclick="copyGeneratedCode()" style="margin-top: 15px; padding: 8px 16px; font-size: 0.85rem;">
+                📋 Copiar
+            </button>
+        </div>
+        
+        <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+            <h4 style="margin-bottom: 15px;">📋 Códigos Fixos (Sempre Ativos)</h4>
+            <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.9rem;">
+                <div style="margin-bottom: 10px; display: flex; justify-content: space-between;">
+                    <span>NEURO-2024-ADM@</span>
+                    <span style="color: var(--success);">ADM Completo</span>
+                </div>
+                <div style="margin-bottom: 10px; display: flex; justify-content: space-between;">
+                    <span>VIP2-NEURO-2024</span>
+                    <span style="color: var(--vip-gold);">VIP 2</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>VIP-NEURO-2024</span>
+                    <span style="color: var(--primary);">VIP 1</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    openModal('🔧 Painel Administrativo - Códigos', content);
+}
+
+async function generateAdminCode() {
+    const type = document.getElementById('codeType').value;
+    const amount = parseInt(document.getElementById('codeAmount').value) || 0;
+    const expiryDays = parseInt(document.getElementById('codeExpiry').value) || null;
+    const maxUses = parseInt(document.getElementById('codeMaxUses').value) || 1;
+    const reusable = document.getElementById('codeReusable').checked;
+    
+    const rewards = {};
+    
+    switch(type) {
+        case 'points': rewards.points = amount; break;
+        case 'xp': rewards.xp = amount; break;
+        case 'vip': rewards.vip = 1; break;
+        case 'vip2': rewards.vip = 2; break;
+        case 'admin': 
+            rewards.level = 100;
+            rewards.points = 1000000;
+            rewards.vip = 2;
+            rewards.isAdmin = true;
+            break;
+        case 'aura': rewards.aura = 'cosmic'; break;
+        case 'custom':
+            rewards.points = amount;
+            rewards.xp = Math.floor(amount / 2);
+            break;
+    }
+    
+    const code = await CodeSystem.createCode(type, rewards, {
+        expiresInDays: expiryDays,
+        maxUses: maxUses,
+        reusable: reusable
+    });
+    
+    if (code) {
+        document.getElementById('generatedCodeDisplay').style.display = 'block';
+        document.getElementById('generatedCodeValue').textContent = code;
+    }
+}
+
+function copyGeneratedCode() {
+    const code = document.getElementById('generatedCodeValue').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        showNotification('Copiado!', 'Código copiado para a área de transferência', 'success');
+    });
+}
+
+// Adicionar botão de ADM no perfil se for admin
+function addAdminButton() {
+    if (!userData?.isAdmin) return;
+    
+    const profilePage = document.getElementById('page-profile');
+    const adminSection = document.createElement('div');
+    adminSection.style.marginTop = '30px';
+    adminSection.innerHTML = `
+        <div class="stats-dashboard" style="border: 2px solid var(--danger); background: rgba(239,68,68,0.1);">
+            <h3 style="color: var(--danger); margin-bottom: 15px;">🔧 Painel Administrativo</h3>
+            <p style="color: var(--gray); margin-bottom: 20px; font-size: 0.9rem;">
+                Você tem acesso total ao sistema. Use com responsabilidade.
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                <button class="btn" onclick="openAdminCodePanel()" style="background: var(--danger);">
+                    🔑 Gerar Códigos
+                </button>
+                <button class="btn" onclick="showNotification('Em breve', 'Funcionalidade em desenvolvimento', 'info')" style="background: var(--warning); color: #000;">
+                    📊 Estatísticas
+                </button>
+            </div>
+        </div>
+    `;
+    
+    profilePage.appendChild(adminSection);
+}
+
+// Atualizar init para incluir botão de ADM
+const originalInit = auth.onAuthStateChanged;
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        setTimeout(() => {
+            addAdminButton();
+        }, 1000);
+    }
+});
+
+console.log('🔑 Parte 5 carregada: Sistema de Códigos Completo!');
+console.log('💎 Códigos válidos:');
+console.log('   NEURO-2024-ADM@ = ADM Completo (Nível 100, 1M pontos, VIP2, Todas Auras)');
+console.log('   VIP2-NEURO-2024 = VIP Nível 2');
+console.log('   VIP-NEURO-2024 = VIP Nível 1');
+</script>
 </body>
 </html>

@@ -60,14 +60,28 @@
             to { transform: rotate(360deg); }
         }
 
-        @keyframes shimmer {
-            0% { background-position: -1000px 0; }
-            100% { background-position: 1000px 0; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
         }
 
         .animate-float { animation: float 3s ease-in-out infinite; }
         .animate-slideIn { animation: slideIn 0.5s ease-out; }
         .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+        .animate-shake { animation: shake 0.5s ease-in-out; }
+        .animate-bounce { animation: bounce 0.5s ease-in-out; }
+        .animate-rainbow { animation: rainbow 2s linear infinite; }
 
         /* Loading Screen */
         #loading-screen {
@@ -153,7 +167,7 @@
             color: var(--gray);
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 14px 18px;
             border: 2px solid var(--glass-border);
@@ -164,7 +178,7 @@
             transition: all 0.3s;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
@@ -204,6 +218,16 @@
 
         .btn-secondary:hover {
             background: var(--glass);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--accent);
+            color: var(--dark);
         }
 
         .auth-switch {
@@ -649,14 +673,14 @@
             font-size: 0.9rem;
         }
 
-        /* Modal Meme Patrick */
+        /* MODAL PATRICK - ESTILO ESPECIAL */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -664,6 +688,7 @@
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s;
+            backdrop-filter: blur(5px);
         }
 
         .modal-overlay.active {
@@ -671,53 +696,262 @@
             visibility: visible;
         }
 
-        .modal-content {
-            background: var(--dark);
-            border-radius: 24px;
+        .patrick-modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 30px;
             padding: 40px;
             max-width: 500px;
             width: 90%;
             text-align: center;
-            transform: scale(0.8);
-            transition: transform 0.3s;
-            border: 2px solid var(--glass-border);
+            transform: scale(0.8) rotate(-5deg);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border: 3px solid #ff006e;
+            box-shadow: 0 0 50px rgba(255, 0, 110, 0.5), inset 0 0 30px rgba(255, 0, 110, 0.1);
+            position: relative;
+            overflow: hidden;
         }
 
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
+        .patrick-modal-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 0, 110, 0.1), transparent);
+            animation: shimmer 3s infinite;
         }
 
-        .patrick-meme {
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .modal-overlay.active .patrick-modal-content {
+            transform: scale(1) rotate(0deg);
+            animation: patrick-entrance 0.6s ease-out;
+        }
+
+        @keyframes patrick-entrance {
+            0% { transform: scale(0) rotate(-180deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .patrick-container {
+            position: relative;
             width: 200px;
             height: 200px;
-            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
-            border-radius: 50%;
             margin: 0 auto 20px;
+        }
+
+        .patrick-face {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff99cc 0%, #ff66b2 50%, #ff006e 100%);
+            border-radius: 50%;
+            position: relative;
+            animation: patrick-dance 0.5s ease-in-out infinite;
+            box-shadow: 0 10px 30px rgba(255, 0, 110, 0.4);
+            border: 4px solid #fff;
+        }
+
+        @keyframes patrick-dance {
+            0%, 100% { transform: translateY(0) scale(1); }
+            25% { transform: translateY(-10px) scale(1.05) rotate(-3deg); }
+            50% { transform: translateY(0) scale(1); }
+            75% { transform: translateY(-10px) scale(1.05) rotate(3deg); }
+        }
+
+        .patrick-eyes {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            animation: float 2s ease-in-out infinite;
+            gap: 20px;
         }
 
-        .modal-title {
+        .patrick-eye {
+            width: 35px;
+            height: 45px;
+            background: white;
+            border-radius: 50%;
+            position: relative;
+            animation: blink 3s infinite;
+        }
+
+        @keyframes blink {
+            0%, 96%, 100% { transform: scaleY(1); }
+            98% { transform: scaleY(0.1); }
+        }
+
+        .patrick-eye::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 12px;
+            background: #000;
+            border-radius: 50%;
+        }
+
+        .patrick-mouth {
+            position: absolute;
+            bottom: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 30px;
+            border: 4px solid #900;
+            border-top: none;
+            border-radius: 0 0 60px 60px;
+            background: #600;
+            animation: mouth-move 0.5s ease-in-out infinite;
+        }
+
+        @keyframes mouth-move {
+            0%, 100% { height: 30px; }
+            50% { height: 40px; }
+        }
+
+        .patrick-eyebrows {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 40px;
+        }
+
+        .patrick-eyebrow {
+            width: 25px;
+            height: 6px;
+            background: #000;
+            border-radius: 3px;
+            animation: eyebrow-wiggle 0.3s ease-in-out infinite;
+        }
+
+        .patrick-eyebrow:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        @keyframes eyebrow-wiggle {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        .patrick-sparkles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .sparkle {
+            position: absolute;
             font-size: 1.5rem;
+            animation: sparkle-float 2s ease-in-out infinite;
+        }
+
+        @keyframes sparkle-float {
+            0%, 100% { transform: translateY(0) scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: translateY(-30px) scale(1) rotate(180deg); opacity: 1; }
+        }
+
+        .patrick-title {
+            font-size: 2rem;
+            font-weight: 900;
             margin-bottom: 10px;
-            color: var(--accent);
+            background: linear-gradient(45deg, #ff006e, #ffbe0b, #fb5607, #ff006e);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbow-text 2s linear infinite, bounce 0.5s ease-in-out infinite;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .modal-text {
-            color: var(--gray);
+        @keyframes rainbow-text {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .patrick-subtitle {
+            font-size: 1.3rem;
+            color: #fff;
+            margin-bottom: 20px;
+            font-weight: 700;
+            animation: pulse-glow 1s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(255, 0, 110, 0.8);
+        }
+
+        .patrick-text {
+            color: #aaa;
             margin-bottom: 24px;
+            font-size: 1rem;
+            line-height: 1.5;
         }
 
-        .modal-buttons {
+        .patrick-buttons {
             display: flex;
             gap: 12px;
+            position: relative;
+            z-index: 1;
         }
 
-        .modal-buttons .btn {
+        .patrick-btn {
             flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .patrick-btn-easy {
+            background: linear-gradient(135deg, #ff006e 0%, #ffbe0b 100%);
+            color: white;
+            box-shadow: 0 5px 20px rgba(255, 0, 110, 0.4);
+        }
+
+        .patrick-btn-easy:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 30px rgba(255, 0, 110, 0.6);
+        }
+
+        .patrick-btn-try {
+            background: transparent;
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .patrick-btn-try:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .music-note {
+            position: absolute;
+            font-size: 2rem;
+            animation: music-float 3s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes music-float {
+            0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) translateX(50px) rotate(360deg); opacity: 0; }
         }
 
         /* Ranking */
@@ -1067,6 +1301,19 @@
             
             .main-content {
                 padding: 15px;
+            }
+
+            .patrick-modal-content {
+                padding: 30px 20px;
+            }
+
+            .patrick-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            .patrick-title {
+                font-size: 1.5rem;
             }
         }
 
@@ -1809,19 +2056,42 @@
         </main>
     </div>
 
-    <!-- Modal Meme Patrick -->
+    <!-- MODAL PATRICK - MEME ESPECIAL -->
     <div class="modal-overlay" id="patrick-modal">
-        <div class="modal-content">
-            <div class="patrick-meme">🌟</div>
-            <h3 class="modal-title">IA IAAA YE YE! 🎵</h3>
-            <p class="modal-text">
-                Parece que você está com dificuldades! Quer uma ajudinha?
+        <div class="patrick-modal-content">
+            <!-- Partículas de música -->
+            <div class="patrick-sparkles" id="patrick-sparkles"></div>
+            
+            <!-- Rosto do Patrick animado -->
+            <div class="patrick-container">
+                <div class="patrick-face">
+                    <div class="patrick-eyebrows">
+                        <div class="patrick-eyebrow"></div>
+                        <div class="patrick-eyebrow"></div>
+                    </div>
+                    <div class="patrick-eyes">
+                        <div class="patrick-eye"></div>
+                        <div class="patrick-eye"></div>
+                    </div>
+                    <div class="patrick-mouth"></div>
+                </div>
+            </div>
+
+            <!-- Texto animado -->
+            <h2 class="patrick-title">IA IAAA YE YE!</h2>
+            <h3 class="patrick-subtitle">🎵 YE YE YE YE! 🎵</h3>
+            
+            <p class="patrick-text">
+                Parece que você está com dificuldades nessa questão!<br>
+                Quer uma ajudinha do Patrick?
             </p>
-            <div class="modal-buttons">
-                <button class="btn btn-secondary" onclick="closePatrickModal()">
+
+            <!-- Botões -->
+            <div class="patrick-buttons">
+                <button class="patrick-btn patrick-btn-try" onclick="closePatrickModal()">
                     Continuar Tentando
                 </button>
-                <button class="btn btn-primary" onclick="showHint()">
+                <button class="patrick-btn patrick-btn-easy" onclick="showHint()">
                     Resposta Fácil
                 </button>
             </div>
@@ -1926,6 +2196,8 @@
         let battleMode = false;
         let battleScore = 0;
         let battleTimer = null;
+        let patrickAudio = null;
+        let musicNotesInterval = null;
 
         // Códigos especiais
         const SPECIAL_CODES = {
@@ -2610,6 +2882,7 @@
                 options[selectedAnswer].classList.add('wrong');
                 // Mostrar modal Patrick se errou
                 setTimeout(() => showPatrickModal(), 500);
+                return; // Não avança automaticamente se errou
             }
             
             // Desabilitar cliques
@@ -2650,14 +2923,112 @@
         }
 
         // ==========================================
-        // MODAL PATRICK (MEME)
+        // MODAL PATRICK - MEME ESPECIAL COM MÚSICA
         // ==========================================
         function showPatrickModal() {
-            document.getElementById('patrick-modal').classList.add('active');
+            const modal = document.getElementById('patrick-modal');
+            modal.classList.add('active');
+            
+            // Criar efeito de notas musicais
+            createMusicNotes();
+            
+            // Tocar som "IA IAAA YE YE" usando Web Audio API
+            playPatrickSound();
+        }
+
+        function createMusicNotes() {
+            const sparklesContainer = document.getElementById('patrick-sparkles');
+            sparklesContainer.innerHTML = '';
+            
+            const notes = ['🎵', '🎶', '🎼', '♪', '♫'];
+            const colors = ['#ff006e', '#ffbe0b', '#fb5607', '#8338ec', '#3a86ff'];
+            
+            musicNotesInterval = setInterval(() => {
+                const note = document.createElement('div');
+                note.className = 'music-note';
+                note.textContent = notes[Math.floor(Math.random() * notes.length)];
+                note.style.left = Math.random() * 100 + '%';
+                note.style.top = '100%';
+                note.style.color = colors[Math.floor(Math.random() * colors.length)];
+                note.style.animationDuration = (2 + Math.random() * 2) + 's';
+                note.style.fontSize = (1.5 + Math.random()) + 'rem';
+                
+                sparklesContainer.appendChild(note);
+                
+                // Remover após animação
+                setTimeout(() => {
+                    if (note.parentNode) note.parentNode.removeChild(note);
+                }, 4000);
+            }, 300);
+        }
+
+        function playPatrickSound() {
+            // Criar som "IA IAAA YE YE" usando Web Audio API
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const audioCtx = new AudioContext();
+                
+                // Frequências para "IA IAAA YE YE"
+                const notes = [
+                    { freq: 523.25, duration: 200 },  // C5 - IA
+                    { freq: 659.25, duration: 300 },  // E5 - IAAA
+                    { freq: 783.99, duration: 200 },  // G5 - YE
+                    { freq: 659.25, duration: 200 },  // E5 - YE
+                    { freq: 0, duration: 100 },       // pausa
+                    { freq: 523.25, duration: 200 },  // C5 - IA
+                    { freq: 659.25, duration: 300 },  // E5 - IAAA
+                    { freq: 783.99, duration: 200 },  // G5 - YE
+                    { freq: 659.25, duration: 200 },  // E5 - YE
+                ];
+                
+                let currentTime = audioCtx.currentTime;
+                
+                notes.forEach(note => {
+                    if (note.freq > 0) {
+                        const oscillator = audioCtx.createOscillator();
+                        const gainNode = audioCtx.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioCtx.destination);
+                        
+                        oscillator.frequency.value = note.freq;
+                        oscillator.type = 'sine';
+                        
+                        gainNode.gain.setValueAtTime(0.3, currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + note.duration / 1000);
+                        
+                        oscillator.start(currentTime);
+                        oscillator.stop(currentTime + note.duration / 1000);
+                    }
+                    currentTime += note.duration / 1000;
+                });
+                
+                // Repetir o som algumas vezes
+                setTimeout(() => {
+                    if (document.getElementById('patrick-modal').classList.contains('active')) {
+                        playPatrickSound();
+                    }
+                }, 2500);
+                
+            } catch (e) {
+                console.log('Web Audio API não suportada');
+            }
         }
 
         function closePatrickModal() {
-            document.getElementById('patrick-modal').classList.remove('active');
+            const modal = document.getElementById('patrick-modal');
+            modal.classList.remove('active');
+            
+            // Parar as notas musicais
+            if (musicNotesInterval) {
+                clearInterval(musicNotesInterval);
+                musicNotesInterval = null;
+            }
+            
+            // Continuar o quiz
+            currentQuestionIndex++;
+            selectedAnswer = null;
+            renderQuestion();
         }
 
         function showHint() {
@@ -2665,6 +3036,15 @@
             const question = currentQuiz[currentQuestionIndex];
             const correctLetter = String.fromCharCode(65 + question.correct);
             showToast(`💡 Dica: A resposta correta é a alternativa ${correctLetter}`, 'warning');
+            
+            // Marcar como acertou para não ficar preso
+            quizAnswers[quizAnswers.length - 1] = true;
+            
+            setTimeout(() => {
+                currentQuestionIndex++;
+                selectedAnswer = null;
+                renderQuestion();
+            }, 2000);
         }
 
         // ==========================================
